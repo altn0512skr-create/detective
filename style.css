@@ -2332,3 +2332,146 @@ body::before {
     background-repeat: no-repeat !important;
   }
 }
+
+@media (max-width: 768px) {
+  /* 盤面全体の上下余白を増やす */
+  .board {
+    padding: 16px 8px 20px !important;
+  }
+
+  /* 上下プレイヤーエリアの高さ配分を安定させる */
+  .opponent-board,
+  .self-board {
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+  }
+
+  /* 相手側・自分側の中身をもっと離す */
+  .opponent-board {
+    grid-template-rows: 92px 90px 1fr !important;
+  }
+
+  .self-board {
+    grid-template-rows: 1fr 90px 92px !important;
+  }
+
+  /* 補助エリアを横一列で整列 */
+  .support-col {
+    display: grid !important;
+    grid-template-columns: repeat(3, auto) !important;
+    justify-content: center !important;
+    align-items: center !important;
+    column-gap: 18px !important;
+    row-gap: 8px !important;
+    min-height: 90px !important;
+  }
+
+  /* battleエリアも3段の間隔を広げる */
+  .opponent-battle-col,
+  .self-battle-col,
+  .battle-col {
+    row-gap: 18px !important;
+  }
+
+  /* 相手側の上段・下段 */
+  .opponent-battle-top,
+  .opponent-battle-bottom,
+  .self-battle-top,
+  .self-battle-middle {
+    gap: 20px !important;
+  }
+
+  /* 現場を中央に固定し、上下から少し離す */
+  .opponent-scene-zone,
+  .self-scene-zone {
+    margin: 6px 0 !important;
+  }
+
+  /* 相手側の現場を少し上へ */
+  .opponent-scene-zone {
+    transform: translateY(-6px) !important;
+  }
+
+  /* 自分側の現場を少し下へ */
+  .self-scene-zone {
+    transform: translateY(6px) !important;
+  }
+
+  /* 山札・リムーブ・証拠・事件の見た目サイズを少しだけ小さく */
+  .deck-card {
+    width: 66px !important;
+    height: 94px !important;
+  }
+
+  .remove-card {
+    width: 64px !important;
+    height: 90px !important;
+  }
+
+  .card-vertical {
+    width: 66px !important;
+    height: 94px !important;
+  }
+
+  .card-horizontal {
+    width: 94px !important;
+    height: 66px !important;
+  }
+
+  .partner-vertical,
+  .partner-file-card.partner-vertical {
+    width: 64px !important;
+    height: 90px !important;
+  }
+
+  .partner-horizontal,
+  .partner-file-card.partner-horizontal {
+    width: 90px !important;
+    height: 64px !important;
+  }
+
+  .file-area,
+  .evidence-area {
+    width: 66px !important;
+    height: 94px !important;
+  }
+
+  /* カウント文字を少し小さく */
+  .file-count,
+  .evidence-count,
+  .deck-count {
+    font-size: 11px !important;
+  }
+
+  /* 現場5枠をもう少し中央に締める */
+  #scene-area,
+  #opponent-scene-area {
+    width: 300px !important;
+    max-width: 300px !important;
+    grid-template-columns: repeat(5, 56px) !important;
+    grid-template-rows: 56px !important;
+    gap: 4px !important;
+  }
+
+  #scene-area .scene-slot,
+  #opponent-scene-area .scene-slot {
+    width: 56px !important;
+    min-width: 56px !important;
+    max-width: 56px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+  }
+
+  /* 手札を画面端ぴったりにしない */
+  .hand-column {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    gap: 4px !important;
+  }
+
+  .hand-card {
+    width: 64px !important;
+    height: 90px !important;
+  }
+}
