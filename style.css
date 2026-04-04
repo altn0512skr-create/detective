@@ -1421,479 +1421,10 @@ body::before {
 
 @media (max-width: 768px) {
   :root {
-    --board-width: 980px;
-    --board-height: 1700px;
-
-    --card-width: 88px;
-    --card-height: 123px;
-
-    --scene-card-width: 140px;
-    --scene-card-height: 95px;
-  }
-
-  .board {
-    padding: 20px 12px;
-    grid-template-columns: 1fr 16px 1fr;
-  }
-
-  .self-board {
-    grid-template-columns: 88px 90px 1fr;
-    column-gap: 10px;
-  }
-
-  .opponent-board {
-    grid-template-columns: 1fr 90px 88px;
-    column-gap: 10px;
-  }
-
-  .deck-card {
-    width: 96px;
-    height: 138px;
-  }
-
-  .remove-card {
-    width: 92px;
-    height: 128px;
-  }
-
-  .partner-vertical,
-  .partner-file-card.partner-vertical {
-    width: 88px;
-    height: 123px;
-  }
-
-  .partner-horizontal,
-  .partner-file-card.partner-horizontal {
-    width: 123px;
-    height: 88px;
-  }
-
-  .card-vertical {
-    width: 96px;
-    height: 138px;
-  }
-
-  .card-horizontal {
-    width: 138px;
-    height: 96px;
-  }
-
-  .hand-card {
-    width: 88px;
-    height: 123px;
-    margin-top: -52px;
-  }
-
-  .file-area,
-  .evidence-area {
-    transform: scale(0.85);
-    transform-origin: center center;
-  }
-
-  .deck-option,
-  .hand-option,
-  .scene-option,
-  .reveal-option,
-  .file-option,
-  .evidence-option,
-  .remove-option,
-  .remove-card-option,
-  .partner-option,
-  .evidence-card-option {
-    font-size: 16px;
-    min-height: 44px;
-  }
-
-  #undo-button,
-  #open-deck-builder {
-    top: 10px;
-    padding: 8px 12px;
-    font-size: 13px;
-  }
-
-  #undo-button {
-    left: 10px;
-  }
-
-  #open-deck-builder {
-    right: 10px;
-  }
-}
-
-@media (max-width: 768px) {
-  /* ここに上下レイアウト用CSSを入れる */
-
-/* =========================================
-   上下レイアウト化 第1段階
-   style.css の一番最後に追加
-========================================= */
-
-:root {
-  --board-width: 100vw;
-  --board-height: 100vh;
-
-  --top-hand-height: 120px;
-  --bottom-hand-height: 120px;
-
-  --side-zone-width: 100px;
-  --center-scene-width: min(92vw, 720px);
-  --center-gap: 12px;
-}
-
-/* 盤面全体を上下3段に */
-.board-viewport {
-  align-items: stretch;
-  justify-content: stretch;
-  overflow: hidden;
-}
-
-.board {
-  width: 100vw !important;
-  height: 100vh !important;
-  padding: 12px !important;
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  grid-template-rows: 1fr 18px 1fr !important;
-  gap: 0 !important;
-  align-items: stretch !important;
-}
-
-/* 中央線を横線に変更 */
-.center-divider {
-  width: 100%;
-  height: 18px;
-  position: relative;
-}
-
-.center-divider::before {
-  content: "";
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  top: 50%;
-  height: 2px;
-  width: auto;
-  transform: translateY(-50%);
-  background: linear-gradient(
-    to right,
-    rgba(255,255,255,0.15),
-    rgba(255,255,255,0.55),
-    rgba(255,255,255,0.15)
-  );
-  box-shadow: 0 0 10px rgba(255,255,255,0.12);
-}
-
-/* 上下の各プレイヤーエリア */
-.side-board {
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  display: grid !important;
-}
-
-/* 相手は 上:手札 / 中:補助 / 下:現場 */
-.opponent-board {
-  grid-template-columns: 1fr !important;
-  grid-template-rows: var(--top-hand-height) auto 1fr !important;
-  row-gap: 10px;
-}
-
-/* 自分は 上:現場 / 中:補助 / 下:手札 */
-.self-board {
-  grid-template-columns: 1fr !important;
-  grid-template-rows: 1fr auto var(--bottom-hand-height) !important;
-  row-gap: 10px;
-}
-
-/* 列の概念を解除 */
-.side-col {
-  width: 100%;
-  height: auto;
-  min-width: 0;
-  min-height: 0;
-}
-
-/* hand / support / battle の順序を並び替える */
-.opponent-hand-col { order: 1; }
-.opponent-support-col { order: 2; }
-.opponent-battle-col { order: 3; }
-
-.self-battle-col { order: 1; }
-.self-support-col { order: 2; }
-.self-hand-col { order: 3; }
-
-/* 手札を横並びスクロールに変更 */
-.hand-col {
-  display: block !important;
-}
-
-.hand-column {
-  width: 100%;
-  height: 100%;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 8px 10px !important;
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-
-.hand-card {
-  flex: 0 0 auto;
-  margin-top: 0 !important;
-}
-
-/* 上側の相手手札は天地だけ反転 */
-.opponent-hand-column .hand-card {
-  transform: rotate(180deg) !important;
-}
-
-/* 自分手札は正位置 */
-.player-hand-column .hand-card {
-  transform: none !important;
-}
-
-/* support 行を横並びに */
-.support-col {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 18px;
-  min-height: 120px;
-}
-
-/* battle 行を左右3分割
-   左: 補助ゾーン
-   中: 現場
-   右: 補助ゾーン
-*/
-.battle-col,
-.self-battle-col,
-.opponent-battle-col {
-  display: grid !important;
-  grid-template-columns: 1fr minmax(320px, var(--center-scene-width)) 1fr !important;
-  grid-template-rows: 1fr !important;
-  align-items: center;
-  column-gap: var(--center-gap);
-  min-width: 0;
-  min-height: 0;
-  height: 100%;
-}
-
-/* battle 内の既存ブロックを単純化 */
-.battle-top,
-.battle-bottom,
-.self-battle-top,
-.self-battle-bottom,
-.opponent-battle-top,
-.opponent-battle-bottom,
-.self-battle-middle {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 14px !important;
-  width: 100%;
-  height: auto;
-  min-width: 0;
-  min-height: 0;
-  transform: none !important;
-}
-
-/* 相手側の配置 */
-.opponent-battle-top {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.opponent-scene-zone {
-  grid-column: 2;
-  grid-row: 1;
-  transform: none !important;
-  margin: 0 !important;
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-.opponent-battle-bottom {
-  grid-column: 3;
-  grid-row: 1;
-}
-
-/* 自分側の配置 */
-.self-battle-top {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.self-scene-zone {
-  grid-column: 2;
-  grid-row: 1;
-  transform: none !important;
-  margin: 0 !important;
-}
-
-.self-battle-middle {
-  grid-column: 3;
-  grid-row: 1;
-}
-
-/* self-battle-middle の中身を横並びに */
-.self-battle-middle {
-  display: flex !important;
-  flex-direction: row !important;
-}
-
-.self-battle-bottom {
-  display: flex !important;
-  flex-direction: row !important;
-}
-
-/* 現場を横5枠にする */
-.vertical-scene-area {
-  width: 100% !important;
-  max-width: var(--center-scene-width);
-  display: grid !important;
-  grid-template-columns: repeat(5, 1fr) !important;
-  grid-template-rows: 1fr !important;
-  gap: 8px !important;
-  justify-items: center;
-  align-items: center;
-}
-
-.scene-slot {
-  width: 100% !important;
-  max-width: 132px;
-  height: 88px !important;
-}
-
-/* 現場カードも横向き前提で自然に */
-.scene-card {
-  width: 100% !important;
-  height: 100% !important;
-  background-size: contain;
-}
-
-/* 上下レイアウトでは左右回転を一旦解除 */
-.self-board .hand-card,
-.self-board .partner-card,
-.self-board .incident-card,
-.self-board .deck-card,
-.self-board .remove-card,
-.opponent-board .partner-card,
-.opponent-board .incident-card,
-.opponent-board .deck-card,
-.opponent-board .remove-card,
-#scene-area .scene-card,
-#opponent-scene-area .scene-card {
-  transform-origin: center center;
-}
-
-/* 自分側 */
-.self-board .partner-card,
-.self-board .incident-card,
-.self-board .deck-card,
-.self-board .remove-card {
-  transform: none !important;
-}
-
-/* 相手側は180度 */
-.opponent-board .partner-card,
-.opponent-board .incident-card,
-.opponent-board .deck-card,
-.opponent-board .remove-card,
-#opponent-scene-area .scene-card {
-  transform: rotate(180deg) !important;
-}
-
-/* スリープ・スタンは最低限維持 */
-#scene-area .scene-card.card-sleep {
-  transform: rotate(90deg) scale(0.72) !important;
-}
-
-#scene-area .scene-card.card-stun {
-  transform: rotate(180deg) !important;
-}
-
-#opponent-scene-area .scene-card.card-sleep {
-  transform: rotate(270deg) scale(0.72) !important;
-}
-
-#opponent-scene-area .scene-card.card-stun {
-  transform: rotate(180deg) !important;
-}
-
-/* 今までの absolute 微調整を無効化 */
-.self-partner-zone,
-.opponent-partner-zone,
-.self-file-zone,
-.opponent-file-zone,
-.self-partner-file-zone,
-.opponent-partner-file-zone,
-.self-evidence-zone,
-.opponent-evidence-zone,
-.self-incident-zone,
-.opponent-incident-zone,
-.self-remove-zone,
-.opponent-remove-zone,
-.self-deck-zone,
-.opponent-deck,
-.player-deck {
-  position: static !important;
-  left: auto !important;
-  right: auto !important;
-  top: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  margin: 0 !important;
-}
-
-/* カウント位置も通常化 */
-.file-count,
-.evidence-count,
-.deck-count {
-  position: static !important;
-  transform: none !important;
-  white-space: nowrap;
-  text-align: center;
-}
-
-/* ゾーンの見た目を揃える */
-.file-zone,
-.partner-zone,
-.deck-zone,
-.remove-zone,
-.incident-zone,
-.evidence-zone,
-.scene-zone,
-.partner-file-zone {
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-/* パートナーFILEも普通のフローに戻す */
-.partner-file-zone {
-  display: flex !important;
-  flex-direction: column;
-  gap: 6px;
-}
-
-}
-
-@media (max-width: 768px) {
-  :root {
     --board-width: 100vw;
     --board-height: 100vh;
-    --card-width: 72px;
-    --card-height: 101px;
-    --scene-card-width: 64px;
-    --scene-card-height: 64px;
-    --top-hand-height: 88px;
-    --bottom-hand-height: 88px;
+    --card-width: 64px;
+    --card-height: 90px;
   }
 
   html,
@@ -1909,11 +1440,11 @@ body::before {
     padding: 0;
   }
 
-  /* HTMLはそのまま、見た目だけ上下順にする */
+  /* HTMLはそのまま、スマホだけ上下表示 */
   .board {
     width: 100vw !important;
     height: 100vh !important;
-    padding: 8px !important;
+    padding: 10px 6px !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 0 !important;
@@ -1927,7 +1458,7 @@ body::before {
   .center-divider {
     order: 2;
     width: 100%;
-    height: 14px;
+    height: 16px;
     position: relative;
   }
 
@@ -1945,6 +1476,7 @@ body::before {
     transform: translateY(-50%) !important;
   }
 
+  /* 上下2エリアの基本構造 */
   .side-board {
     width: 100%;
     min-width: 0;
@@ -1954,14 +1486,14 @@ body::before {
 
   .opponent-board {
     grid-template-columns: 1fr !important;
-    grid-template-rows: var(--top-hand-height) auto 1fr !important;
-    row-gap: 8px !important;
+    grid-template-rows: 82px 92px 1fr !important;
+    row-gap: 10px !important;
   }
 
   .self-board {
     grid-template-columns: 1fr !important;
-    grid-template-rows: 1fr auto var(--bottom-hand-height) !important;
-    row-gap: 8px !important;
+    grid-template-rows: 1fr 92px 82px !important;
+    row-gap: 10px !important;
   }
 
   .opponent-hand-col { order: 1; }
@@ -1979,6 +1511,7 @@ body::before {
     height: auto;
   }
 
+  /* 手札 */
   .hand-col {
     display: block !important;
   }
@@ -1990,15 +1523,15 @@ body::before {
     flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 6px !important;
-    padding: 4px 6px !important;
+    gap: 4px !important;
+    padding: 2px 8px !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
   }
 
   .hand-card {
-    width: 72px !important;
-    height: 101px !important;
+    width: 64px !important;
+    height: 90px !important;
     flex: 0 0 auto !important;
     margin-top: 0 !important;
   }
@@ -2011,23 +1544,25 @@ body::before {
     transform: rotate(180deg) !important;
   }
 
+  /* 補助エリア */
   .support-col {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: wrap !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 10px !important;
-    min-height: auto !important;
+    gap: 12px !important;
+    min-height: 92px !important;
   }
 
+  /* 戦闘エリア */
   .opponent-battle-col,
   .self-battle-col,
   .battle-col {
     display: grid !important;
     grid-template-columns: 1fr !important;
     grid-template-rows: auto auto auto !important;
-    row-gap: 10px !important;
+    row-gap: 14px !important;
     min-width: 0 !important;
     min-height: 0 !important;
     height: auto !important;
@@ -2044,7 +1579,7 @@ body::before {
     flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 10px !important;
+    gap: 16px !important;
     width: 100% !important;
     transform: none !important;
   }
@@ -2062,44 +1597,75 @@ body::before {
     flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 10px !important;
+    gap: 16px !important;
   }
 
-  .vertical-scene-area,
+  /* 現場を完全固定 */
+  .opponent-scene-zone,
+  .self-scene-zone {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+
   #scene-area,
   #opponent-scene-area {
-    width: 100% !important;
+    width: 300px !important;
+    max-width: 300px !important;
     display: grid !important;
-    grid-template-columns: repeat(5, 1fr) !important;
-    grid-template-rows: 1fr !important;
+    grid-template-columns: repeat(5, 56px) !important;
+    grid-template-rows: 56px !important;
     gap: 4px !important;
-    padding: 0 !important;
-    justify-items: center !important;
+    justify-content: center !important;
     align-items: center !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    background: transparent !important;
+    border: none !important;
+    overflow: visible !important;
   }
 
-  .scene-slot {
-    width: 100% !important;
-    max-width: 64px !important;
-    height: 64px !important;
+  #scene-area .scene-slot,
+  #opponent-scene-area .scene-slot {
+    width: 56px !important;
+    min-width: 56px !important;
+    max-width: 56px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border: 2px dashed rgba(255, 255, 255, 0.55) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
     border-radius: 8px !important;
-    border: 2px dashed rgba(255, 255, 255, 0.45) !important;
-    background: rgba(255, 255, 255, 0.05) !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: visible !important;
   }
 
-  .scene-slot::after {
-    color: rgba(255, 255, 255, 0.35) !important;
+  #scene-area .scene-slot::after,
+  #opponent-scene-area .scene-slot::after {
+    color: rgba(255, 255, 255, 0.45) !important;
     font-size: 10px !important;
     bottom: 4px !important;
     right: 6px !important;
   }
 
-  .scene-card {
+  #scene-area .scene-card,
+  #opponent-scene-area .scene-card {
     width: 100% !important;
     height: 100% !important;
     background-size: contain !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
   }
 
+  /* 向き */
   .opponent-board .deck-card,
   .opponent-board .remove-card,
   .opponent-board .partner-card,
@@ -2132,6 +1698,7 @@ body::before {
     transform: rotate(180deg) !important;
   }
 
+  /* PC用の絶対配置を全部解除 */
   .self-partner-zone,
   .opponent-partner-zone,
   .self-file-zone,
@@ -2169,42 +1736,43 @@ body::before {
     justify-content: center !important;
   }
 
+  /* カードサイズ */
   .deck-card {
-    width: 74px !important;
-    height: 106px !important;
+    width: 64px !important;
+    height: 90px !important;
   }
 
   .remove-card {
-    width: 70px !important;
-    height: 98px !important;
+    width: 60px !important;
+    height: 84px !important;
   }
 
   .card-vertical {
-    width: 74px !important;
-    height: 106px !important;
+    width: 64px !important;
+    height: 90px !important;
   }
 
   .card-horizontal {
-    width: 106px !important;
-    height: 74px !important;
+    width: 90px !important;
+    height: 64px !important;
   }
 
   .partner-vertical,
   .partner-file-card.partner-vertical {
-    width: 70px !important;
-    height: 98px !important;
+    width: 60px !important;
+    height: 84px !important;
   }
 
   .partner-horizontal,
   .partner-file-card.partner-horizontal {
-    width: 98px !important;
-    height: 70px !important;
+    width: 84px !important;
+    height: 60px !important;
   }
 
   .file-area,
   .evidence-area {
-    width: 74px !important;
-    height: 106px !important;
+    width: 64px !important;
+    height: 90px !important;
     transform: none !important;
   }
 
@@ -2214,7 +1782,7 @@ body::before {
     position: static !important;
     transform: none !important;
     white-space: nowrap !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
     text-align: center !important;
   }
 
@@ -2227,251 +1795,4 @@ body::before {
 
   #undo-button { left: 8px !important; }
   #open-deck-builder { right: 8px !important; }
-}
-
-@media (max-width: 768px) {
-  #scene-area .scene-slot,
-  #opponent-scene-area .scene-slot {
-    width: 64px !important;
-    max-width: 64px !important;
-    height: 64px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border: 2px dashed rgba(255, 255, 255, 0.5) !important;
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-radius: 8px !important;
-    box-sizing: border-box !important;
-  }
-
-  #scene-area,
-  #opponent-scene-area {
-    width: 100% !important;
-    display: grid !important;
-    grid-template-columns: repeat(5, 64px) !important;
-    justify-content: center !important;
-    gap: 4px !important;
-  }
-
-  #scene-area .scene-slot::after,
-  #opponent-scene-area .scene-slot::after {
-    color: rgba(255, 255, 255, 0.4) !important;
-    font-size: 10px !important;
-    bottom: 4px !important;
-    right: 6px !important;
-  }
-}
-
-@media (max-width: 768px) {
-  /* 現場全体を1列で独立させる */
-  .opponent-scene-zone,
-  .self-scene-zone {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    transform: none !important;
-  }
-
-  /* 現場エリアを5マス固定 */
-  #scene-area,
-  #opponent-scene-area {
-    width: 340px !important;
-    max-width: 340px !important;
-    display: grid !important;
-    grid-template-columns: repeat(5, 64px) !important;
-    grid-template-rows: 64px !important;
-    gap: 4px !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 0 !important;
-    margin: 0 auto !important;
-    background: transparent !important;
-    border: none !important;
-    overflow: visible !important;
-  }
-
-  /* 5枠を強制表示 */
-  #scene-area .scene-slot,
-  #opponent-scene-area .scene-slot {
-    width: 64px !important;
-    min-width: 64px !important;
-    max-width: 64px !important;
-    height: 64px !important;
-    min-height: 64px !important;
-    max-height: 64px !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    border: 2px dashed rgba(255, 255, 255, 0.55) !important;
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-radius: 8px !important;
-    box-sizing: border-box !important;
-    position: relative !important;
-    overflow: visible !important;
-  }
-
-  /* 数字も見やすく */
-  #scene-area .scene-slot::after,
-  #opponent-scene-area .scene-slot::after {
-    color: rgba(255, 255, 255, 0.45) !important;
-    font-size: 10px !important;
-    bottom: 4px !important;
-    right: 6px !important;
-  }
-
-  /* 現場カードは枠の中に収める */
-  #scene-area .scene-card,
-  #opponent-scene-area .scene-card {
-    width: 100% !important;
-    height: 100% !important;
-    background-size: contain !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-  }
-}
-
-@media (max-width: 768px) {
-  /* 盤面全体の上下余白を増やす */
-  .board {
-    padding: 16px 8px 20px !important;
-  }
-
-  /* 上下プレイヤーエリアの高さ配分を安定させる */
-  .opponent-board,
-  .self-board {
-    flex: 1 1 0 !important;
-    min-height: 0 !important;
-  }
-
-  /* 相手側・自分側の中身をもっと離す */
-  .opponent-board {
-    grid-template-rows: 92px 90px 1fr !important;
-  }
-
-  .self-board {
-    grid-template-rows: 1fr 90px 92px !important;
-  }
-
-  /* 補助エリアを横一列で整列 */
-  .support-col {
-    display: grid !important;
-    grid-template-columns: repeat(3, auto) !important;
-    justify-content: center !important;
-    align-items: center !important;
-    column-gap: 18px !important;
-    row-gap: 8px !important;
-    min-height: 90px !important;
-  }
-
-  /* battleエリアも3段の間隔を広げる */
-  .opponent-battle-col,
-  .self-battle-col,
-  .battle-col {
-    row-gap: 18px !important;
-  }
-
-  /* 相手側の上段・下段 */
-  .opponent-battle-top,
-  .opponent-battle-bottom,
-  .self-battle-top,
-  .self-battle-middle {
-    gap: 20px !important;
-  }
-
-  /* 現場を中央に固定し、上下から少し離す */
-  .opponent-scene-zone,
-  .self-scene-zone {
-    margin: 6px 0 !important;
-  }
-
-  /* 相手側の現場を少し上へ */
-  .opponent-scene-zone {
-    transform: translateY(-6px) !important;
-  }
-
-  /* 自分側の現場を少し下へ */
-  .self-scene-zone {
-    transform: translateY(6px) !important;
-  }
-
-  /* 山札・リムーブ・証拠・事件の見た目サイズを少しだけ小さく */
-  .deck-card {
-    width: 66px !important;
-    height: 94px !important;
-  }
-
-  .remove-card {
-    width: 64px !important;
-    height: 90px !important;
-  }
-
-  .card-vertical {
-    width: 66px !important;
-    height: 94px !important;
-  }
-
-  .card-horizontal {
-    width: 94px !important;
-    height: 66px !important;
-  }
-
-  .partner-vertical,
-  .partner-file-card.partner-vertical {
-    width: 64px !important;
-    height: 90px !important;
-  }
-
-  .partner-horizontal,
-  .partner-file-card.partner-horizontal {
-    width: 90px !important;
-    height: 64px !important;
-  }
-
-  .file-area,
-  .evidence-area {
-    width: 66px !important;
-    height: 94px !important;
-  }
-
-  /* カウント文字を少し小さく */
-  .file-count,
-  .evidence-count,
-  .deck-count {
-    font-size: 11px !important;
-  }
-
-  /* 現場5枠をもう少し中央に締める */
-  #scene-area,
-  #opponent-scene-area {
-    width: 300px !important;
-    max-width: 300px !important;
-    grid-template-columns: repeat(5, 56px) !important;
-    grid-template-rows: 56px !important;
-    gap: 4px !important;
-  }
-
-  #scene-area .scene-slot,
-  #opponent-scene-area .scene-slot {
-    width: 56px !important;
-    min-width: 56px !important;
-    max-width: 56px !important;
-    height: 56px !important;
-    min-height: 56px !important;
-    max-height: 56px !important;
-  }
-
-  /* 手札を画面端ぴったりにしない */
-  .hand-column {
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-    gap: 4px !important;
-  }
-
-  .hand-card {
-    width: 64px !important;
-    height: 90px !important;
-  }
 }
