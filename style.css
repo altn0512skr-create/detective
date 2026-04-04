@@ -1440,7 +1440,6 @@ body::before {
     padding: 0;
   }
 
-  /* HTMLはそのまま、スマホだけ上下表示 */
   .board {
     width: 100vw !important;
     height: 100vh !important;
@@ -1451,19 +1450,14 @@ body::before {
     align-items: stretch !important;
   }
 
-  .opponent-board {
-    order: 1;
-  }
+  .opponent-board { order: 1; }
+  .center-divider { order: 2; }
+  .self-board { order: 3; }
 
   .center-divider {
-    order: 2;
     width: 100%;
     height: 16px;
     position: relative;
-  }
-
-  .self-board {
-    order: 3;
   }
 
   .center-divider::before {
@@ -1476,7 +1470,6 @@ body::before {
     transform: translateY(-50%) !important;
   }
 
-  /* 上下2エリアの基本構造 */
   .side-board {
     width: 100%;
     min-width: 0;
@@ -1486,13 +1479,13 @@ body::before {
 
   .opponent-board {
     grid-template-columns: 1fr !important;
-    grid-template-rows: 82px 92px 1fr !important;
+    grid-template-rows: 82px 92px auto !important;
     row-gap: 10px !important;
   }
 
   .self-board {
     grid-template-columns: 1fr !important;
-    grid-template-rows: 1fr 92px 82px !important;
+    grid-template-rows: auto 92px 82px !important;
     row-gap: 10px !important;
   }
 
@@ -1511,7 +1504,6 @@ body::before {
     height: auto;
   }
 
-  /* 手札 */
   .hand-col {
     display: block !important;
   }
@@ -1544,74 +1536,160 @@ body::before {
     transform: rotate(180deg) !important;
   }
 
-  /* 補助エリア */
-  .support-col {
+  /* support: FILE を手札寄りに */
+  .self-support-col,
+  .opponent-support-col {
     display: flex !important;
     flex-direction: row !important;
-    flex-wrap: wrap !important;
     justify-content: center !important;
     align-items: center !important;
     gap: 12px !important;
+    flex-wrap: nowrap !important;
     min-height: 92px !important;
   }
 
-  /* 戦闘エリア */
-  .opponent-battle-col,
-  .self-battle-col,
-  .battle-col {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    grid-template-rows: auto auto auto !important;
-    row-gap: 14px !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    height: auto !important;
-  }
+  .self-file-zone { order: 1 !important; }
+  .self-partner-zone { order: 2 !important; }
+  .self-partner-file-zone { order: 3 !important; }
 
-  .opponent-battle-top,
-  .self-battle-top,
-  .opponent-battle-bottom,
-  .self-battle-bottom,
-  .self-battle-middle,
-  .battle-top,
-  .battle-bottom {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 16px !important;
-    width: 100% !important;
+  .opponent-file-zone { order: 1 !important; }
+  .opponent-partner-zone { order: 2 !important; }
+  .opponent-partner-file-zone { order: 3 !important; }
+
+  /* 既存PC用の absolute / transform を全部解除 */
+  .self-partner-zone,
+  .opponent-partner-zone,
+  .self-file-zone,
+  .opponent-file-zone,
+  .self-partner-file-zone,
+  .opponent-partner-file-zone,
+  .self-evidence-zone,
+  .opponent-evidence-zone,
+  .self-incident-zone,
+  .opponent-incident-zone,
+  .self-remove-zone,
+  .opponent-remove-zone,
+  .self-deck-zone,
+  .opponent-deck,
+  .player-deck {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
     transform: none !important;
+    margin: 0 !important;
+    z-index: auto !important;
   }
 
-  .opponent-battle-top { grid-row: 1; }
-  .opponent-scene-zone { grid-row: 2; }
-  .opponent-battle-bottom { grid-row: 3; }
+  /* =========================
+     相手 battle
+     左: デッキ・リムーブ
+     中: 現場
+     右: 事件・証拠
+  ========================= */
+  .opponent-battle-col {
+    display: grid !important;
+    grid-template-columns: 1fr 300px 1fr !important;
+    grid-template-areas: "left center right" !important;
+    align-items: center !important;
+    justify-items: center !important;
+    column-gap: 12px !important;
+    min-height: 0 !important;
+  }
 
-  .self-battle-top { grid-row: 1; }
-  .self-scene-zone { grid-row: 2; }
-  .self-battle-middle { grid-row: 3; }
-
-  .self-battle-middle {
+  .opponent-battle-top {
+    grid-area: left !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 16px !important;
+    gap: 14px !important;
+    width: auto !important;
   }
 
-  /* 現場を完全固定 */
-  .opponent-scene-zone,
-  .self-scene-zone {
+  .opponent-scene-zone {
+    grid-area: center !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    width: 100% !important;
+    transform: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    transform: none !important;
   }
 
+  .opponent-battle-bottom {
+    grid-area: right !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 14px !important;
+    width: auto !important;
+  }
+
+  .opponent-deck { order: 1 !important; }
+  .opponent-remove-zone { order: 2 !important; }
+  .opponent-incident-zone { order: 1 !important; }
+  .opponent-evidence-zone { order: 2 !important; }
+
+  /* =========================
+     自分 battle
+     左: 事件・証拠
+     中: 現場
+     右: デッキ・リムーブ
+  ========================= */
+  .self-battle-col {
+    display: grid !important;
+    grid-template-columns: 1fr 300px 1fr !important;
+    grid-template-areas: "left center right" !important;
+    align-items: center !important;
+    justify-items: center !important;
+    column-gap: 12px !important;
+    min-height: 0 !important;
+  }
+
+  .self-battle-top {
+    grid-area: left !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 14px !important;
+    width: auto !important;
+  }
+
+  /* これが重要 */
+  .self-battle-middle {
+    display: contents !important;
+  }
+
+  .self-scene-zone {
+    grid-area: center !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .self-battle-bottom {
+    grid-area: right !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 14px !important;
+    width: auto !important;
+  }
+
+  .self-incident-zone { order: 1 !important; }
+  .self-evidence-zone { order: 2 !important; }
+  .self-deck-zone { order: 1 !important; }
+  .self-remove-zone { order: 2 !important; }
+
+  /* 現場 */
   #scene-area,
   #opponent-scene-area {
     width: 300px !important;
@@ -1698,32 +1776,6 @@ body::before {
     transform: rotate(180deg) !important;
   }
 
-  /* PC用の絶対配置を全部解除 */
-  .self-partner-zone,
-  .opponent-partner-zone,
-  .self-file-zone,
-  .opponent-file-zone,
-  .self-partner-file-zone,
-  .opponent-partner-file-zone,
-  .self-evidence-zone,
-  .opponent-evidence-zone,
-  .self-incident-zone,
-  .opponent-incident-zone,
-  .self-remove-zone,
-  .opponent-remove-zone,
-  .self-deck-zone,
-  .opponent-deck,
-  .player-deck {
-    position: static !important;
-    left: auto !important;
-    right: auto !important;
-    top: auto !important;
-    bottom: auto !important;
-    transform: none !important;
-    margin: 0 !important;
-    z-index: auto !important;
-  }
-
   .deck-zone,
   .remove-zone,
   .partner-zone,
@@ -1736,7 +1788,6 @@ body::before {
     justify-content: center !important;
   }
 
-  /* カードサイズ */
   .deck-card {
     width: 64px !important;
     height: 90px !important;
@@ -1795,262 +1846,4 @@ body::before {
 
   #undo-button { left: 8px !important; }
   #open-deck-builder { right: 8px !important; }
-}
-
-@media (max-width: 768px) {
-
-  /* battleエリアを完全に3段にする */
-  .opponent-battle-col,
-  .self-battle-col {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    grid-template-rows: auto auto auto !important;
-    align-items: center !important;
-    justify-items: center !important;
-    row-gap: 12px !important;
-  }
-
-  /* 上段（デッキ・リムーブなど） */
-  .opponent-battle-top,
-  .self-battle-top {
-    grid-row: 1;
-  }
-
-  /* 中央（現場） */
-  .opponent-scene-zone,
-  .self-scene-zone {
-    grid-row: 2;
-  }
-
-  /* 下段（事件・証拠など） */
-  .opponent-battle-bottom,
-  .self-battle-middle {
-    grid-row: 3;
-  }
-
-  /* 横並びにする */
-  .opponent-battle-top,
-  .self-battle-top,
-  .opponent-battle-bottom,
-  .self-battle-middle {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 18px !important;
-  }
-
-}
-
-@media (max-width: 768px) {
-
-  /* 現場を中央に寄せる */
-  .opponent-scene-zone {
-    transform: translateY(10px) !important;
-  }
-
-  .self-scene-zone {
-    transform: translateY(-10px) !important;
-  }
-
-  /* 上下の間隔を広げる */
-  .opponent-battle-col,
-  .self-battle-col {
-    row-gap: 20px !important;
-  }
-
-  /* 上下パーツを少し離す */
-  .opponent-battle-top,
-  .opponent-battle-bottom,
-  .self-battle-top,
-  .self-battle-middle {
-    gap: 24px !important;
-  }
-
-}
-
-@media (max-width: 768px) {
-  /* =========================
-     自分エリア
-     左：事件・証拠
-     中：現場
-     右：デッキ・リムーブ
-  ========================= */
-
-  .self-battle-col {
-    display: grid !important;
-    grid-template-columns: 1fr 300px 1fr !important;
-    grid-template-areas: "left center right" !important;
-    align-items: center !important;
-    justify-items: center !important;
-    column-gap: 12px !important;
-  }
-
-  .self-battle-top {
-    grid-area: left !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 14px !important;
-  }
-
-  /* ここが重要：中間ラッパーを消して子を表に出す */
-  .self-battle-middle {
-    display: contents !important;
-  }
-
-  .self-scene-zone {
-    grid-area: center !important;
-    transform: none !important;
-    margin: 0 !important;
-  }
-
-  .self-battle-bottom {
-    grid-area: right !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 14px !important;
-  }
-
-  /* 自分 左側 = 事件 → 証拠 */
-  .self-incident-zone {
-    order: 1 !important;
-  }
-
-  .self-evidence-zone {
-    order: 2 !important;
-  }
-
-  /* 自分 右側 = デッキ → リムーブ */
-  .self-deck-zone {
-    order: 1 !important;
-  }
-
-  .self-remove-zone {
-    order: 2 !important;
-  }
-
-  /* FILEを手札の上 */
-  .self-board {
-    grid-template-columns: 1fr !important;
-    grid-template-rows: auto auto 82px !important;
-    row-gap: 10px !important;
-  }
-
-  .self-battle-col { order: 1; }
-  .self-support-col { order: 2; }
-  .self-hand-col { order: 3; }
-
-  .self-support-col {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 12px !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .self-file-zone {
-    order: 1 !important;
-  }
-
-  .self-partner-zone {
-    order: 2 !important;
-  }
-
-  .self-partner-file-zone {
-    order: 3 !important;
-  }
-
-  /* =========================
-     相手エリア（左右上下対称）
-     左：デッキ・リムーブ
-     中：現場
-     右：事件・証拠
-  ========================= */
-
-  .opponent-battle-col {
-    display: grid !important;
-    grid-template-columns: 1fr 300px 1fr !important;
-    grid-template-areas: "left center right" !important;
-    align-items: center !important;
-    justify-items: center !important;
-    column-gap: 12px !important;
-  }
-
-  .opponent-battle-top {
-    grid-area: left !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 14px !important;
-  }
-
-  .opponent-scene-zone {
-    grid-area: center !important;
-    transform: none !important;
-    margin: 0 !important;
-  }
-
-  .opponent-battle-bottom {
-    grid-area: right !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 14px !important;
-  }
-
-  /* 相手 左側 = デッキ → リムーブ */
-  .opponent-deck {
-    order: 1 !important;
-  }
-
-  .opponent-remove-zone {
-    order: 2 !important;
-  }
-
-  /* 相手 右側 = 事件 → 証拠 */
-  .opponent-incident-zone {
-    order: 1 !important;
-  }
-
-  .opponent-evidence-zone {
-    order: 2 !important;
-  }
-
-  /* 相手のFILEは手札の下 */
-  .opponent-board {
-    grid-template-columns: 1fr !important;
-    grid-template-rows: 82px auto auto !important;
-    row-gap: 10px !important;
-  }
-
-  .opponent-hand-col { order: 1; }
-  .opponent-support-col { order: 2; }
-  .opponent-battle-col { order: 3; }
-
-  .opponent-support-col {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 12px !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .opponent-file-zone {
-    order: 1 !important;
-  }
-
-  .opponent-partner-zone {
-    order: 2 !important;
-  }
-
-  .opponent-partner-file-zone {
-    order: 3 !important;
-  }
 }
