@@ -1879,31 +1879,34 @@ body::before {
   .self-battle-col {
     display: grid !important;
     grid-template-columns: 1fr 300px 1fr !important;
-    grid-template-rows: 1fr !important;
+    grid-template-areas: "left center right" !important;
     align-items: center !important;
     justify-items: center !important;
     column-gap: 12px !important;
   }
 
   .self-battle-top {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
+    grid-area: left !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
     gap: 14px !important;
+  }
+
+  /* ここが重要：中間ラッパーを消して子を表に出す */
+  .self-battle-middle {
+    display: contents !important;
   }
 
   .self-scene-zone {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
+    grid-area: center !important;
     transform: none !important;
+    margin: 0 !important;
   }
 
-  .self-battle-middle {
-    grid-column: 3 !important;
-    grid-row: 1 !important;
+  .self-battle-bottom {
+    grid-area: right !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
@@ -1911,22 +1914,7 @@ body::before {
     gap: 14px !important;
   }
 
-  .self-battle-bottom {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 14px !important;
-  }
-
-  /* 自分右側は デッキ → リムーブ */
-  .self-deck-zone {
-    order: 1 !important;
-  }
-
-  .self-remove-zone {
-    order: 2 !important;
-  }
-
-  /* 自分左側は 事件 → 証拠 */
+  /* 自分 左側 = 事件 → 証拠 */
   .self-incident-zone {
     order: 1 !important;
   }
@@ -1935,7 +1923,16 @@ body::before {
     order: 2 !important;
   }
 
-  /* FILEを手札の上に置く */
+  /* 自分 右側 = デッキ → リムーブ */
+  .self-deck-zone {
+    order: 1 !important;
+  }
+
+  .self-remove-zone {
+    order: 2 !important;
+  }
+
+  /* FILEを手札の上 */
   .self-board {
     grid-template-columns: 1fr !important;
     grid-template-rows: auto auto 82px !important;
@@ -1968,7 +1965,7 @@ body::before {
   }
 
   /* =========================
-     相手エリア（自分の上下左右対称）
+     相手エリア（左右上下対称）
      左：デッキ・リムーブ
      中：現場
      右：事件・証拠
@@ -1977,15 +1974,14 @@ body::before {
   .opponent-battle-col {
     display: grid !important;
     grid-template-columns: 1fr 300px 1fr !important;
-    grid-template-rows: 1fr !important;
+    grid-template-areas: "left center right" !important;
     align-items: center !important;
     justify-items: center !important;
     column-gap: 12px !important;
   }
 
   .opponent-battle-top {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
+    grid-area: left !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
@@ -1994,14 +1990,13 @@ body::before {
   }
 
   .opponent-scene-zone {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
+    grid-area: center !important;
     transform: none !important;
+    margin: 0 !important;
   }
 
   .opponent-battle-bottom {
-    grid-column: 3 !important;
-    grid-row: 1 !important;
+    grid-area: right !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
@@ -2009,7 +2004,7 @@ body::before {
     gap: 14px !important;
   }
 
-  /* 相手左側は デッキ → リムーブ */
+  /* 相手 左側 = デッキ → リムーブ */
   .opponent-deck {
     order: 1 !important;
   }
@@ -2018,7 +2013,7 @@ body::before {
     order: 2 !important;
   }
 
-  /* 相手右側は 事件 → 証拠 */
+  /* 相手 右側 = 事件 → 証拠 */
   .opponent-incident-zone {
     order: 1 !important;
   }
@@ -2027,7 +2022,7 @@ body::before {
     order: 2 !important;
   }
 
-  /* 相手のFILEは手札の下（＝上下対称） */
+  /* 相手のFILEは手札の下 */
   .opponent-board {
     grid-template-columns: 1fr !important;
     grid-template-rows: 82px auto auto !important;
