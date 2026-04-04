@@ -1840,3 +1840,30 @@ body::before {
   }
 
 }
+
+@media (max-width: 768px) {
+
+  /* 現場を中央に寄せる */
+  .opponent-scene-zone {
+    transform: translateY(10px) !important;
+  }
+
+  .self-scene-zone {
+    transform: translateY(-10px) !important;
+  }
+
+  /* 上下の間隔を広げる */
+  .opponent-battle-col,
+  .self-battle-col {
+    row-gap: 20px !important;
+  }
+
+  /* 上下パーツを少し離す */
+  .opponent-battle-top,
+  .opponent-battle-bottom,
+  .self-battle-top,
+  .self-battle-middle {
+    gap: 24px !important;
+  }
+
+}
