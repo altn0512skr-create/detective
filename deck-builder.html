@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>デッキ作成</title>
+  <link rel="stylesheet" href="deck-builder.css" />
+</head>
+<body>
+  <main class="builder-page">
+    <header class="builder-header">
+      <h1>デッキ作成</h1>
+
+      <div class="builder-status">
+        <div class="deck-target-switch">
+          <button id="edit-player-deck" class="target-button active" type="button">自分デッキ</button>
+          <button id="edit-opponent-deck" class="target-button" type="button">相手デッキ</button>
+        </div>
+
+        <p id="deck-total">合計 0 / 40 枚</p>
+        <button id="save-deck-button" type="button" disabled>このデッキを保存</button>
+        <button id="reset-deck-button" type="button">このデッキをリセット</button>
+        <a href="index.html" class="back-link">ゲーム画面へ戻る</a>
+      </div>
+    </header>
+
+    <div class="search-bar">
+      <input
+        id="card-search-input"
+        type="text"
+        placeholder="カードIDで検索（例: 0150）"
+      />
+      <button id="clear-search-button" type="button">クリア</button>
+    </div>
+
+    <div class="pagination-bar">
+      <button id="prev-page-button" type="button">← 前へ</button>
+      <p id="page-info">1 / 1</p>
+      <button id="next-page-button" type="button">次へ →</button>
+    </div>
+
+    <div class="builder-main">
+      <section id="card-list" class="card-list"></section>
+
+      <aside class="deck-preview">
+        <h2>現在のデッキ</h2>
+        <div id="deck-preview-list"></div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="card-data.js"></script>
+  <script src="deck-builder.js"></script>
+</body>
+</html>
