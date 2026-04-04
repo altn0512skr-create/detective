@@ -1985,9 +1985,6 @@ body::before {
     height: 101px;
   }
 }
-
-}
-
 @media (max-width: 768px) {
   :root {
     --card-width: 72px;
@@ -2307,3 +2304,19 @@ body::before {
   #undo-button { left: 8px !important; }
   #open-deck-builder { right: 8px !important; }
 }
+
+/* 上下を入れ替える（HTML触らない） */
+.opponent-board {
+  order: 1;
+}
+
+.center-divider {
+  order: 2;
+}
+
+.self-board {
+  order: 3;
+}
+
+}
+
