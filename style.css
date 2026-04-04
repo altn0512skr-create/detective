@@ -1929,3 +1929,16 @@ body::before {
     align-self: start !important;
   }
 }
+
+@media (max-width: 768px) {
+  /* FILEを完全に無効化（最終上書き） */
+  .self-file-zone,
+  .opponent-file-zone {
+    position: static !important;
+    left: unset !important;
+    right: unset !important;
+    top: unset !important;
+    bottom: unset !important;
+    transform: none !important;
+  }
+}
