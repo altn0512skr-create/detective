@@ -1867,3 +1867,195 @@ body::before {
   }
 
 }
+
+@media (max-width: 768px) {
+  /* =========================
+     自分エリア
+     左：事件・証拠
+     中：現場
+     右：デッキ・リムーブ
+  ========================= */
+
+  .self-battle-col {
+    display: grid !important;
+    grid-template-columns: 1fr 300px 1fr !important;
+    grid-template-rows: 1fr !important;
+    align-items: center !important;
+    justify-items: center !important;
+    column-gap: 12px !important;
+  }
+
+  .self-battle-top {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+
+  .self-scene-zone {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    transform: none !important;
+  }
+
+  .self-battle-middle {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+
+  .self-battle-bottom {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 14px !important;
+  }
+
+  /* 自分右側は デッキ → リムーブ */
+  .self-deck-zone {
+    order: 1 !important;
+  }
+
+  .self-remove-zone {
+    order: 2 !important;
+  }
+
+  /* 自分左側は 事件 → 証拠 */
+  .self-incident-zone {
+    order: 1 !important;
+  }
+
+  .self-evidence-zone {
+    order: 2 !important;
+  }
+
+  /* FILEを手札の上に置く */
+  .self-board {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto 82px !important;
+    row-gap: 10px !important;
+  }
+
+  .self-battle-col { order: 1; }
+  .self-support-col { order: 2; }
+  .self-hand-col { order: 3; }
+
+  .self-support-col {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .self-file-zone {
+    order: 1 !important;
+  }
+
+  .self-partner-zone {
+    order: 2 !important;
+  }
+
+  .self-partner-file-zone {
+    order: 3 !important;
+  }
+
+  /* =========================
+     相手エリア（自分の上下左右対称）
+     左：デッキ・リムーブ
+     中：現場
+     右：事件・証拠
+  ========================= */
+
+  .opponent-battle-col {
+    display: grid !important;
+    grid-template-columns: 1fr 300px 1fr !important;
+    grid-template-rows: 1fr !important;
+    align-items: center !important;
+    justify-items: center !important;
+    column-gap: 12px !important;
+  }
+
+  .opponent-battle-top {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+
+  .opponent-scene-zone {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    transform: none !important;
+  }
+
+  .opponent-battle-bottom {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+
+  /* 相手左側は デッキ → リムーブ */
+  .opponent-deck {
+    order: 1 !important;
+  }
+
+  .opponent-remove-zone {
+    order: 2 !important;
+  }
+
+  /* 相手右側は 事件 → 証拠 */
+  .opponent-incident-zone {
+    order: 1 !important;
+  }
+
+  .opponent-evidence-zone {
+    order: 2 !important;
+  }
+
+  /* 相手のFILEは手札の下（＝上下対称） */
+  .opponent-board {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 82px auto auto !important;
+    row-gap: 10px !important;
+  }
+
+  .opponent-hand-col { order: 1; }
+  .opponent-support-col { order: 2; }
+  .opponent-battle-col { order: 3; }
+
+  .opponent-support-col {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .opponent-file-zone {
+    order: 1 !important;
+  }
+
+  .opponent-partner-zone {
+    order: 2 !important;
+  }
+
+  .opponent-partner-file-zone {
+    order: 3 !important;
+  }
+}
