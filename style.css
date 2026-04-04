@@ -1796,3 +1796,47 @@ body::before {
   #undo-button { left: 8px !important; }
   #open-deck-builder { right: 8px !important; }
 }
+
+@media (max-width: 768px) {
+
+  /* battleエリアを完全に3段にする */
+  .opponent-battle-col,
+  .self-battle-col {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    align-items: center !important;
+    justify-items: center !important;
+    row-gap: 12px !important;
+  }
+
+  /* 上段（デッキ・リムーブなど） */
+  .opponent-battle-top,
+  .self-battle-top {
+    grid-row: 1;
+  }
+
+  /* 中央（現場） */
+  .opponent-scene-zone,
+  .self-scene-zone {
+    grid-row: 2;
+  }
+
+  /* 下段（事件・証拠など） */
+  .opponent-battle-bottom,
+  .self-battle-middle {
+    grid-row: 3;
+  }
+
+  /* 横並びにする */
+  .opponent-battle-top,
+  .self-battle-top,
+  .opponent-battle-bottom,
+  .self-battle-middle {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 18px !important;
+  }
+
+}
