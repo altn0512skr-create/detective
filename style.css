@@ -1886,3 +1886,46 @@ body::before {
     justify-self: center !important;
   }
 }
+
+@media (max-width: 768px) {
+  /* FILEのPC用 absolute をスマホだけ無効化 */
+  .self-file-zone,
+  .opponent-file-zone {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+  }
+
+  /* support 行の中で正しく並べ直す */
+  .self-support-col,
+  .opponent-support-col {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .self-file-zone { order: 1 !important; }
+  .self-partner-zone { order: 2 !important; }
+  .self-partner-file-zone { order: 3 !important; }
+
+  .opponent-file-zone { order: 1 !important; }
+  .opponent-partner-zone { order: 2 !important; }
+  .opponent-partner-file-zone { order: 3 !important; }
+
+  /* 自分側は中央線より下に固定 */
+  .self-support-col {
+    align-self: end !important;
+  }
+
+  /* 相手側は中央線より上に固定 */
+  .opponent-support-col {
+    align-self: start !important;
+  }
+}
