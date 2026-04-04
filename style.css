@@ -1847,3 +1847,42 @@ body::before {
   #undo-button { left: 8px !important; }
   #open-deck-builder { right: 8px !important; }
 }
+
+@media (max-width: 768px) {
+  /* 上下の陣営を半分ずつに固定 */
+  .opponent-board,
+  .self-board {
+    height: calc((100vh - 16px - 20px) / 2) !important;
+    overflow: hidden !important;
+  }
+
+  /* 相手エリアは上側に寄せる */
+  .opponent-board {
+    align-content: start !important;
+  }
+
+  /* 自分エリアは下側に寄せる */
+  .self-board {
+    align-content: end !important;
+  }
+
+  /* FILEを含む support 行をそれぞれの陣営内に固定 */
+  .opponent-support-col {
+    grid-row: 2 !important;
+    align-self: start !important;
+    margin-top: 4px !important;
+  }
+
+  .self-support-col {
+    grid-row: 2 !important;
+    align-self: end !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* FILE自体を相手側に食い込ませない */
+  .self-file-zone,
+  .opponent-file-zone {
+    align-self: center !important;
+    justify-self: center !important;
+  }
+}
