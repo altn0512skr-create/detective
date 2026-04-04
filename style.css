@@ -2261,3 +2261,74 @@ body::before {
     right: 6px !important;
   }
 }
+
+@media (max-width: 768px) {
+  /* 現場全体を1列で独立させる */
+  .opponent-scene-zone,
+  .self-scene-zone {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+  }
+
+  /* 現場エリアを5マス固定 */
+  #scene-area,
+  #opponent-scene-area {
+    width: 340px !important;
+    max-width: 340px !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, 64px) !important;
+    grid-template-rows: 64px !important;
+    gap: 4px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    background: transparent !important;
+    border: none !important;
+    overflow: visible !important;
+  }
+
+  /* 5枠を強制表示 */
+  #scene-area .scene-slot,
+  #opponent-scene-area .scene-slot {
+    width: 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    max-height: 64px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border: 2px dashed rgba(255, 255, 255, 0.55) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  /* 数字も見やすく */
+  #scene-area .scene-slot::after,
+  #opponent-scene-area .scene-slot::after {
+    color: rgba(255, 255, 255, 0.45) !important;
+    font-size: 10px !important;
+    bottom: 4px !important;
+    right: 6px !important;
+  }
+
+  /* 現場カードは枠の中に収める */
+  #scene-area .scene-card,
+  #opponent-scene-area .scene-card {
+    width: 100% !important;
+    height: 100% !important;
+    background-size: contain !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+  }
+}
