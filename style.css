@@ -1987,3 +1987,323 @@ body::before {
 }
 
 }
+
+@media (max-width: 768px) {
+  :root {
+    --card-width: 72px;
+    --card-height: 101px;
+    --scene-card-width: 64px;
+    --scene-card-height: 64px;
+  }
+
+  html,
+  body {
+    overflow: hidden;
+  }
+
+  .board-viewport {
+    width: 100vw;
+    height: 100vh;
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+  }
+
+  .board {
+    width: 100vw !important;
+    height: 100vh !important;
+    padding: 8px !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr 14px 1fr !important;
+    gap: 0 !important;
+    align-items: stretch !important;
+  }
+
+  .center-divider {
+    width: 100%;
+    height: 14px;
+    position: relative;
+  }
+
+  .center-divider::before {
+    top: 50% !important;
+    bottom: auto !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    height: 2px !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .opponent-board {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 88px auto 1fr !important;
+    row-gap: 8px !important;
+  }
+
+  .self-board {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr auto 88px !important;
+    row-gap: 8px !important;
+  }
+
+  .opponent-hand-col { order: 1; }
+  .opponent-support-col { order: 2; }
+  .opponent-battle-col { order: 3; }
+
+  .self-battle-col { order: 1; }
+  .self-support-col { order: 2; }
+  .self-hand-col { order: 3; }
+
+  .side-col {
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    height: auto;
+  }
+
+  .hand-col {
+    display: block !important;
+  }
+
+  .hand-column {
+    width: 100%;
+    height: 100%;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    padding: 4px 6px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+
+  .hand-card {
+    width: 72px !important;
+    height: 101px !important;
+    flex: 0 0 auto !important;
+    margin-top: 0 !important;
+  }
+
+  .player-hand-column .hand-card {
+    transform: none !important;
+  }
+
+  .opponent-hand-column .hand-card {
+    transform: rotate(180deg) !important;
+  }
+
+  .support-col {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-height: auto !important;
+  }
+
+  .opponent-battle-col,
+  .self-battle-col,
+  .battle-col {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    row-gap: 10px !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  .opponent-battle-top,
+  .self-battle-top,
+  .opponent-battle-bottom,
+  .self-battle-bottom,
+  .self-battle-middle,
+  .battle-top,
+  .battle-bottom {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    transform: none !important;
+  }
+
+  .opponent-battle-top { grid-row: 1; }
+  .opponent-scene-zone { grid-row: 2; }
+  .opponent-battle-bottom { grid-row: 3; }
+
+  .self-battle-top { grid-row: 1; }
+  .self-scene-zone { grid-row: 2; }
+  .self-battle-middle { grid-row: 3; }
+
+  .self-battle-middle {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .vertical-scene-area,
+  #scene-area,
+  #opponent-scene-area {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    grid-template-rows: 1fr !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    justify-items: center !important;
+    align-items: center !important;
+  }
+
+  .scene-slot {
+    width: 100% !important;
+    max-width: 64px !important;
+    height: 64px !important;
+    border-radius: 8px !important;
+  }
+
+  .scene-card {
+    width: 100% !important;
+    height: 100% !important;
+    background-size: contain !important;
+  }
+
+  /* 相手側だけ上下反転 */
+  .opponent-board .deck-card,
+  .opponent-board .remove-card,
+  .opponent-board .partner-card,
+  .opponent-board .incident-card,
+  #opponent-scene-area .scene-card {
+    transform: rotate(180deg) !important;
+  }
+
+  .self-board .deck-card,
+  .self-board .remove-card,
+  .self-board .partner-card,
+  .self-board .incident-card,
+  #scene-area .scene-card {
+    transform: none !important;
+  }
+
+  #scene-area .scene-card.card-sleep {
+    transform: rotate(90deg) scale(0.72) !important;
+  }
+
+  #scene-area .scene-card.card-stun {
+    transform: rotate(180deg) !important;
+  }
+
+  #opponent-scene-area .scene-card.card-sleep {
+    transform: rotate(270deg) scale(0.72) !important;
+  }
+
+  #opponent-scene-area .scene-card.card-stun {
+    transform: rotate(180deg) !important;
+  }
+
+  /* ここが超重要：PC用の絶対配置を全部解除 */
+  .self-partner-zone,
+  .opponent-partner-zone,
+  .self-file-zone,
+  .opponent-file-zone,
+  .self-partner-file-zone,
+  .opponent-partner-file-zone,
+  .self-evidence-zone,
+  .opponent-evidence-zone,
+  .self-incident-zone,
+  .opponent-incident-zone,
+  .self-remove-zone,
+  .opponent-remove-zone,
+  .self-deck-zone,
+  .opponent-deck,
+  .player-deck {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    z-index: auto !important;
+  }
+
+  .deck-zone,
+  .remove-zone,
+  .partner-zone,
+  .incident-zone,
+  .file-zone,
+  .evidence-zone,
+  .scene-zone,
+  .partner-file-zone {
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .deck-card {
+    width: 74px !important;
+    height: 106px !important;
+  }
+
+  .remove-card {
+    width: 70px !important;
+    height: 98px !important;
+  }
+
+  .card-vertical {
+    width: 74px !important;
+    height: 106px !important;
+  }
+
+  .card-horizontal {
+    width: 106px !important;
+    height: 74px !important;
+  }
+
+  .partner-vertical,
+  .partner-file-card.partner-vertical {
+    width: 70px !important;
+    height: 98px !important;
+  }
+
+  .partner-horizontal,
+  .partner-file-card.partner-horizontal {
+    width: 98px !important;
+    height: 70px !important;
+  }
+
+  .file-area,
+  .evidence-area {
+    width: 74px !important;
+    height: 106px !important;
+    transform: none !important;
+  }
+
+  .file-count,
+  .evidence-count,
+  .deck-count {
+    position: static !important;
+    transform: none !important;
+    white-space: nowrap !important;
+    font-size: 12px !important;
+    text-align: center !important;
+  }
+
+  #undo-button,
+  #open-deck-builder {
+    top: 8px !important;
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+  }
+
+  #undo-button { left: 8px !important; }
+  #open-deck-builder { right: 8px !important; }
+}
