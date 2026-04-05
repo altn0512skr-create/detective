@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conan Card Game (Mobile)</title>
+
+  <!-- スマホ専用CSS -->
+  <link rel="stylesheet" href="mobile-only.css?v=1" />
+
+  <!-- 既存JSはそのまま使う -->
+  <script defer src="card-data.js"></script>
+  <script defer src="deck.js"></script>
+  <script defer src="app.js"></script>
+</head>
+
+<body>
+
+  <!-- 上：相手エリア -->
+  <div class="area opponent-area">
+
+    <div class="row hand" id="opponent-hand"></div>
+
+    <div class="row support">
+      <div id="opponent-file-area"></div>
+      <div id="opponent-partner-area"></div>
+      <div id="opponent-partner-file-area"></div>
+    </div>
+
+    <div class="row battle">
+      <div class="left">
+        <div class="deck" id="opponent-deck"></div>
+        <div class="remove" id="opponent-remove-area"></div>
+      </div>
+
+      <div class="center" id="opponent-scene-area"></div>
+
+      <div class="right">
+        <div id="opponent-incident-area"></div>
+        <div id="opponent-evidence-area"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 中央線 -->
+  <div class="divider"></div>
+
+  <!-- 下：自分エリア -->
+  <div class="area player-area">
+
+    <div class="row battle">
+      <div class="left">
+        <div id="self-incident-area"></div>
+        <div id="self-evidence-area"></div>
+      </div>
+
+      <div class="center" id="scene-area"></div>
+
+      <div class="right">
+        <div class="deck" id="player-deck"></div>
+        <div class="remove" id="remove-area"></div>
+      </div>
+    </div>
+
+    <div class="row support">
+      <div id="file-area"></div>
+      <div id="partner-area"></div>
+      <div id="partner-file-area"></div>
+    </div>
+
+    <div class="row hand" id="player-hand"></div>
+
+  </div>
+
+</body>
+</html>
