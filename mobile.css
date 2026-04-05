@@ -443,3 +443,126 @@ body {
 
 #undo-button { left: 8px !important; }
 #open-deck-builder { right: 8px !important; }
+
+/* ===== 緊急用：まず遊べるサイズにする ===== */
+:root {
+  --m-card-w: 52px !important;
+  --m-card-h: 73px !important;
+  --m-small-w: 48px !important;
+  --m-small-h: 67px !important;
+  --m-scene-slot: 44px !important;
+  --m-scene-gap: 3px !important;
+  --m-scene-width: 235px !important;
+  --m-support-gap: 8px !important;
+  --m-battle-gap: 8px !important;
+}
+
+/* 画面内に収まりやすくする */
+.board-viewport {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.board {
+  padding: 6px 4px 12px !important;
+}
+
+/* 上下の高さを少し詰める */
+.opponent-board {
+  grid-template-rows: 72px 76px auto !important;
+  row-gap: 6px !important;
+}
+
+.self-board {
+  grid-template-rows: auto 76px 72px !important;
+  row-gap: 6px !important;
+}
+
+/* 現場を小さく */
+.opponent-battle-col,
+.self-battle-col {
+  grid-template-columns: 78px 235px 78px !important;
+  column-gap: 6px !important;
+}
+
+#scene-area,
+#opponent-scene-area {
+  width: 235px !important;
+  max-width: 235px !important;
+  grid-template-columns: repeat(5, 44px) !important;
+  grid-template-rows: 44px !important;
+  gap: 3px !important;
+}
+
+#scene-area .scene-slot,
+#opponent-scene-area .scene-slot {
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+}
+
+/* 手札と各カードを小さく */
+.hand-card {
+  width: 52px !important;
+  height: 73px !important;
+}
+
+.deck-card,
+.file-area,
+.evidence-area,
+.card-vertical {
+  width: 52px !important;
+  height: 73px !important;
+}
+
+.remove-card,
+.partner-vertical,
+.partner-file-card.partner-vertical {
+  width: 48px !important;
+  height: 67px !important;
+}
+
+.card-horizontal {
+  width: 73px !important;
+  height: 52px !important;
+}
+
+.partner-horizontal,
+.partner-file-card.partner-horizontal {
+  width: 67px !important;
+  height: 48px !important;
+}
+
+/* 余白も詰める */
+.self-support-col,
+.opponent-support-col {
+  gap: 8px !important;
+  min-height: 76px !important;
+}
+
+.opponent-battle-top,
+.opponent-battle-bottom,
+.self-battle-top,
+.self-battle-bottom {
+  gap: 8px !important;
+}
+
+/* 自分側の右（デッキ・リムーブ）を少し中央へ */
+.self-battle-bottom {
+  transform: translateX(-6px) !important;
+}
+
+/* 相手側の左（デッキ・リムーブ）を少し中央へ */
+.opponent-battle-top {
+  transform: translateX(6px) !important;
+}
+
+/* 文字を少し小さく */
+.file-count,
+.evidence-count,
+.deck-count {
+  font-size: 10px !important;
+}
