@@ -1,3 +1,7 @@
+body {
+  outline: 8px solid red !important;
+}
+
 :root {
   --m-card-w: 64px;
   --m-card-h: 90px;
