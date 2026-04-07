@@ -126,6 +126,20 @@
   <button class="evidence-card-option">閉じる</button>
 </div>
 
+<div id="scene-stack-layer" class="scene-stack-layer hidden">
+  <div class="scene-stack-layer-bg"></div>
+  <div class="scene-stack-layer-content">
+    <p class="scene-stack-layer-title">下のカード一覧</p>
+    <div id="scene-stack-layer-cards" class="scene-stack-layer-cards"></div>
+  </div>
+</div>
+
+<div id="scene-stack-card-menu" class="scene-stack-card-menu hidden">
+  <button class="scene-stack-card-option">A</button>
+  <button class="scene-stack-card-option">B</button>
+  <button class="scene-stack-card-option">閉じる</button>
+</div>
+
   <!-- 山札をめくった時のレイヤー -->
   <div id="reveal-layer" class="reveal-layer hidden">
     <div class="reveal-layer-bg"></div>
@@ -153,6 +167,11 @@
 
     <!-- 2列目：パートナー / FILE -->
     <div class="side-col support-col self-support-col">
+
+      <div class="mystery-zone self-mystery-zone">
+  <div id="mystery-area" class="mystery-card"></div>
+</div>
+
       <div class="partner-zone self-partner-zone">
         <div id="partner-card" class="partner-card"></div>
       </div>
@@ -272,6 +291,10 @@
         </div>
         <p id="opponent-file-count" class="file-count">0枚</p>
       </div>
+
+      <div class="mystery-zone opponent-mystery-zone">
+  <div id="opponent-mystery-area" class="mystery-card"></div>
+</div>
 
       <div class="partner-zone opponent-partner-zone">
         <div id="opponent-partner-card" class="partner-card"></div>

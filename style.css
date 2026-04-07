@@ -332,8 +332,10 @@ body::before {
 }
 
 .scene-card {
-  width: 150%;
-  height: 150%;
+  position: absolute;
+  inset: 0;
+  width: 140%;
+  height: 140%;
   border-radius: 10px;
   background-size: contain;
   background-position: center;
@@ -342,6 +344,7 @@ body::before {
   border: none;
   box-shadow: none;
   cursor: pointer;
+  z-index: 5;
 }
 
 #scene-area .scene-card:hover {
@@ -1223,11 +1226,11 @@ body::before {
   overflow: visible !important;
 }
 .self-scene-zone {
-  transform: translate(0px, 30px);
+  transform: translate(-50px, 30px);
 }
 
 .opponent-scene-zone {
-  transform: translate(-130px, -210px);
+  transform: translate(-175px, -210px);
 }
 
 .incident-zone {
@@ -1419,3 +1422,231 @@ body::before {
   font-weight: 800;
 }
 
+
+.hand-card.dragging {
+  opacity: 0.88;
+  transform: scale(1.06);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+}
+
+.scene-slot.drop-highlight {
+  outline: 3px solid rgba(255, 230, 120, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 0 18px rgba(255, 230, 120, 0.55);
+}
+
+.scene-card.dragging {
+  opacity: 0.9;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+}
+
+/* =========================
+   ミステリーエリア
+========================= */
+
+.mystery-zone {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2500;
+}
+
+.self-mystery-zone {
+  position: absolute;
+  left: calc(50% - 420px);
+  top: calc(50% - 250px);
+}
+
+.mystery-label {
+  margin: 0;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+  line-height: 1.1;
+  font-size: 14px;
+}
+
+.mystery-card {
+  width: 120px;
+  height: 168px;
+  border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+#mystery-area {
+  transform: rotate(90deg);
+  transform-origin: center center;
+}
+
+.self-mystery-zone {
+  position: absolute;
+  left: calc(50% - 420px);
+  top: calc(50% - 200px);
+}
+
+.mystery-card.drop-highlight {
+  outline: 3px solid rgba(255, 230, 120, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 0 18px rgba(255, 230, 120, 0.55);
+}
+
+.opponent-mystery-zone {
+  position: absolute;
+  right: calc(50% - 420px);
+  top: calc(50% - 200px);
+}
+
+#opponent-mystery-area {
+  transform: rotate(-90deg);
+  transform-origin: center center;
+}
+
+.scene-stack-count {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  z-index: 20;
+}
+
+.scene-stack-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 3400;
+  pointer-events: auto;
+}
+
+.scene-stack-layer-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.scene-stack-layer-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+}
+
+.scene-stack-layer-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+}
+
+.scene-stack-layer-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 90vw;
+}
+
+.scene-stack-list-card {
+  width: 110px;
+  height: 154px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.42);
+  border: 2px solid rgba(255,255,255,0.18);
+}
+
+.scene-stack-card-menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+}
+
+.scene-stack-card-option {
+  width: 90px;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  color: black;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.scene-stack-card-option:hover {
+  background: #ddd;
+}
+
+.scene-card-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* 下に重なっているカード */
+.scene-card-under {
+  position: absolute;
+  inset: 0;
+  width: 130%;
+  height: 130%;
+  border-radius: 10px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* 自分側：右下に重なる */
+.scene-card-under.self-under.layer-1 {
+  transform: translate(-10px, 8px) rotate(90deg);
+}
+
+.scene-card-under.self-under.layer-2 {
+  transform: translate(-20px, 16px) rotate(90deg);
+}
+
+.scene-card-under.self-under.layer-3 {
+  transform: translate(-30px, 24px) rotate(90deg);
+}
+
+/* 相手側：左下に重なる ＋ 向きも逆 */
+.scene-card-under.opponent-under.layer-1 {
+  transform: translate(30px, 8px) rotate(-90deg);
+}
+
+.scene-card-under.opponent-under.layer-2 {
+  transform: translate(40px, 16px) rotate(-90deg);
+}
+
+.scene-card-under.opponent-under.layer-3 {
+  transform: translate(50px, 24px) rotate(-90deg);
+}
