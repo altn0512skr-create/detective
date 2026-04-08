@@ -1,6 +1,7 @@
-/* =========================
+/* ========================================
    要素取得
-========================= */
+   HTML上の各エリア・メニュー・レイヤーをまとめて取得
+======================================== */
 
 const dom = {
   self: {
@@ -37,14 +38,27 @@ const playerDeckEl = document.querySelector(".player-deck .deck-card");
 const opponentDeckEl = document.querySelector(".opponent-deck .deck-card");
 
 const fileAreaEl = document.getElementById("file-area");
-const removeAreaEl = document.getElementById("remove-area");
-
-const opponentRemoveAreaEl = document.getElementById("opponent-remove-area");
-const opponentEvidenceAreaEl = document.getElementById("opponent-evidence-area");
 const opponentFileAreaEl = document.getElementById("opponent-file-area");
+
+const removeAreaEl = document.getElementById("remove-area");
+const opponentRemoveAreaEl = document.getElementById("opponent-remove-area");
+
+const opponentEvidenceAreaEl = document.getElementById("opponent-evidence-area");
+
+const mysteryAreaEl = document.getElementById("mystery-area");
+const opponentMysteryAreaEl = document.getElementById("opponent-mystery-area");
+
+const partnerFileCardEl = document.getElementById("partner-file-card");
+const opponentPartnerFileCardEl = document.getElementById("opponent-partner-file-card");
+
+const selfPartnerZoneEl = document.querySelector(".self-partner-zone");
+const opponentPartnerZoneEl = document.querySelector(".opponent-partner-zone");
 
 const deckMenuEl = document.getElementById("deck-menu");
 const deckOptions = document.querySelectorAll(".deck-option");
+
+const deckToSceneMenuEl = document.getElementById("deck-to-scene-menu");
+const deckToSceneOptions = document.querySelectorAll(".deck-to-scene-option");
 
 const handMenuEl = document.getElementById("hand-menu");
 const handOptions = document.querySelectorAll(".hand-option");
@@ -61,26 +75,35 @@ const fileOptions = document.querySelectorAll(".file-option");
 const evidenceMenuEl = document.getElementById("evidence-menu");
 const evidenceOptions = document.querySelectorAll(".evidence-option");
 
+const evidenceLayerEl = document.getElementById("evidence-layer");
+const evidenceLayerCardsEl = document.getElementById("evidence-layer-cards");
+const evidenceCardMenuEl = document.getElementById("evidence-card-menu");
+const evidenceCardOptions = document.querySelectorAll(".evidence-card-option");
+
 const removeMenuEl = document.getElementById("remove-menu");
 const removeOptions = document.querySelectorAll(".remove-option");
-
-const removeCardMenuEl = document.getElementById("remove-card-menu");
-const removeCardOptions = document.querySelectorAll(".remove-card-option");
-
-const partnerMenuEl = document.getElementById("partner-menu");
-const partnerOptions = document.querySelectorAll(".partner-option");
-
-const cardPreviewEl = document.getElementById("card-preview");
-const cardPreviewImageEl = document.getElementById("card-preview-image");
-
-const revealLayerEl = document.getElementById("reveal-layer");
-const revealLayerCardsEl = document.getElementById("reveal-layer-cards");
 
 const removeLayerEl = document.getElementById("remove-layer");
 const removeLayerCardsEl = document.getElementById("remove-layer-cards");
 
-const partnerFileCardEl = document.getElementById("partner-file-card");
-const opponentPartnerFileCardEl = document.getElementById("opponent-partner-file-card");
+const removeCardMenuEl = document.getElementById("remove-card-menu");
+const removeCardOptions = document.querySelectorAll(".remove-card-option");
+
+const removeToSceneMenuEl = document.getElementById("remove-to-scene-menu");
+const removeToSceneOptions = document.querySelectorAll(".remove-to-scene-option");
+
+const partnerMenuEl = document.getElementById("partner-menu");
+const partnerOptions = document.querySelectorAll(".partner-option");
+
+const partnerStackLayerEl = document.getElementById("partner-stack-layer");
+const partnerStackLayerCardsEl = document.getElementById("partner-stack-layer-cards");
+const partnerStackCardMenuEl = document.getElementById("partner-stack-card-menu");
+const partnerStackCardOptions = document.querySelectorAll(".partner-stack-card-option");
+
+const sceneStackLayerEl = document.getElementById("scene-stack-layer");
+const sceneStackLayerCardsEl = document.getElementById("scene-stack-layer-cards");
+const sceneStackCardMenuEl = document.getElementById("scene-stack-card-menu");
+const sceneStackCardOptions = document.querySelectorAll(".scene-stack-card-option");
 
 const incidentMenuEl = document.getElementById("incident-menu");
 const incidentOptions = document.querySelectorAll(".incident-option");
@@ -88,25 +111,19 @@ const incidentOptions = document.querySelectorAll(".incident-option");
 const incidentOverlayEl = document.getElementById("incident-overlay");
 const incidentOverlayImageEl = document.getElementById("incident-overlay-image");
 
+const cardPreviewEl = document.getElementById("card-preview");
+const cardPreviewImageEl = document.getElementById("card-preview-image");
+
+const revealLayerEl = document.getElementById("reveal-layer");
+const revealLayerCardsEl = document.getElementById("reveal-layer-cards");
+
 const undoButtonEl = document.getElementById("undo-button");
 
-const historyStack = [];
 
-const evidenceLayerEl = document.getElementById("evidence-layer");
-const evidenceLayerCardsEl = document.getElementById("evidence-layer-cards");
-const evidenceCardMenuEl = document.getElementById("evidence-card-menu");
-const evidenceCardOptions = document.querySelectorAll(".evidence-card-option");
-const mysteryAreaEl = document.getElementById("mystery-area");
-const opponentMysteryAreaEl = document.getElementById("opponent-mystery-area");
-
-const sceneStackLayerEl = document.getElementById("scene-stack-layer");
-const sceneStackLayerCardsEl = document.getElementById("scene-stack-layer-cards");
-
-const sceneStackCardMenuEl = document.getElementById("scene-stack-card-menu");
-const sceneStackCardOptions = document.querySelectorAll(".scene-stack-card-option");
-/* =========================
+/* ========================================
    ゲームデータ
-========================= */
+   各サイドの山札・手札・現場などの状態を保持
+======================================== */
 
 const game = {
   self: {
@@ -118,7 +135,7 @@ const game = {
     revealed: [],
     scene: [[], [], [], [], []],
     incident: "",
-    partner: "",
+    partner: [],
     partnerFile: "",
     mystery: ""
   },
@@ -131,52 +148,66 @@ const game = {
     revealed: [],
     scene: [[], [], [], [], []],
     incident: "",
-    partner: "",
+    partner: [],
     partnerFile: "",
     mystery: ""
   }
 };
 
-/* =========================
+
+/* ========================================
    選択状態
-========================= */
+   どのカード・どのサイドを選択中かを保持
+======================================== */
 
 let selectedHandCardIndex = null;
 let selectedHandSide = "self";
+
 let selectedSceneCardIndex = null;
 let selectedSceneSide = "self";
+
 let selectedRevealCardIndex = null;
 let selectedRevealSide = "self";
+
 let selectedRemoveCardIndex = null;
 let selectedRemoveSide = "self";
+
 let selectedFileCardIndex = null;
+let selectedFileSide = "self";
 
 let selectedDeckSide = "self";
-let selectedFileSide = "self";
 let selectedPartnerSide = null;
 let selectedEvidenceSide = "self";
+let selectedEvidenceCardIndex = null;
 let selectedIncidentSide = null;
 
-let previewOpened = false;
+let selectedSceneStackSide = "self";
+let selectedSceneStackIndex = null;
+let selectedSceneStackHiddenIndex = null;
 
-let selectedEvidenceCardIndex = null;
+let selectedPartnerStackSide = "self";
+let selectedPartnerStackIndex = null;
+
+let previewOpened = false;
 
 const partnerTapped = {
   self: false,
   opponent: false
 };
 
-let selectedSceneStackSide = "self";
-let selectedSceneStackIndex = null;
-let selectedSceneStackHiddenIndex = null;
-/* =========================
-   共通関数
-========================= */
+const historyStack = [];
 
+
+/* ========================================
+   共通ユーティリティ
+======================================== */
+
+/* 横向きカード判定 */
 function isHorizontalCard(imagePath) {
   return typeof imagePath === "string" && imagePath.includes("_h");
 }
 
+/* メニューを対象要素の近くに表示 */
 function showMenuAt(menuEl, targetRect, offsetX = 12, offsetY = 0) {
   if (!menuEl || !targetRect) return;
 
@@ -203,6 +234,7 @@ function showMenuAt(menuEl, targetRect, offsetX = 12, offsetY = 0) {
   menuEl.classList.remove("hidden");
 }
 
+/* レシピから山札配列を作る */
 function buildDeck(recipe) {
   const deck = [];
 
@@ -215,6 +247,7 @@ function buildDeck(recipe) {
   return deck;
 }
 
+/* 配列シャッフル */
 function shuffle(array) {
   const copied = [...array];
 
@@ -226,10 +259,12 @@ function shuffle(array) {
   return copied;
 }
 
+/* 山札の上から1枚引く */
 function drawCard(deck) {
   return deck.shift();
 }
 
+/* 初期手札を配る */
 function drawStartingHand(side, count = 5) {
   game[side].hand = [];
 
@@ -241,13 +276,16 @@ function drawStartingHand(side, count = 5) {
   }
 }
 
+/* 空いている現場スロットの先頭を返す */
 function getFirstEmptySceneSlot(side) {
   return game[side].scene.findIndex((slot) => slot.length === 0);
 }
 
-/* =========================
+
+/* ========================================
    盤面縮尺
-========================= */
+   画面サイズに合わせてボードを縮小表示
+======================================== */
 
 function fitBoardToViewport() {
   const viewport = document.querySelector(".board-viewport");
@@ -256,7 +294,6 @@ function fitBoardToViewport() {
   if (!viewport || !board) return;
 
   const isMobile = window.innerWidth <= 768;
-
   const baseWidth = isMobile ? 980 : 1600;
   const baseHeight = isMobile ? 1700 : 900;
 
@@ -271,21 +308,22 @@ function fitBoardToViewport() {
   board.style.transform = `scale(${scale})`;
 }
 
-/* =========================
-   描画：事件 / パートナー
-========================= */
+
+/* ========================================
+   描画：事件・パートナー
+======================================== */
 
 function renderIncidentCard(imagePath) {
   if (!incidentCardEl) return;
 
+  incidentCardEl.classList.remove("card-vertical", "card-horizontal");
+
   if (!imagePath) {
     incidentCardEl.style.backgroundImage = "none";
-    incidentCardEl.classList.remove("card-vertical", "card-horizontal");
     return;
   }
 
   incidentCardEl.style.backgroundImage = `url("${imagePath}")`;
-  incidentCardEl.classList.remove("card-vertical", "card-horizontal");
 
   if (isHorizontalCard(imagePath)) {
     incidentCardEl.classList.add("card-horizontal");
@@ -297,14 +335,14 @@ function renderIncidentCard(imagePath) {
 function renderOpponentIncidentCard(imagePath) {
   if (!opponentIncidentCardEl) return;
 
+  opponentIncidentCardEl.classList.remove("card-vertical", "card-horizontal");
+
   if (!imagePath) {
     opponentIncidentCardEl.style.backgroundImage = "none";
-    opponentIncidentCardEl.classList.remove("card-vertical", "card-horizontal");
     return;
   }
 
   opponentIncidentCardEl.style.backgroundImage = `url("${imagePath}")`;
-  opponentIncidentCardEl.classList.remove("card-vertical", "card-horizontal");
 
   if (isHorizontalCard(imagePath)) {
     opponentIncidentCardEl.classList.add("card-horizontal");
@@ -313,48 +351,55 @@ function renderOpponentIncidentCard(imagePath) {
   }
 }
 
-function renderPartnerCard(imagePath) {
-  if (!partnerCardEl) return;
+function renderPartnerCard(side) {
+  const targetEl = side === "self" ? partnerCardEl : opponentPartnerCardEl;
+  if (!targetEl) return;
 
-  partnerCardEl.classList.remove("partner-vertical", "partner-horizontal");
+  const stack = Array.isArray(game[side].partner) ? game[side].partner : [];
+  const topCard = stack[0];
 
-  if (!imagePath) {
-    partnerCardEl.style.backgroundImage = "none";
-    return;
-  }
+  targetEl.innerHTML = "";
+  targetEl.className = "partner-card";
+  targetEl.style.backgroundImage = "none";
+  targetEl.style.transform = "none";
+  targetEl.style.transformOrigin = "center center";
 
-  partnerCardEl.style.backgroundImage = `url("${imagePath}")`;
+  if (!topCard) return;
 
-  if (isHorizontalCard(imagePath)) {
-    partnerCardEl.classList.add("partner-horizontal");
+  const underCards = stack.slice(1, 4);
+
+  underCards.forEach((imagePath, idx) => {
+    const underEl = document.createElement("div");
+    underEl.className = `partner-under layer-${idx + 1} ${side === "self" ? "self-under" : "opponent-under"}`;
+    underEl.style.backgroundImage = `url("${imagePath}")`;
+    targetEl.appendChild(underEl);
+  });
+
+  const mainEl = document.createElement("div");
+  mainEl.className = "partner-main";
+  mainEl.style.backgroundImage = `url("${topCard}")`;
+
+  if (isHorizontalCard(topCard)) {
+    mainEl.classList.add("partner-horizontal");
   } else {
-    partnerCardEl.classList.add("partner-vertical");
+    mainEl.classList.add("partner-vertical");
   }
 
-  partnerCardEl.style.transformOrigin = "center center";
-  partnerCardEl.style.transform = partnerTapped.self ? "rotate(180deg)" : "rotate(90deg)";
-}
-
-function renderOpponentPartnerCard(imagePath) {
-  if (!opponentPartnerCardEl) return;
-
-  opponentPartnerCardEl.classList.remove("partner-vertical", "partner-horizontal");
-
-  if (!imagePath) {
-    opponentPartnerCardEl.style.backgroundImage = "none";
-    return;
-  }
-
-  opponentPartnerCardEl.style.backgroundImage = `url("${imagePath}")`;
-
-  if (isHorizontalCard(imagePath)) {
-    opponentPartnerCardEl.classList.add("partner-horizontal");
+  if (side === "self") {
+    mainEl.style.transform = partnerTapped.self ? "rotate(180deg)" : "rotate(90deg)";
   } else {
-    opponentPartnerCardEl.classList.add("partner-vertical");
+    mainEl.style.transform = partnerTapped.opponent ? "rotate(0deg)" : "rotate(-90deg)";
   }
 
-  opponentPartnerCardEl.style.transformOrigin = "center center";
-  opponentPartnerCardEl.style.transform = partnerTapped.opponent ? "rotate(0deg)" : "rotate(-90deg)";
+  mainEl.style.transformOrigin = "center center";
+  targetEl.appendChild(mainEl);
+
+  if (stack.length >= 2) {
+    const countEl = document.createElement("div");
+    countEl.className = "partner-stack-count";
+    countEl.textContent = stack.length - 1;
+    targetEl.appendChild(countEl);
+  }
 }
 
 function renderPartnerFileCard(side) {
@@ -362,7 +407,6 @@ function renderPartnerFileCard(side) {
   if (!targetEl) return;
 
   const imagePath = game[side].partnerFile;
-
   targetEl.classList.remove("partner-vertical", "partner-horizontal");
 
   if (!imagePath) {
@@ -387,16 +431,17 @@ function renderPartnerFileCard(side) {
     targetEl.style.transform = "rotate(180deg)";
   }
 }
-/* =========================
-   描画：手札 / FILE / 証拠 / リムーブ / 現場
-========================= */
+
+
+/* ========================================
+   描画：手札・FILE・証拠・リムーブ・現場
+======================================== */
 
 function renderHand(side) {
   const handEl = dom[side].hand;
   if (!handEl) return;
 
   handEl.innerHTML = "";
-
   const total = game[side].hand.length;
 
   game[side].hand.forEach((imagePath, index) => {
@@ -431,10 +476,8 @@ function renderHand(side) {
 
     cardEl.addEventListener("pointerdown", (event) => {
       if (event.button !== 0) return;
-
       event.stopPropagation();
       event.preventDefault();
-
       beginHandDrag(cardEl, index, side, event);
     });
 
@@ -456,11 +499,8 @@ function renderFileArea(side) {
     const cardEl = document.createElement("div");
     cardEl.className = "file-card";
 
-    const imagePath = cardData.image;
-    const type = cardData.type;
-
-    if (type === "partner") {
-      cardEl.style.backgroundImage = `url("${imagePath}")`;
+    if (cardData.type === "partner") {
+      cardEl.style.backgroundImage = `url("${cardData.image}")`;
     } else {
       cardEl.style.backgroundImage = `url("cards/back.png")`;
     }
@@ -476,8 +516,13 @@ function renderFileArea(side) {
     }
 
     cardEl.style.zIndex = `${index + 1}`;
-
     fileEl.appendChild(cardEl);
+  });
+}
+
+function renumberEvidence(side) {
+  game[side].evidence.forEach((cardData, index) => {
+    cardData.number = index + 1;
   });
 }
 
@@ -488,7 +533,6 @@ function renderEvidenceArea(side) {
   if (!evidenceEl || !evidenceCountEl) return;
 
   renumberEvidence(side);
-
   evidenceCountEl.textContent = `${game[side].evidence.length}枚`;
   evidenceEl.innerHTML = "";
 
@@ -546,39 +590,31 @@ function renderSceneArea(side) {
     if (!stack || stack.length === 0) return;
 
     const visibleCard = stack[0];
-
     const stackWrapEl = document.createElement("div");
     stackWrapEl.className = "scene-card-stack";
 
-    // 下に重なっている実カードを最大3枚ぶん表示
     const underCards = stack.slice(1, 4);
 
-underCards.forEach((underCard, idx) => {
-  const underEl = document.createElement("div");
-  underEl.className = `scene-card-under layer-${idx + 1} ${side === "self" ? "self-under" : "opponent-under"}`;
-  underEl.style.backgroundImage = `url("${underCard.image}")`;
+    underCards.forEach((underCard, idx) => {
+      const underEl = document.createElement("div");
+      underEl.className = `scene-card-under layer-${idx + 1} ${side === "self" ? "self-under" : "opponent-under"}`;
 
-  if (underCard.sleep) {
-    underEl.classList.add("card-sleep");
-  }
+      underEl.style.backgroundImage = underCard.faceDown
+        ? `url("cards/back.png")`
+        : `url("${underCard.image}")`;
 
-  if (underCard.stun) {
-    underEl.classList.add("card-stun");
-  }
+      if (underCard.sleep) underEl.classList.add("card-sleep");
+      if (underCard.stun) underEl.classList.add("card-stun");
 
-  stackWrapEl.appendChild(underEl);
-});
+      stackWrapEl.appendChild(underEl);
+    });
+
     const cardEl = document.createElement("div");
     cardEl.className = "scene-card";
     cardEl.style.backgroundImage = `url("${visibleCard.image}")`;
 
-    if (visibleCard.sleep) {
-      cardEl.classList.add("card-sleep");
-    }
-
-    if (visibleCard.stun) {
-      cardEl.classList.add("card-stun");
-    }
+    if (visibleCard.sleep) cardEl.classList.add("card-sleep");
+    if (visibleCard.stun) cardEl.classList.add("card-stun");
 
     cardEl.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -596,10 +632,8 @@ underCards.forEach((underCard, idx) => {
 
     cardEl.addEventListener("pointerdown", (event) => {
       if (event.button !== 0) return;
-
       event.stopPropagation();
       event.preventDefault();
-
       beginSceneDrag(cardEl, index, side, event);
     });
 
@@ -607,15 +641,14 @@ underCards.forEach((underCard, idx) => {
     slotEl.appendChild(stackWrapEl);
 
     if (stack.length >= 2) {
-      const hiddenCount = stack.length - 1;
-
       const stackCountEl = document.createElement("div");
       stackCountEl.className = "scene-stack-count";
-      stackCountEl.textContent = hiddenCount;
+      stackCountEl.textContent = stack.length - 1;
       slotEl.appendChild(stackCountEl);
     }
   });
 }
+
 function renderMysteryArea(side) {
   const targetEl = side === "self" ? mysteryAreaEl : opponentMysteryAreaEl;
   if (!targetEl) return;
@@ -627,9 +660,11 @@ function renderMysteryArea(side) {
 
   targetEl.style.backgroundImage = `url("${game[side].mystery}")`;
 }
-/* =========================
-   描画：レイヤー
-========================= */
+
+
+/* ========================================
+   描画：各種レイヤー
+======================================== */
 
 function showCardPreview(imagePath) {
   if (!cardPreviewEl || !cardPreviewImageEl) return;
@@ -699,11 +734,15 @@ function renderRemoveLayer(side = "self") {
   removeLayerEl.classList.toggle("hidden", game[side].remove.length === 0);
 }
 
+function hideRemoveLayer() {
+  if (!removeLayerEl) return;
+  removeLayerEl.classList.add("hidden");
+}
+
 function renderEvidenceLayer(side = "self") {
   if (!evidenceLayerEl || !evidenceLayerCardsEl) return;
 
   renumberEvidence(side);
-
   evidenceLayerCardsEl.innerHTML = "";
 
   game[side].evidence.forEach((cardData, index) => {
@@ -716,19 +755,15 @@ function renderEvidenceLayer(side = "self") {
     const badgeEl = document.createElement("div");
     badgeEl.className = "evidence-number-badge";
     badgeEl.textContent = cardData.number;
-
     cardEl.appendChild(badgeEl);
 
     cardEl.addEventListener("click", (event) => {
-  event.stopPropagation();
-
-  hideEvidenceCardMenu();
-
-  selectedEvidenceSide = side;
-  selectedEvidenceCardIndex = index;
-
-  showMenuAt(evidenceCardMenuEl, cardEl.getBoundingClientRect());
-});
+      event.stopPropagation();
+      hideEvidenceCardMenu();
+      selectedEvidenceSide = side;
+      selectedEvidenceCardIndex = index;
+      showMenuAt(evidenceCardMenuEl, cardEl.getBoundingClientRect());
+    });
 
     evidenceLayerCardsEl.appendChild(cardEl);
   });
@@ -741,19 +776,96 @@ function hideEvidenceCardMenu() {
   evidenceCardMenuEl.classList.add("hidden");
   selectedEvidenceCardIndex = null;
 }
+
 function hideEvidenceLayer() {
   if (!evidenceLayerEl) return;
   evidenceLayerEl.classList.add("hidden");
 }
 
-function hideRemoveLayer() {
-  if (!removeLayerEl) return;
-  removeLayerEl.classList.add("hidden");
+function renderSceneStackLayer(side, sceneIndex) {
+  if (!sceneStackLayerEl || !sceneStackLayerCardsEl) return;
+
+  const stack = game[side].scene[sceneIndex];
+  if (!stack || stack.length <= 1) {
+    sceneStackLayerCardsEl.innerHTML = "";
+    sceneStackLayerEl.classList.add("hidden");
+    return;
+  }
+
+  const hiddenCards = stack.slice(1);
+  sceneStackLayerCardsEl.innerHTML = "";
+
+  hiddenCards.forEach((card, hiddenIndex) => {
+    const cardEl = document.createElement("div");
+    cardEl.className = "scene-stack-list-card";
+    cardEl.style.backgroundImage = `url("${card.image}")`;
+
+    cardEl.addEventListener("click", (event) => {
+      event.stopPropagation();
+      hideSceneStackCardMenu();
+      selectedSceneStackSide = side;
+      selectedSceneStackIndex = sceneIndex;
+      selectedSceneStackHiddenIndex = hiddenIndex + 1;
+      showMenuAt(sceneStackCardMenuEl, cardEl.getBoundingClientRect());
+    });
+
+    sceneStackLayerCardsEl.appendChild(cardEl);
+  });
+
+  sceneStackLayerEl.classList.remove("hidden");
 }
 
-/* =========================
+function hideSceneStackLayer() {
+  if (!sceneStackLayerEl) return;
+  sceneStackLayerEl.classList.add("hidden");
+}
+
+function renderPartnerStackLayer(side) {
+  if (!partnerStackLayerEl || !partnerStackLayerCardsEl) return;
+
+  const stack = game[side].partner;
+  if (!Array.isArray(stack) || stack.length <= 1) {
+    partnerStackLayerCardsEl.innerHTML = "";
+    partnerStackLayerEl.classList.add("hidden");
+    return;
+  }
+
+  const hiddenCards = stack.slice(1);
+  partnerStackLayerCardsEl.innerHTML = "";
+
+  hiddenCards.forEach((imagePath, index) => {
+    const cardEl = document.createElement("div");
+    cardEl.className = "scene-stack-list-card";
+    cardEl.style.backgroundImage = `url("${imagePath}")`;
+
+    cardEl.addEventListener("click", (event) => {
+      event.stopPropagation();
+      selectedPartnerStackSide = side;
+      selectedPartnerStackIndex = index + 1;
+      showMenuAt(partnerStackCardMenuEl, cardEl.getBoundingClientRect());
+    });
+
+    partnerStackLayerCardsEl.appendChild(cardEl);
+  });
+
+  partnerStackLayerEl.classList.remove("hidden");
+}
+
+function hidePartnerStackLayer() {
+  if (!partnerStackLayerEl) return;
+  partnerStackLayerEl.classList.add("hidden");
+}
+
+function hidePartnerStackCardMenu() {
+  if (!partnerStackCardMenuEl) return;
+  partnerStackCardMenuEl.classList.add("hidden");
+  selectedPartnerStackIndex = null;
+}
+
+
+/* ========================================
    盤面全体再描画
-========================= */
+======================================== */
 
 function renderAll() {
   renderHand("self");
@@ -774,14 +886,14 @@ function renderAll() {
   renderIncidentCard(game.self.incident);
   renderOpponentIncidentCard(game.opponent.incident);
 
-  renderPartnerCard(game.self.partner);
-  renderOpponentPartnerCard(game.opponent.partner);
+  renderPartnerCard("self");
+  renderPartnerCard("opponent");
 
   renderPartnerFileCard("self");
   renderPartnerFileCard("opponent");
 
- renderMysteryArea("self");
-renderMysteryArea("opponent");
+  renderMysteryArea("self");
+  renderMysteryArea("opponent");
 
   updateDeckCount("self");
   updateDeckCount("opponent");
@@ -789,9 +901,10 @@ renderMysteryArea("opponent");
   renderRevealLayer("self");
 }
 
-/* =========================
+
+/* ========================================
    Undo
-========================= */
+======================================== */
 
 function saveState() {
   const snapshot = {
@@ -829,9 +942,11 @@ function undo() {
 
   renderAll();
 }
-/* =========================
-   操作：DECK / 現場 / FILE / パートナー
-========================= */
+
+
+/* ========================================
+   基本操作：山札
+======================================== */
 
 function drawCardToHand(side) {
   if (game[side].deck.length === 0) return;
@@ -856,17 +971,10 @@ function sendCardToFile(side) {
   updateDeckCount(side);
 }
 
-function renumberEvidence(side) {
-  game[side].evidence.forEach((cardData, index) => {
-    cardData.number = index + 1;
-  });
-}
-
 function sendCardToEvidence(side) {
   if (game[side].deck.length === 0) return;
 
   const card = game[side].deck.shift();
-
   game[side].evidence.push({
     image: card,
     number: 0,
@@ -875,6 +983,16 @@ function sendCardToEvidence(side) {
 
   renumberEvidence(side);
   renderEvidenceArea(side);
+  updateDeckCount(side);
+}
+
+function sendCardToRemove(side) {
+  if (game[side].deck.length === 0) return;
+
+  const card = game[side].deck.shift();
+  game[side].remove.push(card);
+
+  renderRemoveArea(side);
   updateDeckCount(side);
 }
 
@@ -888,32 +1006,89 @@ function previewTopDeckCard(side) {
   updateDeckCount(side);
 }
 
+function shuffleDeck(side) {
+  if (game[side].deck.length === 0) return;
+
+  game[side].deck = shuffle(game[side].deck);
+  updateDeckCount(side);
+}
+
+function sendDeckCardToSceneUnder(side, sceneIndex) {
+  if (game[side].deck.length === 0) return false;
+
+  const targetStack = game[side].scene[sceneIndex];
+  if (!targetStack || targetStack.length === 0) {
+    alert("その現場には表のカードがありません。");
+    return false;
+  }
+
+  const card = game[side].deck.shift();
+
+  targetStack.push({
+    image: card,
+    sleep: false,
+    stun: false,
+    faceDown: true
+  });
+
+  renderSceneArea(side);
+  updateDeckCount(side);
+
+  return true;
+}
+
+
+/* ========================================
+   基本操作：現場
+======================================== */
+
 function sendSceneCardToRemove(side) {
   if (selectedSceneCardIndex === null) return;
 
   const stack = game[side].scene[selectedSceneCardIndex];
   if (!stack || stack.length === 0) return;
 
-  // 画面に見えている1枚
   const visibleCard = stack[0];
-
-  // 下に重なっているカード全部
   const hiddenCards = stack.slice(1);
 
-  // 見えている1枚もリムーブ
   game[side].remove.push(visibleCard.image);
 
-  // 下のカードも全部リムーブ
   hiddenCards.forEach((card) => {
     game[side].remove.push(card.image);
   });
 
-  // その現場スロットを空にする
   game[side].scene[selectedSceneCardIndex] = [];
 
   renderSceneArea(side);
   renderRemoveArea(side);
 }
+
+function sendSceneCardToDeckBottom(side) {
+  if (selectedSceneCardIndex === null) return;
+
+  const stack = game[side].scene[selectedSceneCardIndex];
+  if (!stack || stack.length === 0) return;
+
+  const visibleCard = stack[0];
+  const hiddenCards = stack.slice(1);
+
+  game[side].deck.push(visibleCard.image);
+
+  hiddenCards.forEach((card) => {
+    game[side].remove.push(card.image);
+  });
+
+  game[side].scene[selectedSceneCardIndex] = [];
+
+  renderSceneArea(side);
+  renderRemoveArea(side);
+  updateDeckCount(side);
+}
+
+
+/* ========================================
+   基本操作：FILE / リムーブ / パートナー
+======================================== */
 
 function moveTopFileCardToHand(side) {
   if (selectedFileCardIndex === null) return;
@@ -929,29 +1104,45 @@ function moveTopFileCardToHand(side) {
   renderFileArea(side);
 }
 
-function partnerActionA(side) {
-  partnerTapped[side] = !partnerTapped[side];
+function moveRemoveCardToSceneUnder(side, removeIndex, sceneIndex) {
+  const removeCard = game[side].remove[removeIndex];
+  if (!removeCard) return false;
 
-  if (side === "self") {
-    renderPartnerCard(game.self.partner);
-  } else {
-    renderOpponentPartnerCard(game.opponent.partner);
+  const targetStack = game[side].scene[sceneIndex];
+  if (!targetStack || targetStack.length === 0) {
+    alert("その現場には表のカードがありません。");
+    return false;
   }
+
+  targetStack.push({
+    image: removeCard,
+    sleep: false,
+    stun: false
+  });
+
+  game[side].remove.splice(removeIndex, 1);
+
+  renderSceneArea(side);
+  renderRemoveArea(side);
+  renderRemoveLayer(side);
+
+  return true;
+}
+
+function partnerActionA(side) {
+  if (!Array.isArray(game[side].partner) || game[side].partner.length === 0) return;
+
+  partnerTapped[side] = !partnerTapped[side];
+  renderPartnerCard(side);
 }
 
 function partnerActionB(side) {
-  const card = game[side].partner;
-  if (!card) return;
+  if (!Array.isArray(game[side].partner) || game[side].partner.length === 0) return;
 
+  const card = game[side].partner.shift();
   game[side].partnerFile = card;
-  game[side].partner = "";
 
-  if (side === "self") {
-    renderPartnerCard(game.self.partner);
-  } else {
-    renderOpponentPartnerCard(game.opponent.partner);
-  }
-
+  renderPartnerCard(side);
   renderPartnerFileCard(side);
 }
 
@@ -959,17 +1150,37 @@ function partnerActionC(side) {
   const card = game[side].partnerFile;
   if (!card) return;
 
-  game[side].partner = card;
-  game[side].partnerFile = "";
-
-  if (side === "self") {
-    renderPartnerCard(game.self.partner);
-  } else {
-    renderOpponentPartnerCard(game.opponent.partner);
+  if (!Array.isArray(game[side].partner)) {
+    game[side].partner = [];
   }
 
+  game[side].partner.unshift(card);
+  game[side].partnerFile = "";
+
+  renderPartnerCard(side);
   renderPartnerFileCard(side);
 }
+
+function moveHandCardToPartner(side, handIndex) {
+  if (handIndex === null || handIndex === undefined) return false;
+
+  const card = game[side].hand[handIndex];
+  if (!card) return false;
+
+  game[side].partner.push(card);
+  game[side].hand.splice(handIndex, 1);
+  partnerTapped[side] = false;
+
+  renderHand(side);
+  renderPartnerCard(side);
+
+  return true;
+}
+
+
+/* ========================================
+   事件オーバーレイ操作
+======================================== */
 
 function showIncidentOverlay(side, type = "A") {
   const targetEl = side === "self" ? incidentCardEl : opponentIncidentCardEl;
@@ -982,7 +1193,6 @@ function showIncidentOverlay(side, type = "A") {
   let offsetY = 0;
   let scale = 0.7;
 
-  // ===== 自分側 =====
   if (side === "self") {
     if (type === "A") {
       offsetX = -40;
@@ -1001,7 +1211,6 @@ function showIncidentOverlay(side, type = "A") {
     }
   }
 
-  // ===== 相手側 =====
   if (side === "opponent") {
     if (type === "A") {
       offsetX = 50;
@@ -1025,9 +1234,7 @@ function showIncidentOverlay(side, type = "A") {
   const left = rect.left + offsetX;
   const top = rect.top + offsetY;
 
-  // ★ここが最大の変更ポイント
   const overlayImage = document.createElement("div");
-
   overlayImage.className = "incident-floating-image";
 
   overlayImage.style.position = "fixed";
@@ -1039,14 +1246,10 @@ function showIncidentOverlay(side, type = "A") {
   overlayImage.style.backgroundSize = "contain";
   overlayImage.style.backgroundPosition = "center";
   overlayImage.style.backgroundRepeat = "no-repeat";
-
-  overlayImage.style.transform =
-    side === "self" ? "rotate(90deg)" : "rotate(-90deg)";
-
+  overlayImage.style.transform = side === "self" ? "rotate(90deg)" : "rotate(-90deg)";
   overlayImage.style.zIndex = "30000";
   overlayImage.style.cursor = "pointer";
 
-  // ★クリックで個別削除できるようにする
   overlayImage.onclick = (event) => {
     event.stopPropagation();
     overlayImage.remove();
@@ -1061,57 +1264,10 @@ function hideIncidentOverlay() {
   });
 }
 
-function shuffleDeck(side) {
-  if (game[side].deck.length === 0) return;
 
-  game[side].deck = shuffle(game[side].deck);
-  updateDeckCount(side);
-}
-
-function renderSceneStackLayer(side, sceneIndex) {
-  if (!sceneStackLayerEl || !sceneStackLayerCardsEl) return;
-
-  const stack = game[side].scene[sceneIndex];
-  if (!stack || stack.length <= 1) {
-    sceneStackLayerCardsEl.innerHTML = "";
-    sceneStackLayerEl.classList.add("hidden");
-    return;
-  }
-
-  const hiddenCards = stack.slice(1);
-
-  sceneStackLayerCardsEl.innerHTML = "";
-
-  hiddenCards.forEach((card, hiddenIndex) => {
-    const cardEl = document.createElement("div");
-    cardEl.className = "scene-stack-list-card";
-    cardEl.style.backgroundImage = `url("${card.image}")`;
-
-    cardEl.addEventListener("click", (event) => {
-      event.stopPropagation();
-
-      hideSceneStackCardMenu();
-
-      selectedSceneStackSide = side;
-      selectedSceneStackIndex = sceneIndex;
-      selectedSceneStackHiddenIndex = hiddenIndex + 1; // stack[1] 以降なので +1
-
-      showMenuAt(sceneStackCardMenuEl, cardEl.getBoundingClientRect());
-    });
-
-    sceneStackLayerCardsEl.appendChild(cardEl);
-  });
-
-  sceneStackLayerEl.classList.remove("hidden");
-}
-
-function hideSceneStackLayer() {
-  if (!sceneStackLayerEl) return;
-  sceneStackLayerEl.classList.add("hidden");
-}
-/* =========================
+/* ========================================
    枚数表示
-========================= */
+======================================== */
 
 function updateDeckCount(side) {
   const deckCountEl = dom[side].deckCount;
@@ -1120,9 +1276,10 @@ function updateDeckCount(side) {
   deckCountEl.textContent = `${game[side].deck.length}枚`;
 }
 
-/* =========================
+
+/* ========================================
    各メニューを閉じる
-========================= */
+======================================== */
 
 function hideDeckMenu() {
   if (!deckMenuEl) return;
@@ -1181,6 +1338,11 @@ function hideRemoveCardMenu() {
   selectedRemoveCardIndex = null;
 }
 
+function hideRemoveToSceneMenu() {
+  if (!removeToSceneMenuEl) return;
+  removeToSceneMenuEl.classList.add("hidden");
+}
+
 function hideSceneStackCardMenu() {
   if (!sceneStackCardMenuEl) return;
   sceneStackCardMenuEl.classList.add("hidden");
@@ -1202,45 +1364,41 @@ function hideAllMenus() {
   hideEvidenceLayer();
   hideSceneStackLayer();
   hideSceneStackCardMenu();
+  hidePartnerStackLayer();
+  hidePartnerStackCardMenu();
+  hideRemoveToSceneMenu();
+
+  if (deckToSceneMenuEl) {
+    deckToSceneMenuEl.classList.add("hidden");
+  }
 }
 
-/* =========================
-   イベント登録
-========================= */
+
+/* ========================================
+   イベント登録：基本エリア
+======================================== */
 
 if (partnerCardEl) {
   partnerCardEl.addEventListener("click", (event) => {
     event.stopPropagation();
     hideAllMenus();
 
-    if (!game.self.partner) return;
+    if (!game.self.partner.length) return;
 
     selectedPartnerSide = "self";
     showMenuAt(partnerMenuEl, partnerCardEl.getBoundingClientRect());
   });
 }
 
-if (incidentCardEl) {
-  incidentCardEl.addEventListener("click", (event) => {
+if (opponentPartnerCardEl) {
+  opponentPartnerCardEl.addEventListener("click", (event) => {
     event.stopPropagation();
     hideAllMenus();
 
-    if (!game.self.incident) return;
+    if (!game.opponent.partner.length) return;
 
-    selectedIncidentSide = "self";
-    showMenuAt(incidentMenuEl, incidentCardEl.getBoundingClientRect());
-  });
-}
-
-if (opponentIncidentCardEl) {
-  opponentIncidentCardEl.addEventListener("click", (event) => {
-    event.stopPropagation();
-    hideAllMenus();
-
-    if (!game.opponent.incident) return;
-
-    selectedIncidentSide = "opponent";
-    showMenuAt(incidentMenuEl, opponentIncidentCardEl.getBoundingClientRect());
+    selectedPartnerSide = "opponent";
+    showMenuAt(partnerMenuEl, opponentPartnerCardEl.getBoundingClientRect());
   });
 }
 
@@ -1268,15 +1426,27 @@ if (opponentPartnerFileCardEl) {
   });
 }
 
-if (opponentPartnerCardEl) {
-  opponentPartnerCardEl.addEventListener("click", (event) => {
+if (incidentCardEl) {
+  incidentCardEl.addEventListener("click", (event) => {
     event.stopPropagation();
     hideAllMenus();
 
-    if (!game.opponent.partner) return;
+    if (!game.self.incident) return;
 
-    selectedPartnerSide = "opponent";
-    showMenuAt(partnerMenuEl, opponentPartnerCardEl.getBoundingClientRect());
+    selectedIncidentSide = "self";
+    showMenuAt(incidentMenuEl, incidentCardEl.getBoundingClientRect());
+  });
+}
+
+if (opponentIncidentCardEl) {
+  opponentIncidentCardEl.addEventListener("click", (event) => {
+    event.stopPropagation();
+    hideAllMenus();
+
+    if (!game.opponent.incident) return;
+
+    selectedIncidentSide = "opponent";
+    showMenuAt(incidentMenuEl, opponentIncidentCardEl.getBoundingClientRect());
   });
 }
 
@@ -1309,9 +1479,7 @@ if (fileAreaEl) {
   fileAreaEl.addEventListener("click", (event) => {
     event.stopPropagation();
 
-    if (game.self.file.length === 0) {
-      return;
-    }
+    if (game.self.file.length === 0) return;
 
     if (!fileMenuEl.classList.contains("hidden")) {
       hideFileMenu();
@@ -1329,9 +1497,7 @@ if (opponentFileAreaEl) {
   opponentFileAreaEl.addEventListener("click", (event) => {
     event.stopPropagation();
 
-    if (game.opponent.file.length === 0) {
-      return;
-    }
+    if (game.opponent.file.length === 0) return;
 
     if (!fileMenuEl.classList.contains("hidden")) {
       hideFileMenu();
@@ -1349,9 +1515,7 @@ if (dom.self.evidence) {
   dom.self.evidence.addEventListener("click", (event) => {
     event.stopPropagation();
 
-    if (game.self.evidence.length === 0) {
-      return;
-    }
+    if (game.self.evidence.length === 0) return;
 
     hideAllMenus();
     selectedEvidenceSide = "self";
@@ -1363,9 +1527,7 @@ if (opponentEvidenceAreaEl) {
   opponentEvidenceAreaEl.addEventListener("click", (event) => {
     event.stopPropagation();
 
-    if (game.opponent.evidence.length === 0) {
-      return;
-    }
+    if (game.opponent.evidence.length === 0) return;
 
     hideAllMenus();
     selectedEvidenceSide = "opponent";
@@ -1377,9 +1539,7 @@ if (removeAreaEl) {
   removeAreaEl.addEventListener("click", (event) => {
     event.stopPropagation();
 
-    if (game.self.remove.length === 0) {
-      return;
-    }
+    if (game.self.remove.length === 0) return;
 
     if (!removeMenuEl.classList.contains("hidden")) {
       hideRemoveMenu();
@@ -1396,9 +1556,7 @@ if (opponentRemoveAreaEl) {
   opponentRemoveAreaEl.addEventListener("click", (event) => {
     event.stopPropagation();
 
-    if (game.opponent.remove.length === 0) {
-      return;
-    }
+    if (game.opponent.remove.length === 0) return;
 
     if (!removeMenuEl.classList.contains("hidden")) {
       hideRemoveMenu();
@@ -1420,6 +1578,46 @@ if (removeLayerEl) {
 if (cardPreviewEl) {
   cardPreviewEl.addEventListener("click", () => {
     hideCardPreview();
+  });
+}
+
+if (evidenceLayerEl) {
+  evidenceLayerEl.addEventListener("click", () => {
+    hideEvidenceLayer();
+    hideEvidenceCardMenu();
+  });
+}
+
+if (sceneStackLayerEl) {
+  sceneStackLayerEl.addEventListener("click", (event) => {
+    if (event.target === sceneStackLayerEl || event.target.classList.contains("scene-stack-layer-bg")) {
+      hideSceneStackLayer();
+      hideSceneStackCardMenu();
+    }
+  });
+}
+
+if (partnerStackLayerEl) {
+  partnerStackLayerEl.addEventListener("click", (event) => {
+    if (event.target === partnerStackLayerEl || event.target.classList.contains("scene-stack-layer-bg")) {
+      hidePartnerStackLayer();
+      hidePartnerStackCardMenu();
+    }
+  });
+}
+
+if (incidentOverlayImageEl) {
+  incidentOverlayImageEl.addEventListener("click", (event) => {
+    event.stopPropagation();
+    alert("case.png がクリックされました");
+  });
+}
+
+if (incidentOverlayEl) {
+  incidentOverlayEl.addEventListener("click", (event) => {
+    if (event.target === incidentOverlayEl) {
+      hideIncidentOverlay();
+    }
   });
 }
 
@@ -1446,14 +1644,14 @@ if (undoButtonEl) {
 window.addEventListener("load", fitBoardToViewport);
 window.addEventListener("resize", fitBoardToViewport);
 
-/* =========================
+
+/* ========================================
    DECKメニュー
-========================= */
+======================================== */
 
 deckOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
     event.stopPropagation();
-
     const choice = button.textContent.trim();
 
     if (choice === "手札") {
@@ -1461,6 +1659,7 @@ deckOptions.forEach((button) => {
         hideDeckMenu();
         return;
       }
+
       saveState();
       drawCardToHand(selectedDeckSide);
       hideDeckMenu();
@@ -1472,6 +1671,7 @@ deckOptions.forEach((button) => {
         hideDeckMenu();
         return;
       }
+
       saveState();
       sendCardToFile(selectedDeckSide);
       hideDeckMenu();
@@ -1483,9 +1683,33 @@ deckOptions.forEach((button) => {
         hideDeckMenu();
         return;
       }
+
       saveState();
       sendCardToEvidence(selectedDeckSide);
       hideDeckMenu();
+      return;
+    }
+
+    if (choice === "リムーブ") {
+      if (game[selectedDeckSide].deck.length === 0) {
+        hideDeckMenu();
+        return;
+      }
+
+      saveState();
+      sendCardToRemove(selectedDeckSide);
+      hideDeckMenu();
+      return;
+    }
+
+    if (choice === "現場の下") {
+      if (game[selectedDeckSide].deck.length === 0) {
+        hideDeckMenu();
+        return;
+      }
+
+      const rect = deckMenuEl.getBoundingClientRect();
+      showMenuAt(deckToSceneMenuEl, rect, 12, 0);
       return;
     }
 
@@ -1494,6 +1718,7 @@ deckOptions.forEach((button) => {
         hideDeckMenu();
         return;
       }
+
       saveState();
       previewTopDeckCard(selectedDeckSide);
       return;
@@ -1504,6 +1729,7 @@ deckOptions.forEach((button) => {
         hideDeckMenu();
         return;
       }
+
       saveState();
       shuffleDeck(selectedDeckSide);
       hideDeckMenu();
@@ -1512,14 +1738,36 @@ deckOptions.forEach((button) => {
 
     if (choice === "閉じる") {
       hideDeckMenu();
-      return;
     }
   });
 });
 
-/* =========================
+deckToSceneOptions.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    const slot = Number(button.dataset.slot);
+    const side = selectedDeckSide;
+
+    if (slot === -1) {
+      deckToSceneMenuEl.classList.add("hidden");
+      return;
+    }
+
+    saveState();
+
+    const moved = sendDeckCardToSceneUnder(side, slot);
+    if (moved) {
+      deckToSceneMenuEl.classList.add("hidden");
+      hideDeckMenu();
+    }
+  });
+});
+
+
+/* ========================================
    手札メニュー
-========================= */
+======================================== */
 
 handOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -1540,29 +1788,30 @@ handOptions.forEach((button) => {
     }
 
     if (choice === "現場") {
-  const emptySlotIndex = getFirstEmptySceneSlot(side);
+      const emptySlotIndex = getFirstEmptySceneSlot(side);
 
-  if (emptySlotIndex === -1) {
-    alert("現場には5枚までしか出せません。");
-    hideHandMenu();
-    return;
-  }
+      if (emptySlotIndex === -1) {
+        alert("現場には5枚までしか出せません。");
+        hideHandMenu();
+        return;
+      }
 
-  saveState();
+      saveState();
 
-  game[side].scene[emptySlotIndex].push({
-    image: card,
-    sleep: false,
-    stun: false
-  });
+      game[side].scene[emptySlotIndex].push({
+        image: card,
+        sleep: false,
+        stun: false
+      });
 
-  game[side].hand.splice(selectedHandCardIndex, 1);
+      game[side].hand.splice(selectedHandCardIndex, 1);
 
-  renderHand(side);
-  renderSceneArea(side);
-  hideHandMenu();
-  return;
-}
+      renderHand(side);
+      renderSceneArea(side);
+      hideHandMenu();
+      return;
+    }
+
     if (choice === "リムーブ") {
       saveState();
 
@@ -1575,24 +1824,23 @@ handOptions.forEach((button) => {
       return;
     }
 
+    if (choice === "パートナー") {
+      saveState();
+      moveHandCardToPartner(side, selectedHandCardIndex);
+      hideHandMenu();
+      return;
+    }
+
     if (choice === "閉じる") {
       hideHandMenu();
     }
   });
 });
 
-if (sceneStackLayerEl) {
-  sceneStackLayerEl.addEventListener("click", (event) => {
-    if (event.target === sceneStackLayerEl || event.target.classList.contains("scene-stack-layer-bg")) {
-      hideSceneStackLayer();
-      hideSceneStackCardMenu();
-    }
-  });
-}
 
-/* =========================
+/* ========================================
    現場メニュー
-========================= */
+======================================== */
 
 sceneOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -1602,10 +1850,11 @@ sceneOptions.forEach((button) => {
     const side = selectedSceneSide;
 
     if (selectedSceneCardIndex === null) return;
-const stack = game[side].scene[selectedSceneCardIndex];
-if (!stack || stack.length === 0) return;
 
-const card = stack[0];
+    const stack = game[side].scene[selectedSceneCardIndex];
+    if (!stack || stack.length === 0) return;
+
+    const card = stack[0];
     if (!card) return;
 
     if (choice === "拡大") {
@@ -1635,11 +1884,18 @@ const card = stack[0];
       return;
     }
 
-    if (choice === "E") {
-  renderSceneStackLayer(side, selectedSceneCardIndex);
-  hideSceneMenu();
-  return;
-}
+    if (choice === "一覧") {
+      renderSceneStackLayer(side, selectedSceneCardIndex);
+      hideSceneMenu();
+      return;
+    }
+
+    if (choice === "山札の下") {
+      saveState();
+      sendSceneCardToDeckBottom(side);
+      hideSceneMenu();
+      return;
+    }
 
     if (choice === "閉じる") {
       hideSceneMenu();
@@ -1647,9 +1903,10 @@ const card = stack[0];
   });
 });
 
-/* =========================
+
+/* ========================================
    めくったカードメニュー
-========================= */
+======================================== */
 
 revealOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -1699,9 +1956,10 @@ revealOptions.forEach((button) => {
   });
 });
 
-/* =========================
+
+/* ========================================
    FILEメニュー
-========================= */
+======================================== */
 
 fileOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -1727,9 +1985,10 @@ fileOptions.forEach((button) => {
   });
 });
 
-/* =========================
+
+/* ========================================
    証拠メニュー
-========================= */
+======================================== */
 
 evidenceOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -1765,6 +2024,27 @@ evidenceCardOptions.forEach((button) => {
       return;
     }
 
+    if (choice === "手札") {
+      saveState();
+
+      game[side].hand.push(cardData.image);
+      game[side].evidence.splice(selectedEvidenceCardIndex, 1);
+
+      renumberEvidence(side);
+
+      renderHand(side);
+      renderEvidenceArea(side);
+
+      if (game[side].evidence.length === 0) {
+        hideEvidenceLayer();
+      } else {
+        renderEvidenceLayer(side);
+      }
+
+      hideEvidenceCardMenu();
+      return;
+    }
+
     if (choice === "リムーブ") {
       saveState();
 
@@ -1792,16 +2072,10 @@ evidenceCardOptions.forEach((button) => {
   });
 });
 
-if (evidenceLayerEl) {
-  evidenceLayerEl.addEventListener("click", () => {
-    hideEvidenceLayer();
-    hideEvidenceCardMenu();
-  });
-}
 
-/* =========================
+/* ========================================
    リムーブメニュー
-========================= */
+======================================== */
 
 removeOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -1838,9 +2112,10 @@ removeOptions.forEach((button) => {
   });
 });
 
-/* =========================
+
+/* ========================================
    リムーブ一覧カードメニュー
-========================= */
+======================================== */
 
 removeCardOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -1873,7 +2148,12 @@ removeCardOptions.forEach((button) => {
       return;
     }
 
-    if (choice === "山札" || choice === "C") {
+    if (choice === "現場") {
+      showMenuAt(removeToSceneMenuEl, removeCardMenuEl.getBoundingClientRect(), 12, 0);
+      return;
+    }
+
+    if (choice === "山札") {
       saveState();
 
       game[side].deck.push(card);
@@ -1883,13 +2163,44 @@ removeCardOptions.forEach((button) => {
       renderRemoveLayer(side);
       updateDeckCount(side);
       hideRemoveCardMenu();
+      return;
+    }
+
+    if (choice === "閉じる") {
+      hideRemoveCardMenu();
     }
   });
 });
 
-/* =========================
+removeToSceneOptions.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    const slot = Number(button.dataset.slot);
+    const side = selectedRemoveSide;
+
+    if (slot === -1) {
+      hideRemoveToSceneMenu();
+      return;
+    }
+
+    if (selectedRemoveCardIndex === null) return;
+
+    saveState();
+
+    const moved = moveRemoveCardToSceneUnder(side, selectedRemoveCardIndex, slot);
+
+    if (moved) {
+      hideRemoveToSceneMenu();
+      hideRemoveCardMenu();
+    }
+  });
+});
+
+
+/* ========================================
    パートナーメニュー
-========================= */
+======================================== */
 
 partnerOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -1918,12 +2229,66 @@ partnerOptions.forEach((button) => {
       hidePartnerMenu();
       return;
     }
+
+    if (type === "D") {
+      renderPartnerStackLayer(selectedPartnerSide);
+      hidePartnerMenu();
+    }
   });
 });
 
-/* =========================
+partnerStackCardOptions.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    const choice = button.textContent.trim();
+    const side = selectedPartnerStackSide;
+    const stackIndex = selectedPartnerStackIndex;
+
+    if (stackIndex === null) return;
+
+    const stack = game[side].partner;
+    const card = stack?.[stackIndex];
+
+    if (!card) {
+      hidePartnerStackCardMenu();
+      return;
+    }
+
+    if (choice === "拡大") {
+      showCardPreview(card);
+      hidePartnerStackCardMenu();
+      return;
+    }
+
+    if (choice === "リムーブ") {
+      saveState();
+
+      game[side].remove.push(card);
+      stack.splice(stackIndex, 1);
+
+      renderPartnerCard(side);
+      renderPartnerStackLayer(side);
+      renderRemoveArea(side);
+
+      if (!Array.isArray(stack) || stack.length <= 1) {
+        hidePartnerStackLayer();
+      }
+
+      hidePartnerStackCardMenu();
+      return;
+    }
+
+    if (choice === "閉じる") {
+      hidePartnerStackCardMenu();
+    }
+  });
+});
+
+
+/* ========================================
    事件メニュー
-========================= */
+======================================== */
 
 incidentOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -1975,20 +2340,10 @@ incidentOptions.forEach((button) => {
   });
 });
 
-if (incidentOverlayImageEl) {
-  incidentOverlayImageEl.addEventListener("click", (event) => {
-    event.stopPropagation();
-    alert("case.png がクリックされました");
-  });
-}
 
-if (incidentOverlayEl) {
-  incidentOverlayEl.addEventListener("click", (event) => {
-    if (event.target === incidentOverlayEl) {
-      hideIncidentOverlay();
-    }
-  });
-}
+/* ========================================
+   現場下カード一覧メニュー
+======================================== */
 
 sceneStackCardOptions.forEach((button) => {
   button.addEventListener("click", (event) => {
@@ -2010,27 +2365,24 @@ sceneStackCardOptions.forEach((button) => {
       return;
     }
 
-   if (choice === "A") {
-  saveState();
+    if (choice === "A") {
+      saveState();
 
-  // 下カードを現場スタックから抜く
-  stack.splice(selectedSceneStackHiddenIndex, 1);
+      stack.splice(selectedSceneStackHiddenIndex, 1);
+      game[side].remove.push(card.image);
 
-  // リムーブへ送る
-  game[side].remove.push(card.image);
+      renderSceneStackLayer(side, selectedSceneStackIndex);
+      renderSceneArea(side);
+      renderRemoveArea(side);
 
-  renderSceneStackLayer(side, selectedSceneStackIndex);
-  renderSceneArea(side);
-  renderRemoveArea(side);
+      hideSceneStackCardMenu();
+      return;
+    }
 
-  hideSceneStackCardMenu();
-  return;
-}
-
-if (choice === "B") {
-  hideSceneStackCardMenu();
-  return;
-}
+    if (choice === "B") {
+      hideSceneStackCardMenu();
+      return;
+    }
 
     if (choice === "閉じる") {
       hideSceneStackCardMenu();
@@ -2038,9 +2390,12 @@ if (choice === "B") {
   });
 });
 
-/* =========================
-   高精度ドラッグ操作（手札・現場カード・ミステリー対応）
-========================= */
+
+/* ========================================
+   高精度ドラッグ操作
+   手札 → 現場 / パートナー
+   現場 → 現場 / ミステリー
+======================================== */
 
 let dragState = null;
 let dragJustEnded = false;
@@ -2050,13 +2405,10 @@ function clearDropHighlights() {
     el.classList.remove("drop-highlight");
   });
 
-  if (mysteryAreaEl) {
-    mysteryAreaEl.classList.remove("drop-highlight");
-  }
-
-  if (opponentMysteryAreaEl) {
-    opponentMysteryAreaEl.classList.remove("drop-highlight");
-  }
+  if (mysteryAreaEl) mysteryAreaEl.classList.remove("drop-highlight");
+  if (opponentMysteryAreaEl) opponentMysteryAreaEl.classList.remove("drop-highlight");
+  if (selfPartnerZoneEl) selfPartnerZoneEl.classList.remove("drop-highlight");
+  if (opponentPartnerZoneEl) opponentPartnerZoneEl.classList.remove("drop-highlight");
 }
 
 function getSceneSlots(side) {
@@ -2138,6 +2490,25 @@ function isPointerOverMystery(side, clientX, clientY) {
   );
 }
 
+function getPartnerZoneEl(side) {
+  return side === "self" ? selfPartnerZoneEl : opponentPartnerZoneEl;
+}
+
+function isPointerOverPartner(side, clientX, clientY) {
+  const targetEl = getPartnerZoneEl(side);
+  if (!targetEl) return false;
+
+  const rect = targetEl.getBoundingClientRect();
+  const padding = 24;
+
+  return (
+    clientX >= rect.left - padding &&
+    clientX <= rect.right + padding &&
+    clientY >= rect.top - padding &&
+    clientY <= rect.bottom + padding
+  );
+}
+
 function beginHandDrag(cardEl, handIndex, side, startEvent) {
   const rect = cardEl.getBoundingClientRect();
 
@@ -2199,6 +2570,14 @@ function moveDraggingVisual(clientX, clientY) {
   clearDropHighlights();
 
   if (dragState.type === "hand") {
+    if (isPointerOverPartner(dragState.side, clientX, clientY)) {
+      const partnerZoneEl = getPartnerZoneEl(dragState.side);
+      if (partnerZoneEl) {
+        partnerZoneEl.classList.add("drop-highlight");
+      }
+      return;
+    }
+
     const nearest = getNearestEmptySceneSlot(dragState.side, clientX, clientY);
     if (nearest) {
       nearest.slot.classList.add("drop-highlight");
@@ -2207,19 +2586,19 @@ function moveDraggingVisual(clientX, clientY) {
   }
 
   if (dragState.type === "scene") {
-  if (isPointerOverMystery(dragState.side, clientX, clientY)) {
-    const targetEl = dragState.side === "self" ? mysteryAreaEl : opponentMysteryAreaEl;
-    if (targetEl) {
-      targetEl.classList.add("drop-highlight");
+    if (isPointerOverMystery(dragState.side, clientX, clientY)) {
+      const targetEl = dragState.side === "self" ? mysteryAreaEl : opponentMysteryAreaEl;
+      if (targetEl) {
+        targetEl.classList.add("drop-highlight");
+      }
+      return;
     }
-    return;
-  }
 
-  const nearest = getNearestSceneSlot(dragState.side, clientX, clientY);
-  if (nearest) {
-    nearest.slot.classList.add("drop-highlight");
+    const nearest = getNearestSceneSlot(dragState.side, clientX, clientY);
+    if (nearest) {
+      nearest.slot.classList.add("drop-highlight");
+    }
   }
-}
 }
 
 function resetDraggedCardVisual() {
@@ -2241,6 +2620,18 @@ function finishDrag() {
   clearDropHighlights();
   resetDraggedCardVisual();
   dragState = null;
+}
+
+function dropHandToPartner(clientX, clientY) {
+  if (!dragState || dragState.type !== "hand") return false;
+  if (!dragState.started) return false;
+  if (!isPointerOverPartner(dragState.side, clientX, clientY)) return false;
+
+  const side = dragState.side;
+  const handIndex = dragState.handIndex;
+
+  saveState();
+  return moveHandCardToPartner(side, handIndex);
 }
 
 function dropHandToScene(clientX, clientY) {
@@ -2295,7 +2686,6 @@ function moveSceneCard(clientX, clientY) {
   toStack.unshift(movingCard);
 
   renderSceneArea(side);
-
   return true;
 }
 
@@ -2307,31 +2697,23 @@ function dropSceneToMystery(clientX, clientY) {
   const side = dragState.side;
   const fromIndex = dragState.sceneIndex;
   const fromStack = game[side].scene[fromIndex];
+
   if (!fromStack || fromStack.length === 0) return false;
 
   saveState();
 
-  // 画面に見えている1枚
   const visibleCard = fromStack[0];
-
-  // 下に重なっているカード
   const hiddenCards = fromStack.slice(1);
-
-  // いまのミステリー
   const oldMystery = game[side].mystery;
 
-  // 見えている1枚をミステリーへ
   game[side].mystery = visibleCard.image;
 
-  // 下のカードは全部リムーブへ
   hiddenCards.forEach((card) => {
     game[side].remove.push(card.image);
   });
 
-  // 元の現場は空にする
   game[side].scene[fromIndex] = [];
 
-  // もしミステリーに元からカードがあったら、それはリムーブへ
   if (oldMystery) {
     game[side].remove.push(oldMystery);
   }
@@ -2363,7 +2745,11 @@ document.addEventListener("pointerup", (event) => {
   let dropped = false;
 
   if (dragState.type === "hand") {
-    dropped = dropHandToScene(event.clientX, event.clientY);
+    dropped = dropHandToPartner(event.clientX, event.clientY);
+
+    if (!dropped) {
+      dropped = dropHandToScene(event.clientX, event.clientY);
+    }
   } else if (dragState.type === "scene") {
     dropped = dropSceneToMystery(event.clientX, event.clientY);
 
@@ -2422,9 +2808,11 @@ if (opponentMysteryAreaEl) {
     renderRemoveArea("opponent");
   });
 }
-/* =========================
+
+
+/* ========================================
    初期化
-========================= */
+======================================== */
 
 function setupGame() {
   game.self.deck = shuffle(buildDeck(playerDeckRecipe));
@@ -2436,8 +2824,8 @@ function setupGame() {
   game.self.incident = "cards_i/0930_h.png";
   game.opponent.incident = "cards_i/0386_h.png";
 
-  game.self.partner = "cards_p/P008.png";
-  game.opponent.partner = "cards_p/P004.png";
+  game.self.partner = ["cards_p/P008.png"];
+  game.opponent.partner = ["cards_p/P004.png"];
 
   renderAll();
   fitBoardToViewport();

@@ -1,26 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <!-- ========================================
+       基本設定
+  ========================================= -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Conan Card Game</title>
+
+  <!-- スタイルシート -->
   <link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body>
 
-  <!-- =========================
+  <!-- ========================================
        各種メニュー
-  ========================== -->
+       クリック時に表示される操作メニュー群
+  ========================================= -->
 
-  <!-- DECKメニュー -->
+  <!-- 山札メニュー -->
   <div id="deck-menu" class="deck-menu hidden">
-  <button class="deck-option">手札</button>
-  <button class="deck-option">FILE</button>
-  <button class="deck-option">証拠</button>
-  <button class="deck-option">山札をめくる</button>
-  <button class="deck-option">山札をシャッフル</button>
-  <button class="deck-option">閉じる</button>
-</div>
+    <button class="deck-option">手札</button>
+    <button class="deck-option">FILE</button>
+    <button class="deck-option">証拠</button>
+    <button class="deck-option">リムーブ</button>
+    <button class="deck-option">現場の下</button>
+    <button class="deck-option">山札をめくる</button>
+    <button class="deck-option">山札をシャッフル</button>
+    <button class="deck-option">閉じる</button>
+  </div>
+
+  <!-- 山札 → 現場の下 メニュー -->
+  <div id="deck-to-scene-menu" class="remove-card-menu hidden">
+    <button class="deck-to-scene-option" data-slot="0">現場1</button>
+    <button class="deck-to-scene-option" data-slot="1">現場2</button>
+    <button class="deck-to-scene-option" data-slot="2">現場3</button>
+    <button class="deck-to-scene-option" data-slot="3">現場4</button>
+    <button class="deck-to-scene-option" data-slot="4">現場5</button>
+    <button class="deck-to-scene-option" data-slot="-1">閉じる</button>
+  </div>
 
   <!-- めくったカード用メニュー -->
   <div id="reveal-menu" class="reveal-menu hidden">
@@ -36,7 +54,7 @@
     <button class="file-option">B</button>
   </div>
 
-  <!-- 証拠用メニュー -->
+  <!-- 証拠エリア用メニュー -->
   <div id="evidence-menu" class="evidence-menu hidden">
     <button class="evidence-option">リムーブ</button>
     <button class="evidence-option">B</button>
@@ -46,18 +64,19 @@
   <div id="hand-menu" class="hand-menu hidden">
     <button class="hand-option">拡大</button>
     <button class="hand-option">現場</button>
+    <button class="hand-option">パートナー</button>
     <button class="hand-option">リムーブ</button>
     <button class="hand-option">閉じる</button>
   </div>
 
-  <!-- 現場メニュー -->
+  <!-- 現場カードメニュー -->
   <div id="scene-menu" class="scene-menu hidden">
     <button class="scene-option">拡大</button>
     <button class="scene-option">スリープ</button>
     <button class="scene-option">スタン</button>
     <button class="scene-option">リムーブ</button>
-    <button class="scene-option">E</button>
-    <button class="scene-option">F</button>
+    <button class="scene-option">一覧</button>
+    <button class="scene-option">山札の下</button>
     <button class="scene-option">閉じる</button>
   </div>
 
@@ -72,27 +91,43 @@
   <div id="remove-card-menu" class="remove-card-menu hidden">
     <button class="remove-card-option">拡大</button>
     <button class="remove-card-option">手札</button>
-    <button class="remove-card-option">C</button>
+    <button class="remove-card-option">現場</button>
+    <button class="remove-card-option">山札</button>
+    <button class="remove-card-option">閉じる</button>
   </div>
 
+  <!-- リムーブ → 現場 選択メニュー -->
+  <div id="remove-to-scene-menu" class="remove-card-menu hidden">
+    <button class="remove-to-scene-option" data-slot="0">現場1</button>
+    <button class="remove-to-scene-option" data-slot="1">現場2</button>
+    <button class="remove-to-scene-option" data-slot="2">現場3</button>
+    <button class="remove-to-scene-option" data-slot="3">現場4</button>
+    <button class="remove-to-scene-option" data-slot="4">現場5</button>
+    <button class="remove-to-scene-option" data-slot="-1">閉じる</button>
+  </div>
+
+  <!-- パートナーメニュー -->
   <div id="partner-menu" class="partner-menu hidden">
-  <button class="partner-option" data-type="A">タップ</button>
-<button class="partner-option" data-type="B">アシスト</button>
-<button class="partner-option" data-type="C">戻る</button>
-</div>
+    <button class="partner-option" data-type="A">タップ</button>
+    <button class="partner-option" data-type="B">アシスト</button>
+    <button class="partner-option" data-type="C">戻る</button>
+    <button class="partner-option" data-type="D">下のカード一覧</button>
+  </div>
 
-<div id="incident-menu" class="scene-menu hidden">
- <button class="incident-option">拡大</button>
-<button class="incident-option" data-type="A">先・事</button>
-<button class="incident-option" data-type="B">後・事</button>
-<button class="incident-option" data-type="C">先・解</button>
-<button class="incident-option" data-type="D">後・解</button>
-<button class="incident-option">閉じる</button>
-</div>
+  <!-- 事件カードメニュー -->
+  <div id="incident-menu" class="scene-menu hidden">
+    <button class="incident-option">拡大</button>
+    <button class="incident-option" data-type="A">先・事</button>
+    <button class="incident-option" data-type="B">後・事</button>
+    <button class="incident-option" data-type="C">先・解</button>
+    <button class="incident-option" data-type="D">後・解</button>
+    <button class="incident-option">閉じる</button>
+  </div>
 
-  <!-- =========================
+  <!-- ========================================
        レイヤー類
-  ========================== -->
+       一覧表示や拡大表示などのオーバーレイ
+  ========================================= -->
 
   <!-- カード拡大表示 -->
   <div id="card-preview" class="card-preview hidden">
@@ -111,34 +146,55 @@
     </div>
   </div>
 
+  <!-- 証拠一覧レイヤー -->
   <div id="evidence-layer" class="evidence-layer hidden">
-  <div class="evidence-layer-bg"></div>
-  <div class="evidence-layer-content">
-    <p class="evidence-layer-title">証拠一覧</p>
-    <div id="evidence-layer-cards" class="evidence-layer-cards"></div>
+    <div class="evidence-layer-bg"></div>
+    <div class="evidence-layer-content">
+      <p class="evidence-layer-title">証拠一覧</p>
+      <div id="evidence-layer-cards" class="evidence-layer-cards"></div>
+    </div>
   </div>
-</div>
 
-<div id="evidence-card-menu" class="evidence-card-menu hidden">
-  <button class="evidence-card-option">拡大</button>
-  <button class="evidence-card-option">表向き/裏向き</button>
-  <button class="evidence-card-option">リムーブ</button>
-  <button class="evidence-card-option">閉じる</button>
-</div>
-
-<div id="scene-stack-layer" class="scene-stack-layer hidden">
-  <div class="scene-stack-layer-bg"></div>
-  <div class="scene-stack-layer-content">
-    <p class="scene-stack-layer-title">下のカード一覧</p>
-    <div id="scene-stack-layer-cards" class="scene-stack-layer-cards"></div>
+  <!-- 証拠一覧カード用メニュー -->
+  <div id="evidence-card-menu" class="evidence-card-menu hidden">
+    <button class="evidence-card-option">拡大</button>
+    <button class="evidence-card-option">表向き/裏向き</button>
+    <button class="evidence-card-option">手札</button>
+    <button class="evidence-card-option">リムーブ</button>
+    <button class="evidence-card-option">閉じる</button>
   </div>
-</div>
 
-<div id="scene-stack-card-menu" class="scene-stack-card-menu hidden">
-  <button class="scene-stack-card-option">A</button>
-  <button class="scene-stack-card-option">B</button>
-  <button class="scene-stack-card-option">閉じる</button>
-</div>
+  <!-- 現場の下カード一覧レイヤー -->
+  <div id="scene-stack-layer" class="scene-stack-layer hidden">
+    <div class="scene-stack-layer-bg"></div>
+    <div class="scene-stack-layer-content">
+      <p class="scene-stack-layer-title">下のカード一覧</p>
+      <div id="scene-stack-layer-cards" class="scene-stack-layer-cards"></div>
+    </div>
+  </div>
+
+  <!-- パートナーの下カード一覧レイヤー -->
+  <div id="partner-stack-layer" class="scene-stack-layer hidden">
+    <div class="scene-stack-layer-bg"></div>
+    <div class="scene-stack-layer-content">
+      <p class="scene-stack-layer-title">パートナー下のカード一覧</p>
+      <div id="partner-stack-layer-cards" class="scene-stack-layer-cards"></div>
+    </div>
+  </div>
+
+  <!-- パートナー下カード一覧のカード用メニュー -->
+  <div id="partner-stack-card-menu" class="scene-stack-card-menu hidden">
+    <button class="partner-stack-card-option">拡大</button>
+    <button class="partner-stack-card-option">リムーブ</button>
+    <button class="partner-stack-card-option">閉じる</button>
+  </div>
+
+  <!-- 現場下カード一覧のカード用メニュー -->
+  <div id="scene-stack-card-menu" class="scene-stack-card-menu hidden">
+    <button class="scene-stack-card-option">A</button>
+    <button class="scene-stack-card-option">B</button>
+    <button class="scene-stack-card-option">閉じる</button>
+  </div>
 
   <!-- 山札をめくった時のレイヤー -->
   <div id="reveal-layer" class="reveal-layer hidden">
@@ -149,182 +205,205 @@
     </div>
   </div>
 
-  <!-- =========================
+  <!-- ========================================
        盤面全体
-  ========================== -->
+  ========================================= -->
   <div class="board-viewport">
-   <main class="board">
+    <main class="board">
 
-  <!-- =========================
-       自分エリア
-  ========================== -->
-  <section class="side-board self-board">
+      <!-- =====================================
+           自分エリア
+      ====================================== -->
+      <section class="side-board self-board">
 
-    <!-- 1列目：手札 -->
-    <div class="side-col hand-col self-hand-col">
-      <div id="player-hand" class="hand-column player-hand-column"></div>
-    </div>
-
-    <!-- 2列目：パートナー / FILE -->
-    <div class="side-col support-col self-support-col">
-
-      <div class="mystery-zone self-mystery-zone">
-  <div id="mystery-area" class="mystery-card"></div>
-</div>
-
-      <div class="partner-zone self-partner-zone">
-        <div id="partner-card" class="partner-card"></div>
-      </div>
-
-      <div class="file-zone self-file-zone">
-        <div id="file-area">
-  <div class="file-card"></div>
-  <div class="file-card"></div>
-  <div class="file-card"></div>
-</div>
-        <p id="file-count" class="file-count">0枚</p>
-      </div>
-
-      <div class="partner-file-zone self-partner-file-zone">
-  <div id="partner-file-card" class="partner-file-card"></div>
-</div>
-    </div>
-
-    <!-- 3列目：証拠 / 事件 / 現場 / デッキ / リムーブ -->
-    <div class="side-col battle-col self-battle-col">
-
-  <div class="battle-top self-battle-top">
-    <div class="evidence-zone self-evidence-zone">
-      <div id="evidence-area" class="evidence-area">
-        <div class="evidence-stack">
-          <div class="evidence-card back-1"></div>
-          <div class="evidence-card back-2"></div>
-          <div class="evidence-card back-3"></div>
+        <!-- 1列目：手札 -->
+        <div class="side-col hand-col self-hand-col">
+          <div id="player-hand" class="hand-column player-hand-column"></div>
         </div>
-      </div>
-      <p id="evidence-count" class="evidence-count">0枚</p>
-    </div>
 
-    <div class="incident-zone self-incident-zone">
-      <div id="incident-card" class="incident-card"></div>
-    </div>
+        <!-- 2列目：ミステリー / パートナー / FILE / パートナーファイル -->
+        <div class="side-col support-col self-support-col">
+
+          <!-- ミステリーエリア -->
+          <div class="mystery-zone self-mystery-zone">
+            <div id="mystery-area" class="mystery-card"></div>
+          </div>
+
+          <!-- パートナーエリア -->
+          <div class="partner-zone self-partner-zone">
+            <div id="partner-card" class="partner-card"></div>
+          </div>
+
+          <!-- FILEエリア -->
+          <div class="file-zone self-file-zone">
+            <div id="file-area">
+              <div class="file-card"></div>
+              <div class="file-card"></div>
+              <div class="file-card"></div>
+            </div>
+            <p id="file-count" class="file-count">0枚</p>
+          </div>
+
+          <!-- パートナーファイルエリア -->
+          <div class="partner-file-zone self-partner-file-zone">
+            <div id="partner-file-card" class="partner-file-card"></div>
+          </div>
+        </div>
+
+        <!-- 3列目：証拠 / 事件 / 現場 / デッキ / リムーブ -->
+        <div class="side-col battle-col self-battle-col">
+
+          <!-- 上段：証拠 / 事件 -->
+          <div class="battle-top self-battle-top">
+            <div class="evidence-zone self-evidence-zone">
+              <div id="evidence-area" class="evidence-area">
+                <div class="evidence-stack">
+                  <div class="evidence-card back-1"></div>
+                  <div class="evidence-card back-2"></div>
+                  <div class="evidence-card back-3"></div>
+                </div>
+              </div>
+              <p id="evidence-count" class="evidence-count">0枚</p>
+            </div>
+
+            <div class="incident-zone self-incident-zone">
+              <div id="incident-card" class="incident-card"></div>
+            </div>
+          </div>
+
+          <!-- 中段：リムーブ / デッキ / 現場 -->
+          <div class="self-battle-middle">
+            <div class="battle-bottom self-battle-bottom">
+              <div class="remove-zone self-remove-zone">
+                <div id="remove-area" class="remove-card"></div>
+              </div>
+
+              <div class="deck-zone player-deck self-deck-zone">
+                <div class="deck-card"></div>
+                <p class="deck-count">35枚</p>
+              </div>
+            </div>
+
+            <div class="scene-zone self-scene-zone">
+              <div id="scene-area" class="scene-area vertical-scene-area">
+                <div class="scene-slot" data-slot="0"></div>
+                <div class="scene-slot" data-slot="1"></div>
+                <div class="scene-slot" data-slot="2"></div>
+                <div class="scene-slot" data-slot="3"></div>
+                <div class="scene-slot" data-slot="4"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 中央線 -->
+      <div class="center-divider"></div>
+
+      <!-- =====================================
+           相手エリア
+      ====================================== -->
+      <section class="side-board opponent-board">
+
+        <!-- 1列目：現場 / デッキ / リムーブ / 事件 / 証拠 -->
+        <div class="side-col battle-col opponent-battle-col">
+
+          <!-- 上段：デッキ / リムーブ -->
+          <div class="battle-top opponent-battle-top">
+            <div class="deck-zone opponent-deck">
+              <div class="deck-card"></div>
+              <p class="deck-count">35枚</p>
+            </div>
+
+            <div class="remove-zone opponent-remove-zone">
+              <div id="opponent-remove-area" class="remove-card"></div>
+            </div>
+          </div>
+
+          <!-- 中段：現場 -->
+          <div class="scene-zone opponent-scene-zone">
+            <div id="opponent-scene-area" class="scene-area vertical-scene-area">
+              <div class="scene-slot" data-slot="0"></div>
+              <div class="scene-slot" data-slot="1"></div>
+              <div class="scene-slot" data-slot="2"></div>
+              <div class="scene-slot" data-slot="3"></div>
+              <div class="scene-slot" data-slot="4"></div>
+            </div>
+          </div>
+
+          <!-- 下段：事件 / 証拠 -->
+          <div class="battle-bottom opponent-battle-bottom">
+            <div class="incident-zone opponent-incident-zone">
+              <div id="opponent-incident-card" class="incident-card"></div>
+            </div>
+
+            <div class="evidence-zone opponent-evidence-zone">
+              <div id="opponent-evidence-area" class="evidence-area"></div>
+              <p id="opponent-evidence-count" class="evidence-count">0枚</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2列目：FILE / ミステリー / パートナー / パートナーファイル -->
+        <div class="side-col support-col opponent-support-col">
+
+          <!-- FILEエリア -->
+          <div class="file-zone opponent-file-zone">
+            <div id="opponent-file-area" class="file-area">
+              <div class="file-stack-base"></div>
+            </div>
+            <p id="opponent-file-count" class="file-count">0枚</p>
+          </div>
+
+          <!-- ミステリーエリア -->
+          <div class="mystery-zone opponent-mystery-zone">
+            <div id="opponent-mystery-area" class="mystery-card"></div>
+          </div>
+
+          <!-- パートナーエリア -->
+          <div class="partner-zone opponent-partner-zone">
+            <div id="opponent-partner-card" class="partner-card"></div>
+          </div>
+
+          <!-- パートナーファイルエリア -->
+          <div class="partner-file-zone opponent-partner-file-zone">
+            <div id="opponent-partner-file-card" class="partner-file-card"></div>
+          </div>
+        </div>
+
+        <!-- 3列目：手札 -->
+        <div class="side-col hand-col opponent-hand-col">
+          <div id="opponent-hand" class="hand-column opponent-hand-column"></div>
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <div class="self-battle-middle">
-    <div class="battle-bottom self-battle-bottom">
-      <div class="remove-zone self-remove-zone">
-        <div id="remove-area" class="remove-card"></div>
-      </div>
+  <!-- ========================================
+       盤面外固定ボタン
+  ========================================= -->
 
-      <div class="deck-zone player-deck self-deck-zone">
-        <div class="deck-card"></div>
-        <p class="deck-count">35枚</p>
-      </div>
-    </div>
-
-    <div class="scene-zone self-scene-zone">
-      <div id="scene-area" class="scene-area vertical-scene-area">
-        <div class="scene-slot" data-slot="0"></div>
-        <div class="scene-slot" data-slot="1"></div>
-        <div class="scene-slot" data-slot="2"></div>
-        <div class="scene-slot" data-slot="3"></div>
-        <div class="scene-slot" data-slot="4"></div>
-      </div>
-    </div>
-  </div>
-
-</div>
-  </section>
-
-  <!-- 中央線 -->
-  <div class="center-divider"></div>
-
-  <!-- =========================
-       相手エリア
-  ========================== -->
-    <!-- =========================
-       相手エリア
-  ========================== -->
-  <section class="side-board opponent-board">
-
-    <!-- 1列目：現場 / デッキ / 事件 / 証拠 -->
-    <div class="side-col battle-col opponent-battle-col">
-
-      <div class="battle-top opponent-battle-top">
-        <div class="deck-zone opponent-deck">
-          <div class="deck-card"></div>
-          <p class="deck-count">35枚</p>
-        </div>
-
-        <div class="remove-zone opponent-remove-zone">
-          <div id="opponent-remove-area" class="remove-card"></div>
-        </div>
-      </div>
-
-      <div class="scene-zone opponent-scene-zone">
-        <div id="opponent-scene-area" class="scene-area vertical-scene-area">
-          <div class="scene-slot" data-slot="0"></div>
-          <div class="scene-slot" data-slot="1"></div>
-          <div class="scene-slot" data-slot="2"></div>
-          <div class="scene-slot" data-slot="3"></div>
-          <div class="scene-slot" data-slot="4"></div>
-        </div>
-      </div>
-
-      <div class="battle-bottom opponent-battle-bottom">
-        <div class="incident-zone opponent-incident-zone">
-          <div id="opponent-incident-card" class="incident-card"></div>
-        </div>
-
-        <div class="evidence-zone opponent-evidence-zone">
-          <div id="opponent-evidence-area" class="evidence-area"></div>
-          <p id="opponent-evidence-count" class="evidence-count">0枚</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2列目：FILE / パートナー / 追加エリア -->
-    <div class="side-col support-col opponent-support-col">
-      <div class="file-zone opponent-file-zone">
-        <div id="opponent-file-area" class="file-area">
-          <div class="file-stack-base"></div>
-        </div>
-        <p id="opponent-file-count" class="file-count">0枚</p>
-      </div>
-
-      <div class="mystery-zone opponent-mystery-zone">
-  <div id="opponent-mystery-area" class="mystery-card"></div>
-</div>
-
-      <div class="partner-zone opponent-partner-zone">
-        <div id="opponent-partner-card" class="partner-card"></div>
-      </div>
-
-      <div class="partner-file-zone opponent-partner-file-zone">
-        <div id="opponent-partner-file-card" class="partner-file-card"></div>
-      </div>
-    </div>
-
-    <!-- 3列目：手札 -->
-    <div class="side-col hand-col opponent-hand-col">
-      <div id="opponent-hand" class="hand-column opponent-hand-column"></div>
-    </div>
-  </section>
-
-</main>
-  </div>
-
+  <!-- Undoボタン -->
   <button id="undo-button">↩ 戻る</button>
 
+  <!-- デッキ作成画面へのリンク -->
   <a href="deck-builder.html" id="open-deck-builder">デッキ作成</a>
-  
-  <script src="card-data.js"></script>
-<script src="deck.js"></script>
-<script src="app.js"></script>
 
+  <!-- ========================================
+       スクリプト読み込み
+  ========================================= -->
+  <script src="card-data.js"></script>
+  <script src="deck.js"></script>
+  <script src="app.js?v=8"></script>
+
+  <!-- ========================================
+       事件カード用オーバーレイ
+  ========================================= -->
   <div id="incident-overlay" class="incident-overlay hidden">
-  <div id="incident-overlay-image" class="incident-overlay-image"></div>
-</div>
+    <div id="incident-overlay-image" class="incident-overlay-image"></div>
+  </div>
 
 </body>
 </html>
