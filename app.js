@@ -1454,6 +1454,11 @@ if (playerDeckEl) {
   playerDeckEl.addEventListener("click", (event) => {
     event.stopPropagation();
 
+    if (dragJustEnded) {
+      dragJustEnded = false;
+      return;
+    }
+
     selectedDeckSide = "self";
     hideAllMenus();
 
@@ -1469,9 +1474,32 @@ if (opponentDeckEl) {
   opponentDeckEl.addEventListener("click", (event) => {
     event.stopPropagation();
 
+    if (dragJustEnded) {
+      dragJustEnded = false;
+      return;
+    }
+
     selectedDeckSide = "opponent";
     hideAllMenus();
     showMenuAt(deckMenuEl, opponentDeckEl.getBoundingClientRect(), 12, 0);
+  });
+}
+
+if (playerDeckEl) {
+  playerDeckEl.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    event.stopPropagation();
+    event.preventDefault();
+    beginDeckDrag(playerDeckEl, "self", event);
+  });
+}
+
+if (opponentDeckEl) {
+  opponentDeckEl.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    event.stopPropagation();
+    event.preventDefault();
+    beginDeckDrag(opponentDeckEl, "opponent", event);
   });
 }
 
@@ -1876,6 +1904,29 @@ sceneOptions.forEach((button) => {
       renderSceneArea(side);
       return;
     }
+
+    if (choice === "手札") {
+  saveState();
+
+  const visibleCard = stack[0];
+  const hiddenCards = stack.slice(1);
+
+  if (visibleCard) {
+    game[side].hand.push(visibleCard.image);
+  }
+
+  hiddenCards.forEach((card) => {
+    game[side].remove.push(card.image);
+  });
+
+  game[side].scene[selectedSceneCardIndex] = [];
+
+  renderHand(side);
+  renderSceneArea(side);
+  renderRemoveArea(side);
+  hideSceneMenu();
+  return;
+}
 
     if (choice === "リムーブ") {
       saveState();
@@ -2399,6 +2450,7 @@ sceneStackCardOptions.forEach((button) => {
 
 let dragState = null;
 let dragJustEnded = false;
+let dragGhostEl = null;
 
 function clearDropHighlights() {
   document.querySelectorAll(".scene-slot.drop-highlight").forEach((el) => {
@@ -2409,6 +2461,19 @@ function clearDropHighlights() {
   if (opponentMysteryAreaEl) opponentMysteryAreaEl.classList.remove("drop-highlight");
   if (selfPartnerZoneEl) selfPartnerZoneEl.classList.remove("drop-highlight");
   if (opponentPartnerZoneEl) opponentPartnerZoneEl.classList.remove("drop-highlight");
+  if (dom.self.hand) dom.self.hand.classList.remove("drop-highlight");
+  if (dom.opponent.hand) dom.opponent.hand.classList.remove("drop-highlight");
+  if (dom.self.evidence) dom.self.evidence.classList.remove("drop-highlight");
+  if (dom.opponent.evidence) dom.opponent.evidence.classList.remove("drop-highlight");
+
+  [fileAreaEl, opponentFileAreaEl].forEach((el) => {
+    if (!el) return;
+    el.classList.remove("drop-highlight");
+    el.style.outline = "";
+    el.style.outlineOffset = "";
+    el.style.boxShadow = "";
+    el.style.background = "";
+  });
 }
 
 function getSceneSlots(side) {
@@ -2509,6 +2574,51 @@ function isPointerOverPartner(side, clientX, clientY) {
   );
 }
 
+function isPointerOverHand(side, clientX, clientY) {
+  const targetEl = side === "self" ? dom.self.hand : dom.opponent.hand;
+  if (!targetEl) return false;
+
+  const rect = targetEl.getBoundingClientRect();
+  const padding = 24;
+
+  return (
+    clientX >= rect.left - padding &&
+    clientX <= rect.right + padding &&
+    clientY >= rect.top - padding &&
+    clientY <= rect.bottom + padding
+  );
+}
+
+function isPointerOverFile(side, clientX, clientY) {
+  const targetEl = side === "self" ? fileAreaEl : opponentFileAreaEl;
+  if (!targetEl) return false;
+
+  const rect = targetEl.getBoundingClientRect();
+  const padding = 24;
+
+  return (
+    clientX >= rect.left - padding &&
+    clientX <= rect.right + padding &&
+    clientY >= rect.top - padding &&
+    clientY <= rect.bottom + padding
+  );
+}
+
+function isPointerOverEvidence(side, clientX, clientY) {
+  const targetEl = side === "self" ? dom.self.evidence : dom.opponent.evidence;
+  if (!targetEl) return false;
+
+  const rect = targetEl.getBoundingClientRect();
+  const padding = 30;
+
+  return (
+    clientX >= rect.left - padding &&
+    clientX <= rect.right + padding &&
+    clientY >= rect.top - padding &&
+    clientY <= rect.bottom + padding
+  );
+}
+
 function beginHandDrag(cardEl, handIndex, side, startEvent) {
   const rect = cardEl.getBoundingClientRect();
 
@@ -2541,6 +2651,21 @@ function beginSceneDrag(cardEl, sceneIndex, side, startEvent) {
   };
 }
 
+function beginDeckDrag(cardEl, side, startEvent) {
+  const rect = cardEl.getBoundingClientRect();
+
+  dragState = {
+    type: "deck",
+    side,
+    element: cardEl,
+    started: false,
+    startX: startEvent.clientX,
+    startY: startEvent.clientY,
+    offsetX: startEvent.clientX - rect.left,
+    offsetY: startEvent.clientY - rect.top
+  };
+}
+
 function startDraggingVisual() {
   if (!dragState || dragState.started) return;
 
@@ -2549,23 +2674,25 @@ function startDraggingVisual() {
   const cardEl = dragState.element;
   const rect = cardEl.getBoundingClientRect();
 
-  cardEl.classList.add("dragging");
-  cardEl.style.position = "fixed";
-  cardEl.style.left = `${rect.left}px`;
-  cardEl.style.top = `${rect.top}px`;
-  cardEl.style.width = `${rect.width}px`;
-  cardEl.style.height = `${rect.height}px`;
-  cardEl.style.zIndex = "99999";
-  cardEl.style.pointerEvents = "none";
-  cardEl.style.marginTop = "0";
+  dragGhostEl = cardEl.cloneNode(true);
+  dragGhostEl.classList.add("dragging");
+  dragGhostEl.style.position = "fixed";
+  dragGhostEl.style.left = `${rect.left}px`;
+  dragGhostEl.style.top = `${rect.top}px`;
+  dragGhostEl.style.width = `${rect.width}px`;
+  dragGhostEl.style.height = `${rect.height}px`;
+  dragGhostEl.style.zIndex = "99999";
+  dragGhostEl.style.pointerEvents = "none";
+  dragGhostEl.style.marginTop = "0";
+
+  document.body.appendChild(dragGhostEl);
 }
 
 function moveDraggingVisual(clientX, clientY) {
-  if (!dragState || !dragState.started) return;
+  if (!dragState || !dragState.started || !dragGhostEl) return;
 
-  const cardEl = dragState.element;
-  cardEl.style.left = `${clientX - dragState.offsetX}px`;
-  cardEl.style.top = `${clientY - dragState.offsetY}px`;
+  dragGhostEl.style.left = `${clientX - dragState.offsetX}px`;
+  dragGhostEl.style.top = `${clientY - dragState.offsetY}px`;
 
   clearDropHighlights();
 
@@ -2582,7 +2709,7 @@ function moveDraggingVisual(clientX, clientY) {
     if (nearest) {
       nearest.slot.classList.add("drop-highlight");
     }
-    return;
+      return;
   }
 
   if (dragState.type === "scene") {
@@ -2598,22 +2725,41 @@ function moveDraggingVisual(clientX, clientY) {
     if (nearest) {
       nearest.slot.classList.add("drop-highlight");
     }
+    return;
   }
+
+    if (dragState.type === "deck") {
+  const handEl = dragState.side === "self" ? dom.self.hand : dom.opponent.hand;
+  const fileEl = dragState.side === "self" ? fileAreaEl : opponentFileAreaEl;
+  const evidenceEl = dragState.side === "self" ? dom.self.evidence : dom.opponent.evidence;
+
+  if (isPointerOverHand(dragState.side, clientX, clientY)) {
+    handEl?.classList.add("drop-highlight");
+    return;
+  }
+
+  if (isPointerOverFile(dragState.side, clientX, clientY)) {
+    if (fileEl) {
+      fileEl.style.outline = "4px solid rgba(255, 230, 120, 1)";
+      fileEl.style.outlineOffset = "6px";
+      fileEl.style.boxShadow = "0 0 0 4px rgba(255, 230, 120, 0.95), 0 0 26px rgba(255, 230, 120, 0.85)";
+      fileEl.style.background = "rgba(255, 230, 120, 0.12)";
+    }
+    return;
+  }
+
+  if (isPointerOverEvidence(dragState.side, clientX, clientY)) {
+    evidenceEl?.classList.add("drop-highlight");
+    return;
+  }
+}
 }
 
 function resetDraggedCardVisual() {
-  if (!dragState) return;
-
-  const cardEl = dragState.element;
-  cardEl.classList.remove("dragging");
-  cardEl.style.position = "";
-  cardEl.style.left = "";
-  cardEl.style.top = "";
-  cardEl.style.width = "";
-  cardEl.style.height = "";
-  cardEl.style.zIndex = "";
-  cardEl.style.pointerEvents = "";
-  cardEl.style.marginTop = "";
+  if (dragGhostEl) {
+    dragGhostEl.remove();
+    dragGhostEl = null;
+  }
 }
 
 function finishDrag() {
@@ -2756,7 +2902,29 @@ document.addEventListener("pointerup", (event) => {
     if (!dropped) {
       dropped = moveSceneCard(event.clientX, event.clientY);
     }
+    } else if (dragState.type === "deck") {
+  const side = dragState.side;
+
+  if (dragState.started && isPointerOverHand(side, event.clientX, event.clientY)) {
+    if (game[side].deck.length > 0) {
+      saveState();
+      drawCardToHand(side);
+      dropped = true;
+    }
+  } else if (dragState.started && isPointerOverFile(side, event.clientX, event.clientY)) {
+    if (game[side].deck.length > 0) {
+      saveState();
+      sendCardToFile(side);
+      dropped = true;
+    }
+  } else if (dragState.started && isPointerOverEvidence(side, event.clientX, event.clientY)) {
+    if (game[side].deck.length > 0) {
+      saveState();
+      sendCardToEvidence(side);
+      dropped = true;
+    }
   }
+}
 
   if (dragState.started) {
     dragJustEnded = true;
