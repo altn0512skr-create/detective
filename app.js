@@ -2822,10 +2822,10 @@ function setupGame() {
   drawStartingHand("opponent", 5);
 
   game.self.incident = "cards_i/0930_h.png";
-  game.opponent.incident = "cards_i/0386_h.png";
+  game.opponent.incident = "cards_i/0946.png";
 
   game.self.partner = ["cards_p/P008.png"];
-  game.opponent.partner = ["cards_p/P004.png"];
+  game.opponent.partner = ["cards_p/P076.png"];
 
   renderAll();
   fitBoardToViewport();
