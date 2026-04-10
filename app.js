@@ -137,7 +137,8 @@ const game = {
     incident: "",
     partner: [],
     partnerFile: "",
-    mystery: ""
+    mystery: "",
+    incidentOverlays: []
   },
   opponent: {
     deck: [],
@@ -150,7 +151,8 @@ const game = {
     incident: "",
     partner: [],
     partnerFile: "",
-    mystery: ""
+    mystery: "",
+    incidentOverlays: []
   }
 };
 
@@ -899,6 +901,7 @@ function renderAll() {
   updateDeckCount("opponent");
 
   renderRevealLayer("self");
+  renderIncidentOverlays();
 }
 
 
@@ -936,7 +939,6 @@ function undo() {
   hideRemoveMenu();
   hideRemoveCardMenu();
   hideRemoveLayer();
-  hideIncidentOverlay();
   hideEvidenceCardMenu();
   hideEvidenceLayer();
 
@@ -1183,82 +1185,112 @@ function moveHandCardToPartner(side, handIndex) {
 ======================================== */
 
 function showIncidentOverlay(side, type = "A") {
-  const targetEl = side === "self" ? incidentCardEl : opponentIncidentCardEl;
-  if (!targetEl) return;
-
-  const rect = targetEl.getBoundingClientRect();
-
-  let imagePath = "cards/case.png";
-  let offsetX = 0;
-  let offsetY = 0;
-  let scale = 0.7;
-
-  if (side === "self") {
-    if (type === "A") {
-      offsetX = -40;
-      offsetY = 90;
-    } else if (type === "B") {
-      offsetX = -40;
-      offsetY = -30;
-    } else if (type === "C") {
-      imagePath = "cards/closed.png";
-      offsetX = -40;
-      offsetY = 90;
-    } else if (type === "D") {
-      imagePath = "cards/closed.png";
-      offsetX = -40;
-      offsetY = -30;
-    }
+  if (!game[side].incidentOverlays) {
+    game[side].incidentOverlays = [];
   }
 
-  if (side === "opponent") {
-    if (type === "A") {
-      offsetX = 50;
-      offsetY = -20;
-    } else if (type === "B") {
-      offsetX = 50;
-      offsetY = 80;
-    } else if (type === "C") {
-      imagePath = "cards/closed.png";
-      offsetX = 50;
-      offsetY = -20;
-    } else if (type === "D") {
-      imagePath = "cards/closed.png";
-      offsetX = 50;
-      offsetY = 80;
-    }
-  }
+  game[side].incidentOverlays.push(type);
+  renderIncidentOverlays();
+}
 
-  const width = rect.width * scale;
-  const height = rect.height * scale;
-  const left = rect.left + offsetX;
-  const top = rect.top + offsetY;
+function renderIncidentOverlays() {
+  document.querySelectorAll(".incident-floating-image").forEach((el) => {
+    el.remove();
+  });
 
-  const overlayImage = document.createElement("div");
-  overlayImage.className = "incident-floating-image";
+  ["self", "opponent"].forEach((side) => {
+    const targetEl = side === "self" ? incidentCardEl : opponentIncidentCardEl;
+    if (!targetEl) return;
 
-  overlayImage.style.position = "fixed";
-  overlayImage.style.left = `${left}px`;
-  overlayImage.style.top = `${top}px`;
-  overlayImage.style.width = `${width}px`;
-  overlayImage.style.height = `${height}px`;
-  overlayImage.style.backgroundImage = `url("${imagePath}")`;
-  overlayImage.style.backgroundSize = "contain";
-  overlayImage.style.backgroundPosition = "center";
-  overlayImage.style.backgroundRepeat = "no-repeat";
-  overlayImage.style.transform = side === "self" ? "rotate(90deg)" : "rotate(-90deg)";
-  overlayImage.style.zIndex = "30000";
-  overlayImage.style.cursor = "pointer";
+    const overlays = game[side].incidentOverlays || [];
+    const rect = targetEl.getBoundingClientRect();
 
-  overlayImage.onclick = (event) => {
-    event.stopPropagation();
-    overlayImage.remove();
-  };
+    overlays.forEach((type) => {
+      let imagePath = "cards/case.png";
+      let offsetX = 0;
+      let offsetY = 0;
+      let scale = 0.5;
 
-  document.body.appendChild(overlayImage);
+      if (side === "self") {
+        if (type === "A") {
+          offsetX = -40;
+          offsetY = 90;
+        } else if (type === "B") {
+          offsetX = -40;
+          offsetY = -30;
+        } else if (type === "C") {
+          imagePath = "cards/closed.png";
+          offsetX = -40;
+          offsetY = 90;
+        } else if (type === "D") {
+          imagePath = "cards/closed.png";
+          offsetX = -40;
+          offsetY = -30;
+        }
+      }
+
+      if (side === "opponent") {
+        if (type === "A") {
+          offsetX = 50;
+          offsetY = -20;
+        } else if (type === "B") {
+          offsetX = 50;
+          offsetY = 80;
+        } else if (type === "C") {
+          imagePath = "cards/closed.png";
+          offsetX = 50;
+          offsetY = -20;
+        } else if (type === "D") {
+          imagePath = "cards/closed.png";
+          offsetX = 50;
+          offsetY = 80;
+        }
+      }
+
+      const width = rect.width * scale;
+      const height = rect.height * scale;
+      const left = rect.left + offsetX;
+      const top = rect.top + offsetY;
+
+      const overlayImage = document.createElement("div");
+      overlayImage.className = "incident-floating-image";
+      overlayImage.dataset.side = side;
+      overlayImage.dataset.type = type;
+
+      overlayImage.style.position = "fixed";
+      overlayImage.style.left = `${left}px`;
+      overlayImage.style.top = `${top}px`;
+      overlayImage.style.width = `${width}px`;
+      overlayImage.style.height = `${height}px`;
+      overlayImage.style.backgroundImage = `url("${imagePath}")`;
+      overlayImage.style.backgroundSize = "contain";
+      overlayImage.style.backgroundPosition = "center";
+      overlayImage.style.backgroundRepeat = "no-repeat";
+      overlayImage.style.transform = side === "self" ? "rotate(90deg)" : "rotate(-90deg)";
+      overlayImage.style.zIndex = "30000";
+      overlayImage.style.cursor = "pointer";
+
+      overlayImage.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        const list = game[side].incidentOverlays || [];
+        const index = list.indexOf(type);
+        if (index !== -1) {
+          list.splice(index, 1);
+        }
+
+        renderIncidentOverlays();
+      });
+
+      document.body.appendChild(overlayImage);
+    });
+  });
 }
 
 function hideIncidentOverlay() {
+  game.self.incidentOverlays = [];
+  game.opponent.incidentOverlays = [];
+
   document.querySelectorAll(".incident-floating-image").forEach((el) => {
     el.remove();
   });
@@ -2362,28 +2394,32 @@ incidentOptions.forEach((button) => {
     }
 
     if (type === "A") {
-      incidentMenuEl.classList.add("hidden");
-      showIncidentOverlay(selectedIncidentSide, "A");
-      return;
-    }
+  saveState();
+  incidentMenuEl.classList.add("hidden");
+  showIncidentOverlay(selectedIncidentSide, "A");
+  return;
+}
 
     if (type === "B") {
-      incidentMenuEl.classList.add("hidden");
-      showIncidentOverlay(selectedIncidentSide, "B");
-      return;
-    }
+  saveState();
+  incidentMenuEl.classList.add("hidden");
+  showIncidentOverlay(selectedIncidentSide, "B");
+  return;
+}
 
-    if (type === "C") {
-      incidentMenuEl.classList.add("hidden");
-      showIncidentOverlay(selectedIncidentSide, "C");
-      return;
-    }
+if (type === "C") {
+  saveState();
+  incidentMenuEl.classList.add("hidden");
+  showIncidentOverlay(selectedIncidentSide, "C");
+  return;
+}
 
-    if (type === "D") {
-      incidentMenuEl.classList.add("hidden");
-      showIncidentOverlay(selectedIncidentSide, "D");
-      return;
-    }
+if (type === "D") {
+  saveState();
+  incidentMenuEl.classList.add("hidden");
+  showIncidentOverlay(selectedIncidentSide, "D");
+  return;
+}
 
     if (label === "閉じる") {
       incidentMenuEl.classList.add("hidden");
@@ -2989,8 +3025,8 @@ function setupGame() {
   drawStartingHand("self", 5);
   drawStartingHand("opponent", 5);
 
-  game.self.incident = "cards_i/0930_h.png";
-  game.opponent.incident = "cards_i/0946.png";
+  game.self.incident = "cards_i/0499_h.png";
+  game.opponent.incident = "cards_i/1059.png";
 
   game.self.partner = ["cards_p/P008.png"];
   game.opponent.partner = ["cards_p/P076.png"];
@@ -3000,3 +3036,126 @@ function setupGame() {
 }
 
 setupGame();
+
+/* ========================================
+   事件パーツ自由配置
+======================================== */
+
+const incidentPiecePaletteEls = document.querySelectorAll(".incident-piece");
+
+let freePieceDragState = null;
+
+function createPlacedIncidentPiece(owner, type, clientX, clientY) {
+  const el = document.createElement("div");
+  el.className = `placed-incident-piece ${owner === "self" ? "self-piece" : "opponent-piece"}`;
+  el.dataset.owner = owner;
+  el.dataset.pieceType = type;
+
+  if (type === "case") {
+    el.style.backgroundImage = `url("cards/case.png")`;
+  } else if (type === "closed") {
+    el.style.backgroundImage = `url("cards/closed.png")`;
+  }
+
+  el.style.left = `${clientX - 45}px`;
+  el.style.top = `${clientY - 45}px`;
+
+  el.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    event.stopPropagation();
+    event.preventDefault();
+
+    const rect = el.getBoundingClientRect();
+
+    freePieceDragState = {
+      mode: "move-existing",
+      element: el,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top
+    };
+  });
+
+  document.body.appendChild(el);
+}
+
+incidentPiecePaletteEls.forEach((pieceEl) => {
+  pieceEl.addEventListener("pointerdown", (event) => {
+  if (event.button !== 0) return;
+  event.stopPropagation();
+  event.preventDefault();
+  pieceEl.setPointerCapture?.(event.pointerId);
+  
+    const type = pieceEl.dataset.pieceType;
+    const owner = pieceEl.dataset.owner;
+    const rect = pieceEl.getBoundingClientRect();
+
+    freePieceDragState = {
+      mode: "create-new",
+      pieceType: type,
+      owner,
+      sourceEl: pieceEl,
+      ghostEl: null,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top
+    };
+
+    const ghostEl = pieceEl.cloneNode(true);
+    ghostEl.style.position = "fixed";
+    ghostEl.style.left = `${rect.left}px`;
+    ghostEl.style.top = `${rect.top}px`;
+    ghostEl.style.width = `${rect.width}px`;
+    ghostEl.style.height = `${rect.height}px`;
+    ghostEl.style.zIndex = "50000";
+    ghostEl.style.pointerEvents = "none";
+    ghostEl.style.opacity = "0.9";
+
+    document.body.appendChild(ghostEl);
+    freePieceDragState.ghostEl = ghostEl;
+  });
+});
+
+document.addEventListener("pointermove", (event) => {
+  if (!freePieceDragState) return;
+
+  if (freePieceDragState.mode === "create-new") {
+    const ghostEl = freePieceDragState.ghostEl;
+    if (!ghostEl) return;
+
+    ghostEl.style.left = `${event.clientX - freePieceDragState.offsetX}px`;
+    ghostEl.style.top = `${event.clientY - freePieceDragState.offsetY}px`;
+    return;
+  }
+
+  if (freePieceDragState.mode === "move-existing") {
+    const el = freePieceDragState.element;
+    if (!el) return;
+
+    el.style.left = `${event.clientX - freePieceDragState.offsetX}px`;
+    el.style.top = `${event.clientY - freePieceDragState.offsetY}px`;
+  }
+});
+
+document.addEventListener("pointerup", (event) => {
+  if (!freePieceDragState) return;
+
+  if (freePieceDragState.mode === "create-new") {
+    const { owner, pieceType, ghostEl } = freePieceDragState;
+
+    if (ghostEl) {
+      createPlacedIncidentPiece(owner, pieceType, event.clientX, event.clientY);
+      ghostEl.remove();
+    }
+  }
+
+  freePieceDragState = null;
+});
+
+document.addEventListener("pointercancel", () => {
+  if (!freePieceDragState) return;
+
+  if (freePieceDragState.mode === "create-new" && freePieceDragState.ghostEl) {
+    freePieceDragState.ghostEl.remove();
+  }
+
+  freePieceDragState = null;
+});

@@ -392,19 +392,27 @@
   <!-- デッキ作成画面へのリンク -->
   <a href="deck-builder.html" id="open-deck-builder">デッキ作成</a>
 
+  <div id="incident-overlay" class="incident-overlay hidden">
+  <div id="incident-overlay-image" class="incident-overlay-image"></div>
+</div>
+
+<!-- 自分用 -->
+<div id="incident-piece-tray-self" class="incident-piece-tray self-tray">
+  <div class="incident-piece self-piece" data-owner="self" data-piece-type="case" style="background-image: url('cards/case.png');"></div>
+  <div class="incident-piece self-piece" data-owner="self" data-piece-type="closed" style="background-image: url('cards/closed.png');"></div>
+</div>
+
+<!-- 相手用 -->
+<div id="incident-piece-tray-opponent" class="incident-piece-tray opponent-tray">
+  <div class="incident-piece opponent-piece" data-owner="opponent" data-piece-type="case" style="background-image: url('cards/case.png');"></div>
+  <div class="incident-piece opponent-piece" data-owner="opponent" data-piece-type="closed" style="background-image: url('cards/closed.png');"></div>
+</div>
   <!-- ========================================
        スクリプト読み込み
   ========================================= -->
   <script src="card-data.js"></script>
   <script src="deck.js"></script>
-  <script src="app.js?v=8"></script>
-
-  <!-- ========================================
-       事件カード用オーバーレイ
-  ========================================= -->
-  <div id="incident-overlay" class="incident-overlay hidden">
-    <div id="incident-overlay-image" class="incident-overlay-image"></div>
-  </div>
+  <script src="app.js?v=9"></script>
 
 </body>
 </html>

@@ -401,7 +401,7 @@ body::before {
 .opponent-incident-zone {
   position: absolute !important;
   right: 580px !important;
-  top: 740px !important;
+  top: 730px !important;
   z-index: 500 !important;
 }
 
@@ -679,7 +679,89 @@ body::before {
   cursor: pointer;
 }
 
+/* =========================
+   事件パーツ置き場
+========================= */
 
+/* =========================
+   事件パーツ置き場
+========================= */
+
+.incident-piece-tray {
+  position: fixed;
+  bottom: 20px;
+  z-index: 40000;
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(20, 20, 20, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.self-tray {
+  left: 20px;
+}
+
+.opponent-tray {
+  right: 20px;
+}
+
+.incident-piece {
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: grab;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.incident-piece:active {
+  cursor: grabbing;
+}
+
+/* 自分用は右向き */
+.self-piece {
+  transform: rotate(90deg);
+}
+
+/* 相手用は左向き */
+.opponent-piece {
+  transform: rotate(-90deg);
+}
+
+.placed-incident-piece {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 39999;
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.placed-incident-piece.self-piece {
+  transform: rotate(90deg);
+}
+
+.placed-incident-piece.opponent-piece {
+  transform: rotate(-90deg);
+}
+
+.incident-piece,
+.placed-incident-piece {
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
 /* ========================================
    パートナー
 ======================================== */
