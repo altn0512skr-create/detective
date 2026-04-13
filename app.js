@@ -595,18 +595,31 @@ function renderSceneArea(side) {
   if (!slotEls.length) return;
 
   slotEls.forEach((slotEl, index) => {
-  slotEl.innerHTML = "";
-  slotEl.classList.remove("has-card");
+    slotEl.innerHTML = "";
+    slotEl.classList.remove("has-card");
 
-  const stack = game[side].scene[index];
-  if (!stack || stack.length === 0) return;
+    const stack = game[side].scene[index];
+    if (!stack || stack.length === 0) return;
 
-  slotEl.classList.add("has-card");
+    slotEl.classList.add("has-card");
 
-  const visibleCard = stack[0];
-  const stackWrapEl = document.createElement("div");
-  stackWrapEl.className = "scene-card-stack";
+    const visibleCard = stack[0];
+    const underCards = stack.slice(1, 4); // 最大3枚まで見せる
 
+    const stackWrapEl = document.createElement("div");
+    stackWrapEl.className = "scene-card-stack";
+
+    // 下のカードを先に描画
+    underCards.forEach((cardData, underIndex) => {
+      const underEl = document.createElement("div");
+      underEl.className = `scene-card-under layer-${underIndex + 1} ${
+        side === "self" ? "self-under" : "opponent-under"
+      }`;
+      underEl.style.backgroundImage = `url("${cardData.image}")`;
+      stackWrapEl.appendChild(underEl);
+    });
+
+    // 表のカード
     const cardEl = document.createElement("div");
     cardEl.className = "scene-card";
     cardEl.style.backgroundImage = `url("${visibleCard.image}")`;
@@ -615,22 +628,23 @@ function renderSceneArea(side) {
     if (visibleCard.stun) cardEl.classList.add("card-stun");
 
     cardEl.addEventListener("click", (event) => {
-  event.stopPropagation();
+      event.stopPropagation();
 
-  if (dragJustEnded) {
-    dragJustEnded = false;
-    return;
-  }
+      if (dragJustEnded) {
+        dragJustEnded = false;
+        return;
+      }
 
-  hideAllMenus();          // 先に閉じる
-  clearSceneSelection();   // 次に前の選択を消す
+      hideAllMenus();
+      clearSceneSelection();
 
-  cardEl.classList.add("selected"); // 最後に今回のカードを光らせる
+      cardEl.classList.add("selected");
 
-  selectedSceneCardIndex = index;
-  selectedSceneSide = side;
-  showMenuAt(sceneMenuEl, cardEl.getBoundingClientRect());
-});
+      selectedSceneCardIndex = index;
+      selectedSceneSide = side;
+      showMenuAt(sceneMenuEl, cardEl.getBoundingClientRect());
+    });
+
     cardEl.addEventListener("pointerdown", (event) => {
       if (event.button !== 0) return;
       event.stopPropagation();
