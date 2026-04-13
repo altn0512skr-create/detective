@@ -632,7 +632,34 @@ body::before {
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
 }
 
+.scene-card.selected {
+  z-index: 30;
+}
 
+.scene-card.selected::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 45%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  border: 4px solid rgba(255, 230, 120, 1);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 3px rgba(255, 230, 120, 0.75),
+    0 0 18px rgba(255, 230, 120, 0.9);
+  pointer-events: none;
+}
+
+.scene-card.drop-highlight {
+  outline: 4px solid rgba(255, 230, 120, 1);
+  outline-offset: 2px;
+
+  box-shadow:
+    0 0 0 3px rgba(255, 230, 120, 0.7),
+    0 0 18px rgba(255, 230, 120, 0.9);
+}
 /* ========================================
    事件カード
 ======================================== */
@@ -962,6 +989,15 @@ body::before {
 
 #partner-file-card {
   transform-origin: center center;
+}
+
+.partner-file-card.drop-highlight {
+  outline: 4px solid rgba(255, 230, 120, 1) !important;
+  outline-offset: 6px !important;
+  box-shadow:
+    0 0 0 4px rgba(255, 230, 120, 0.95),
+    0 0 26px rgba(255, 230, 120, 0.85) !important;
+  background: rgba(255, 230, 120, 0.12) !important;
 }
 
 /* 自分側 */
@@ -1460,20 +1496,15 @@ body::before {
 
 .deck-menu,
 .hand-menu,
-.scene-menu {
-  z-index: 9999;
-}
-
+.scene-menu,
 .reveal-menu,
 .file-menu,
 .evidence-menu,
-.remove-menu {
-  z-index: 4000;
+.remove-menu,
+.remove-card-menu {
+  z-index: 60000;
 }
 
-.remove-card-menu {
-  z-index: 5000;
-}
 
 .deck-option,
 .hand-option,
@@ -1559,7 +1590,7 @@ body::before {
 .reveal-layer {
   position: fixed;
   inset: 0;
-  z-index: 3200;
+  z-index: 50000;
   pointer-events: auto;
 }
 
@@ -1567,7 +1598,6 @@ body::before {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
-  pointer-events: none;
 }
 
 .reveal-layer-content {
@@ -1579,16 +1609,7 @@ body::before {
   justify-content: center;
   gap: 24px;
   padding: 24px;
-  pointer-events: none;
-}
-
-.reveal-layer-title {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 800;
-  color: white;
-  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .reveal-layer-cards {
@@ -1597,15 +1618,16 @@ body::before {
   justify-content: center;
   gap: 20px;
   max-width: 90vw;
-  pointer-events: auto;
+  position: relative;
+  z-index: 50001;
 }
 
 .reveal-layer-cards .hand-card {
-  margin-top: 0;
+  margin-top: 0 !important;
   pointer-events: auto;
+  position: relative;
+  z-index: 50002;
 }
-
-
 /* ========================================
    現場・パートナーの下カード一覧レイヤー
 ======================================== */

@@ -9,7 +9,7 @@
   <title>Conan Card Game</title>
 
   <!-- スタイルシート -->
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
 
@@ -41,12 +41,22 @@
   </div>
 
   <!-- めくったカード用メニュー -->
-  <div id="reveal-menu" class="reveal-menu hidden">
-    <button class="reveal-option">拡大</button>
-    <button class="reveal-option">手札</button>
-    <button class="reveal-option">山札</button>
-    <button class="reveal-option">閉じる</button>
-  </div>
+ <div id="reveal-menu" class="reveal-menu hidden">
+  <button class="reveal-option">拡大</button>
+  <button class="reveal-option">手札</button>
+  <button class="reveal-option">山札</button>
+  <button class="reveal-option">現場</button>
+  <button class="reveal-option">閉じる</button>
+</div>
+
+<div id="reveal-to-scene-menu" class="remove-card-menu hidden">
+  <button class="reveal-to-scene-option" data-slot="0">現場1</button>
+  <button class="reveal-to-scene-option" data-slot="1">現場2</button>
+  <button class="reveal-to-scene-option" data-slot="2">現場3</button>
+  <button class="reveal-to-scene-option" data-slot="3">現場4</button>
+  <button class="reveal-to-scene-option" data-slot="4">現場5</button>
+  <button class="reveal-to-scene-option" data-slot="-1">閉じる</button>
+</div>
 
   <!-- FILE用メニュー -->
   <div id="file-menu" class="file-menu hidden">
@@ -62,12 +72,13 @@
 
   <!-- 手札メニュー -->
   <div id="hand-menu" class="hand-menu hidden">
-    <button class="hand-option">拡大</button>
-    <button class="hand-option">現場</button>
-    <button class="hand-option">パートナー</button>
-    <button class="hand-option">リムーブ</button>
-    <button class="hand-option">閉じる</button>
-  </div>
+  <button class="hand-option">拡大</button>
+  <button class="hand-option">現場</button>
+  <button class="hand-option">パートナー</button>
+  <button class="hand-option">リムーブ</button>
+  <button class="hand-option">山札</button>
+  <button class="hand-option">閉じる</button>
+</div>
 
   <!-- 現場カードメニュー -->
  <div id="scene-menu" class="scene-menu hidden">
@@ -411,8 +422,8 @@
        スクリプト読み込み
   ========================================= -->
   <script src="card-data.js"></script>
-  <script src="deck.js"></script>
-  <script src="app.js?v=9"></script>
+<script src="deck.js"></script>
+<script src="app.js?v=10"></script>
 
 </body>
 </html>
