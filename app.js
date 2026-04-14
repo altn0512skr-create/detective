@@ -1396,7 +1396,6 @@ function hideRevealMenu() {
   if (!revealMenuEl) return;
   revealMenuEl.classList.add("hidden");
   selectedRevealCardIndex = null;
-  selectedRevealSide = "self";
 }
 
 function hideFileMenu() {
@@ -1714,7 +1713,8 @@ if (removeLayerEl) {
 }
 
 if (cardPreviewEl) {
-  cardPreviewEl.addEventListener("click", () => {
+  cardPreviewEl.addEventListener("click", (event) => {
+    event.stopPropagation();
     hideCardPreview();
   });
 }
@@ -1789,6 +1789,8 @@ window.addEventListener("resize", fitBoardToViewport);
 
 if (revealLayerEl) {
   revealLayerEl.addEventListener("click", (event) => {
+    if (previewOpened) return;
+
     if (event.target.classList.contains("reveal-layer-bg")) {
       hideRevealMenu();
       hideRevealToSceneMenu();
