@@ -1171,16 +1171,23 @@ function moveRemoveCardToSceneUnder(side, removeIndex, sceneIndex) {
   if (!removeCard) return false;
 
   const targetStack = game[side].scene[sceneIndex];
-  if (!targetStack || targetStack.length === 0) {
-    alert("その現場には表のカードがありません。");
-    return false;
-  }
+  if (!targetStack) return false;
 
-  targetStack.push({
-    image: removeCard,
-    sleep: false,
-    stun: false
-  });
+  if (targetStack.length === 0) {
+    // 現場が空なら、そのカードを表のカードとして登場させる
+    targetStack.push({
+      image: removeCard,
+      sleep: false,
+      stun: false
+    });
+  } else {
+    // すでにカードがあるなら、その下に重ねる
+    targetStack.push({
+      image: removeCard,
+      sleep: false,
+      stun: false
+    });
+  }
 
   game[side].remove.splice(removeIndex, 1);
 
@@ -1190,7 +1197,6 @@ function moveRemoveCardToSceneUnder(side, removeIndex, sceneIndex) {
 
   return true;
 }
-
 function partnerActionA(side) {
   if (!Array.isArray(game[side].partner) || game[side].partner.length === 0) return;
 
@@ -1367,9 +1373,24 @@ function hideIncidentOverlay() {
 
 function updateDeckCount(side) {
   const deckCountEl = dom[side].deckCount;
-  if (!deckCountEl) return;
+  const deckCardEl = dom[side].deckCard;
 
-  deckCountEl.textContent = `${game[side].deck.length}枚`;
+  if (!deckCountEl || !deckCardEl) return;
+
+  const deckLength = game[side].deck.length;
+  deckCountEl.textContent = `${deckLength}枚`;
+
+  if (deckLength === 0) {
+    deckCardEl.style.backgroundImage = "none";
+    deckCardEl.style.backgroundColor = "rgba(255, 255, 255, 0.06)";
+    deckCardEl.style.border = "2px dashed rgba(255, 255, 255, 0.35)";
+    deckCardEl.style.boxShadow = "none";
+  } else {
+    deckCardEl.style.backgroundImage = 'url("cards/back.png")';
+    deckCardEl.style.backgroundColor = "";
+    deckCardEl.style.border = "";
+    deckCardEl.style.boxShadow = "";
+  }
 }
 
 
