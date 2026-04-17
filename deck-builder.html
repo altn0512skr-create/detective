@@ -4,52 +4,209 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>デッキ作成</title>
-  <link rel="stylesheet" href="deck-builder.css" />
+  <link rel="stylesheet" href="deck-builder.css?v=2" />
 </head>
 <body>
-  <main class="builder-page">
+  <div class="builder-page">
+
+    <!-- ========================================
+         上部バー
+    ========================================= -->
     <header class="builder-header">
-      <h1>デッキ作成</h1>
+      <div class="header-left">
+        <h1 class="builder-title">デッキ作成</h1>
+        <p class="builder-subtitle">保存済みデッキを複数管理できます</p>
+      </div>
 
-      <div class="builder-status">
-        <div class="deck-target-switch">
-          <button id="edit-player-deck" class="target-button active" type="button">自分デッキ</button>
-          <button id="edit-opponent-deck" class="target-button" type="button">相手デッキ</button>
-        </div>
-
-        <p id="deck-total">合計 0 / 40 枚</p>
-        <button id="save-deck-button" type="button" disabled>このデッキを保存</button>
-        <button id="reset-deck-button" type="button">このデッキをリセット</button>
-        <a href="index.html" class="back-link">ゲーム画面へ戻る</a>
+      <div class="header-right">
+        <a class="back-link" href="index.html">盤面へ戻る</a>
       </div>
     </header>
 
-    <div class="search-bar">
-      <input
-        id="card-search-input"
-        type="text"
-        placeholder="カードIDで検索（例: 0150）"
-      />
-      <button id="clear-search-button" type="button">クリア</button>
-    </div>
+    <!-- ========================================
+         上段：保存済みデッキ一覧 + 編集中デッキ情報
+    ========================================= -->
+    <section class="top-panel">
 
-    <div class="pagination-bar">
-      <button id="prev-page-button" type="button">← 前へ</button>
-      <p id="page-info">1 / 1</p>
-      <button id="next-page-button" type="button">次へ →</button>
-    </div>
+      <!-- 保存済みデッキ一覧 -->
+      <div class="saved-decks-panel card-panel">
+        <div class="panel-head">
+          <h2>保存済みデッキ</h2>
+          <button id="create-new-deck-button" type="button">新規デッキ</button>
+        </div>
 
-    <div class="builder-main">
-      <section id="card-list" class="card-list"></section>
+        <div id="saved-deck-list" class="saved-deck-list">
+          <!-- JSで描画 -->
+        </div>
+      </div>
 
-      <aside class="deck-preview">
-        <h2>現在のデッキ</h2>
-        <div id="deck-preview-list"></div>
-      </aside>
+      <!-- 編集中デッキ -->
+      <div class="current-deck-panel card-panel">
+        <div class="panel-head">
+          <h2>編集中のデッキ</h2>
+        </div>
+
+        <div class="current-deck-form">
+          <label class="form-block">
+            <span>デッキ名</span>
+            <input id="deck-name-input" type="text" placeholder="デッキ名を入力" />
+          </label>
+
+          <div class="match-settings-block">
+  <h3>対戦デッキ設定</h3>
+
+  <label class="form-block">
+    <span>自分側デッキ</span>
+    <select id="player-deck-select-builder"></select>
+  </label>
+
+  <label class="form-block">
+    <span>相手側デッキ</span>
+    <select id="opponent-deck-select-builder"></select>
+  </label>
+
+  <div class="match-settings-actions">
+    <button id="start-game-button" type="button">推理開始</button>
+  </div>
+</div>
+
+          <div class="current-deck-stats">
+            <div class="stat-box">
+              <span class="stat-label">合計枚数</span>
+              <span id="deck-total-count" class="stat-value">0</span>
+            </div>
+
+            <div class="stat-box">
+              <span class="stat-label">異なるカード数</span>
+              <span id="deck-unique-count" class="stat-value">0</span>
+            </div>
+          </div>
+
+          <div class="current-deck-actions">
+            <button id="save-new-deck-button" type="button">新規保存</button>
+            <button id="overwrite-deck-button" type="button">上書き保存</button>
+            <button id="duplicate-deck-button" type="button">複製</button>
+            <button id="rename-deck-button" type="button">名前変更</button>
+            <button id="delete-deck-button" type="button" class="danger">削除</button>
+            <button id="clear-current-deck-button" type="button" class="subtle">編集中デッキを空にする</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================
+         中段：検索 + カード一覧
+    ========================================= -->
+    <section class="library-panel card-panel">
+      <div class="panel-head">
+        <h2>カード一覧</h2>
+      </div>
+
+      <div class="library-tools">
+        <input
+          id="card-search-input"
+          type="text"
+          placeholder="カード名・ID・ファイル名などで検索"
+        />
+
+        <select id="card-sort-select">
+          <option value="default">並び順：標準</option>
+          <option value="id-asc">ID昇順</option>
+          <option value="id-desc">ID降順</option>
+          <option value="name-asc">名前昇順</option>
+          <option value="name-desc">名前降順</option>
+        </select>
+      </div>
+
+      <div id="card-library" class="card-library">
+        <!-- JSで描画 -->
+      </div>
+    </section>
+
+    <!-- ========================================
+         下段：現在のデッキ内容
+    ========================================= -->
+    <section class="deck-preview-panel card-panel">
+      <div class="panel-head">
+        <h2>現在のデッキ内容</h2>
+      </div>
+
+      <div id="current-deck-card-list" class="current-deck-card-list">
+        <!-- JSで描画 -->
+      </div>
+    </section>
+  </div>
+
+  <!-- ========================================
+       テンプレート：保存済みデッキ1件
+  ========================================= -->
+  <template id="saved-deck-item-template">
+    <div class="saved-deck-item">
+      <div class="saved-deck-main">
+        <div class="saved-deck-name-row">
+          <span class="saved-deck-name"></span>
+          <span class="saved-deck-count"></span>
+        </div>
+
+        <div class="saved-deck-meta"></div>
+      </div>
+
+      <div class="saved-deck-actions">
+        <button class="load-deck-button" type="button">読み込む</button>
+        <button class="use-for-player-button" type="button">自分側に指定</button>
+        <button class="use-for-opponent-button" type="button">相手側に指定</button>
+      </div>
     </div>
-  </main>
+  </template>
+
+  <!-- ========================================
+       テンプレート：カード一覧1件
+  ========================================= -->
+  <template id="card-library-item-template">
+    <div class="card-library-item">
+      <div class="card-library-image-wrap">
+        <div class="card-library-image"></div>
+      </div>
+
+      <div class="card-library-info">
+  <div class="card-library-title">${escapeHtml(card.name)}</div>
+  <div class="card-library-sub">
+    ID: ${escapeHtml(card.id)}<br>
+    ${currentCount} / ${card.maxCopies}
+  </div>
+</div>
+
+      <div class="card-library-actions">
+        <button class="add-card-button" type="button">＋1</button>
+        <button class="remove-card-button" type="button">－1</button>
+      </div>
+    </div>
+  </template>
+
+  <!-- ========================================
+       テンプレート：現在のデッキ1件
+  ========================================= -->
+  <template id="current-deck-item-template">
+    <div class="current-deck-item">
+      <div class="current-deck-image-wrap">
+        <div class="current-deck-image"></div>
+      </div>
+
+      <div class="current-deck-info">
+        <div class="current-deck-title"></div>
+        <div class="current-deck-sub"></div>
+      </div>
+
+      <div class="current-deck-controls">
+        <button class="current-minus-button" type="button">－</button>
+        <span class="current-count"></span>
+        <button class="current-plus-button" type="button">＋</button>
+      </div>
+    </div>
+  </template>
 
   <script src="card-data.js"></script>
-  <script src="deck-builder.js"></script>
+  <script src="deck.js"></script>
+  <script src="deck-builder.js?v=2"></script>
 </body>
 </html>

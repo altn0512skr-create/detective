@@ -1,6 +1,5 @@
 /* ========================================
    全体共通設定
-   画面サイズ・カードサイズ・共通色など
 ======================================== */
 
 :root {
@@ -36,7 +35,6 @@ body {
   background-repeat: no-repeat;
 }
 
-/* 背景を少し暗くするオーバーレイ */
 body::before {
   content: "";
   position: fixed;
@@ -45,15 +43,12 @@ body::before {
   pointer-events: none;
 }
 
-/* 共通：非表示 */
 .hidden {
   display: none !important;
 }
 
-
 /* ========================================
    盤面全体
-   ボードの大枠・左右エリア・中央線
 ======================================== */
 
 .board-viewport {
@@ -99,7 +94,6 @@ body::before {
   height: 100%;
 }
 
-/* 中央線 */
 .center-divider {
   position: relative;
   height: 100%;
@@ -122,10 +116,8 @@ body::before {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.12);
 }
 
-
 /* ========================================
    ラベル文字
-   枚数表示など
 ======================================== */
 
 .deck-count {
@@ -147,9 +139,37 @@ body::before {
   font-size: 20px;
 }
 
+.file-menu {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+}
+
+.file-option {
+  width: 90px;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  color: black;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.file-option:hover {
+  background: #ddd;
+}
 
 /* ========================================
-   手札列
+   手札
 ======================================== */
 
 .hand-col {
@@ -159,12 +179,13 @@ body::before {
 }
 
 .hand-column {
+  position: relative;
+  min-width: 120px;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   padding-top: 30px;
-  gap: -40px;
 }
 
 .hand-card {
@@ -184,16 +205,10 @@ body::before {
   margin-top: 0;
 }
 
-/* ドラッグ中の手札 */
 .hand-card.dragging {
   opacity: 0.88;
   transform: scale(1.06);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
-}
-
-.hand-column {
-  position: relative;
-  min-width: 120px;
 }
 
 .hand-column.drop-highlight {
@@ -206,7 +221,6 @@ body::before {
 
 /* ========================================
    支援列
-   FILE / パートナー / デッキ / リムーブ など
 ======================================== */
 
 .support-col {
@@ -240,7 +254,6 @@ body::before {
   align-items: flex-start;
 }
 
-
 /* ========================================
    山札
 ======================================== */
@@ -271,7 +284,6 @@ body::before {
   transform: translate(-50px, 20px);
 }
 
-/* 相手デッキまわり */
 .opponent-battle-top {
   position: relative;
   z-index: 5000 !important;
@@ -291,10 +303,8 @@ body::before {
   pointer-events: auto !important;
 }
 
-
 /* ========================================
    戦場列
-   証拠・事件・現場・デッキ・リムーブの大枠
 ======================================== */
 
 .battle-col {
@@ -322,9 +332,8 @@ body::before {
   justify-content: flex-end;
 }
 
-
 /* ========================================
-   自分側の戦場レイアウト調整
+   自分側戦場
 ======================================== */
 
 .self-battle-col {
@@ -371,9 +380,8 @@ body::before {
   transform: translate(-50px, 30px);
 }
 
-
 /* ========================================
-   相手側の戦場レイアウト調整
+   相手側戦場
 ======================================== */
 
 .opponent-remove-zone {
@@ -423,7 +431,6 @@ body::before {
   overflow: visible !important;
 }
 
-
 /* ========================================
    現場エリア
 ======================================== */
@@ -448,7 +455,6 @@ body::before {
   z-index: 1;
 }
 
-/* 現場スロット */
 .scene-slot {
   width: var(--scene-card-width);
   height: var(--scene-card-height);
@@ -483,7 +489,6 @@ body::before {
 .scene-slot[data-slot="3"]::after { content: "4"; }
 .scene-slot[data-slot="4"]::after { content: "5"; }
 
-/* 現場カード本体 */
 .scene-card {
   position: absolute;
   inset: 0;
@@ -500,7 +505,6 @@ body::before {
   z-index: 5;
 }
 
-/* 自分側現場カードの向き */
 #scene-area .scene-card {
   transform: rotate(90deg);
   transform-origin: center center;
@@ -511,13 +515,11 @@ body::before {
   box-shadow: none !important;
 }
 
-/* 相手側現場カードの向き */
 #opponent-scene-area .scene-card {
   transform: rotate(-90deg);
   transform-origin: center center;
 }
 
-/* スリープ / スタン */
 .card-sleep {
   transform: rotate(90deg);
   transform-origin: center center;
@@ -554,7 +556,6 @@ body::before {
   transform: rotate(90deg);
 }
 
-/* 現場カードスタック表示 */
 .scene-card-stack {
   position: relative;
   width: 100%;
@@ -574,7 +575,6 @@ body::before {
   pointer-events: none;
 }
 
-/* 自分側：右下に重なる */
 .scene-card-under.self-under.layer-1 {
   transform: translate(-10px, 8px) rotate(90deg);
 }
@@ -587,7 +587,6 @@ body::before {
   transform: translate(-30px, 24px) rotate(90deg);
 }
 
-/* 相手側：左下に重なる */
 .scene-card-under.opponent-under.layer-1 {
   transform: translate(30px, 8px) rotate(-90deg);
 }
@@ -600,7 +599,6 @@ body::before {
   transform: translate(50px, 24px) rotate(-90deg);
 }
 
-/* 現場の下カード枚数表示 */
 .scene-stack-count {
   position: absolute;
   top: 6px;
@@ -620,7 +618,6 @@ body::before {
   z-index: 20;
 }
 
-/* ドロップ候補ハイライト */
 .scene-slot.drop-highlight {
   outline: 3px solid rgba(255, 230, 120, 0.95);
   border-radius: 12px;
@@ -655,11 +652,11 @@ body::before {
 .scene-card.drop-highlight {
   outline: 4px solid rgba(255, 230, 120, 1);
   outline-offset: 2px;
-
   box-shadow:
     0 0 0 3px rgba(255, 230, 120, 0.7),
     0 0 18px rgba(255, 230, 120, 0.9);
 }
+
 /* ========================================
    事件カード
 ======================================== */
@@ -691,7 +688,6 @@ body::before {
   transform: translate(300px, 20px);
 }
 
-/* 事件カードオーバーレイ */
 .incident-overlay {
   position: fixed;
   inset: 0;
@@ -705,14 +701,6 @@ body::before {
   pointer-events: auto;
   cursor: pointer;
 }
-
-/* =========================
-   事件パーツ置き場
-========================= */
-
-/* =========================
-   事件パーツ置き場
-========================= */
 
 .incident-piece-tray {
   position: fixed;
@@ -752,12 +740,10 @@ body::before {
   cursor: grabbing;
 }
 
-/* 自分用は右向き */
 .self-piece {
   transform: rotate(90deg);
 }
 
-/* 相手用は左向き */
 .opponent-piece {
   transform: rotate(-90deg);
 }
@@ -789,6 +775,7 @@ body::before {
   user-select: none;
   -webkit-user-select: none;
 }
+
 /* ========================================
    パートナー
 ======================================== */
@@ -808,7 +795,6 @@ body::before {
   box-shadow: none;
 }
 
-/* パートナー位置 */
 .self-partner-zone {
   position: absolute;
   left: calc(50% - 420px);
@@ -828,7 +814,6 @@ body::before {
   pointer-events: auto;
 }
 
-/* 表のパートナーカード */
 .partner-main {
   position: absolute;
   left: 50%;
@@ -854,7 +839,6 @@ body::before {
   margin-top: -60px;
 }
 
-/* 下に重なるパートナーカード */
 .partner-under {
   position: absolute;
   left: 50%;
@@ -891,7 +875,6 @@ body::before {
   transform: translate(26px, -26px) rotate(-90deg);
 }
 
-/* 下に重なっている枚数表示 */
 .partner-stack-count {
   position: absolute;
   right: -8px;
@@ -940,7 +923,6 @@ body::before {
   background: #ddd;
 }
 
-
 /* ========================================
    パートナーファイル
 ======================================== */
@@ -951,15 +933,6 @@ body::before {
   flex-direction: column;
   align-items: center;
   gap: 6px;
-}
-
-.partner-file-label {
-  margin: 0;
-  font-weight: 800;
-  color: white;
-  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
-  line-height: 1.1;
-  font-size: 11px;
 }
 
 .partner-file-card {
@@ -1000,7 +973,6 @@ body::before {
   background: rgba(255, 230, 120, 0.12) !important;
 }
 
-/* 自分側 */
 .self-partner-file-zone {
   position: absolute;
   left: calc(50% - 610px);
@@ -1008,30 +980,27 @@ body::before {
   margin-top: 18px;
 }
 
-/* 相手側 */
 .opponent-partner-file-zone {
   position: absolute;
   right: calc(50% - 600px);
   top: calc(50% - 270px);
 }
 
-
 /* ========================================
    FILEエリア
 ======================================== */
 
-.file-area {
+.file-area,
+#file-area,
+#opponent-file-area {
   position: relative;
   width: 120px;
   height: 160px;
-
   border: 3px dashed rgba(255, 255, 255, 0.7);
   border-radius: 10px;
-
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* 疑似スタック表示は使わない */
 .file-area.has-cards::before,
 .file-area.has-cards::after,
 .file-area.has-cards .file-stack-base {
@@ -1052,11 +1021,11 @@ body::before {
   transform: rotate(180deg);
 }
 
-/* 自分側 FILE */
 .self-file-zone {
-  position: absolute;
-  left: calc(50% - 600px);
-  top: calc(50% - 250px);
+  position: absolute !important;
+  left: calc(50% - 600px) !important;
+  top: calc(50% - 250px) !important;
+  z-index: 9000 !important;
 }
 
 .self-file-zone .file-count {
@@ -1068,7 +1037,6 @@ body::before {
   white-space: nowrap;
 }
 
-/* 相手側 FILE */
 .opponent-file-zone {
   position: absolute;
   right: calc(50% - 600px);
@@ -1085,47 +1053,6 @@ body::before {
   white-space: nowrap;
 }
 
-.file-area {
-  position: relative !important;
-}
-
-.file-area.drop-highlight {
-  outline: 4px solid rgba(255, 230, 120, 1) !important;
-  outline-offset: 6px !important;
-  box-shadow:
-    0 0 0 4px rgba(255, 230, 120, 0.95),
-    0 0 26px rgba(255, 230, 120, 0.85) !important;
-  background: rgba(255, 230, 120, 0.12) !important;
-}
-
-.file-area.drop-highlight::after {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  border: 4px solid rgba(255, 230, 120, 1);
-  border-radius: 14px;
-  box-shadow: 0 0 24px rgba(255, 230, 120, 0.85);
-  pointer-events: none;
-  z-index: 9999;
-}
-
-.self-file-zone {
-  position: absolute !important;
-  left: calc(50% - 600px) !important;
-  top: calc(50% - 250px) !important;
-  z-index: 9000 !important;
-}
-
-#file-area {
-  position: relative !important;
-  width: 120px !important;
-  height: 160px !important;
-  border: 3px dashed rgba(255, 255, 255, 0.95) !important;
-  border-radius: 10px !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  z-index: 9001 !important;
-}
-
 #file-area::before {
   content: "FILE";
   position: absolute;
@@ -1139,6 +1066,30 @@ body::before {
   letter-spacing: 0.08em;
   pointer-events: none;
   z-index: 1;
+}
+
+.file-area.drop-highlight,
+#file-area.drop-highlight,
+#opponent-file-area.drop-highlight {
+  outline: 4px solid rgba(255, 230, 120, 1) !important;
+  outline-offset: 6px !important;
+  box-shadow:
+    0 0 0 4px rgba(255, 230, 120, 0.95),
+    0 0 26px rgba(255, 230, 120, 0.85) !important;
+  background: rgba(255, 230, 120, 0.12) !important;
+}
+
+.file-area.drop-highlight::after,
+#file-area.drop-highlight::after,
+#opponent-file-area.drop-highlight::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border: 4px solid rgba(255, 230, 120, 1);
+  border-radius: 14px;
+  box-shadow: 0 0 24px rgba(255, 230, 120, 0.85);
+  pointer-events: none;
+  z-index: 9999;
 }
 
 /* ========================================
@@ -1165,7 +1116,6 @@ body::before {
   display: block;
 }
 
-/* 証拠カード本体 */
 .evidence-card {
   position: absolute;
   width: 118px;
@@ -1178,7 +1128,6 @@ body::before {
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
 }
 
-/* 見本用の重なり */
 .back-1 {
   top: -8px;
   left: 22px;
@@ -1199,14 +1148,12 @@ body::before {
   z-index: 1;
 }
 
-/* 自分側 証拠位置 */
 .self-evidence-zone {
   position: absolute;
   left: calc(50% - 400px);
   top: calc(50% - 400px);
 }
 
-/* 相手側 枚数表示 */
 .opponent-evidence-zone .evidence-count {
   position: absolute;
   left: 50%;
@@ -1216,7 +1163,6 @@ body::before {
   white-space: nowrap;
 }
 
-/* 盤面の証拠カード番号 */
 .evidence-card-number {
   position: absolute;
   top: 4px;
@@ -1235,7 +1181,6 @@ body::before {
   font-weight: 800;
 }
 
-/* 証拠一覧レイヤー */
 .evidence-layer {
   position: fixed;
   inset: 0;
@@ -1308,7 +1253,6 @@ body::before {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
 }
 
-/* 証拠カードメニュー */
 .evidence-card-menu {
   position: absolute;
   display: flex;
@@ -1338,16 +1282,13 @@ body::before {
   background: #ddd;
 }
 
-.evidence-area.drop-highlight {
-  outline: 3px solid rgba(255, 230, 120, 0.95);
-  outline-offset: 6px;
-  border-radius: 10px;
-  box-shadow: 0 0 18px rgba(255, 230, 120, 0.55);
-}
-
 /* ========================================
    リムーブエリア
 ======================================== */
+
+.remove-zone {
+  position: relative;
+}
 
 .remove-card {
   width: 118px;
@@ -1358,131 +1299,11 @@ body::before {
   background-position: center;
   background-repeat: no-repeat;
   cursor: pointer;
+  background-image: none;
+  box-shadow: none;
 }
 
-/* リムーブ一覧レイヤー */
-.remove-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 3200;
-  pointer-events: auto;
-}
-
-.remove-layer-bg {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  pointer-events: auto;
-}
-
-.remove-layer-content {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  padding: 24px;
-  pointer-events: none;
-}
-
-.remove-layer-title {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 800;
-  color: white;
-  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
-  pointer-events: none;
-}
-
-.remove-layer-cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  max-width: 90vw;
-  pointer-events: auto;
-}
-
-.remove-layer-cards .hand-card {
-  margin-top: 0 !important;
-  pointer-events: auto;
-}
-
-
-/* ========================================
-   ミステリーエリア
-======================================== */
-
-.mystery-zone {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  z-index: 2500;
-}
-
-.mystery-label {
-  margin: 0;
-  font-weight: 800;
-  color: white;
-  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
-  line-height: 1.1;
-  font-size: 14px;
-}
-
-.mystery-card {
-  width: 120px;
-  height: 168px;
-  border-radius: 10px;
-  border: 2px dashed rgba(255, 255, 255, 0.5);
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-}
-
-.self-mystery-zone {
-  left: calc(50% - 420px);
-  top: calc(50% - 200px);
-}
-
-.opponent-mystery-zone {
-  right: calc(50% - 420px);
-  top: calc(50% - 200px);
-}
-
-#mystery-area {
-  transform: rotate(90deg);
-  transform-origin: center center;
-}
-
-#opponent-mystery-area {
-  transform: rotate(-90deg);
-  transform-origin: center center;
-}
-
-.mystery-card.drop-highlight {
-  outline: 3px solid rgba(255, 230, 120, 0.95);
-  border-radius: 10px;
-  box-shadow: 0 0 18px rgba(255, 230, 120, 0.55);
-}
-
-
-/* ========================================
-   共通メニュー見た目
-======================================== */
-
-.deck-menu,
-.hand-menu,
-.scene-menu,
-.reveal-menu,
-.file-menu,
-.evidence-menu,
-.remove-menu,
-.remove-card-menu {
+.remove-menu {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -1492,39 +1313,10 @@ body::before {
   border: 2px solid rgba(255, 255, 255, 0.25);
   border-radius: 12px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
 }
 
-.deck-menu,
-.hand-menu,
-.scene-menu,
-.reveal-menu,
-.file-menu,
-.evidence-menu,
-.remove-menu,
-.remove-card-menu {
-  z-index: 60000;
-}
-
-
-.deck-option,
-.hand-option,
-.scene-option {
-  width: 120px;
-  padding: 10px 0;
-  border: none;
-  border-radius: 8px;
-  background: white;
-  color: black;
-  font-size: 18px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.reveal-option,
-.file-option,
-.evidence-option,
-.remove-option,
-.remove-card-option {
+.remove-option {
   width: 80px;
   padding: 10px 0;
   border: none;
@@ -1536,32 +1328,177 @@ body::before {
   cursor: pointer;
 }
 
-.deck-option:hover,
-.hand-option:hover,
-.scene-option:hover,
-.reveal-option:hover,
-.file-option:hover,
-.evidence-option:hover,
-.remove-option:hover,
-.remove-card-option:hover {
+.remove-option:hover {
   background: #ddd;
 }
 
+.remove-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 3200;
+  pointer-events: auto;
+}
+
+.remove-layer-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.remove-layer-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+}
+
+.remove-layer-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+}
+
+.remove-layer-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 90vw;
+}
+
+.remove-layer-cards .hand-card {
+  margin-top: 0 !important;
+  pointer-events: auto;
+}
+
+.remove-card-menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+}
+
+.remove-card-option,
+.remove-to-scene-option,
+.reveal-to-scene-option {
+  width: 120px;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  color: black;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.remove-card-option:hover,
+.remove-to-scene-option:hover,
+.reveal-to-scene-option:hover {
+  background: #ddd;
+}
 
 /* ========================================
-   カード拡大レイヤー
+   手札メニュー
+======================================== */
+
+.hand-menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+}
+
+.hand-option {
+  width: 90px;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  color: black;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.hand-option:hover {
+  background: #ddd;
+}
+
+/* ========================================
+   現場カードメニュー
+======================================== */
+
+.scene-menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+}
+
+.scene-option,
+.incident-option,
+.deck-option,
+.file-option,
+.reveal-option {
+  width: 90px;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  color: black;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.scene-option:hover,
+.incident-option:hover,
+.deck-option:hover,
+.file-option:hover,
+.reveal-option:hover {
+  background: #ddd;
+}
+
+/* ========================================
+   カード拡大プレビュー
 ======================================== */
 
 .card-preview {
   position: fixed;
   inset: 0;
-  z-index: 60001;
+  z-index: 3000;
+  pointer-events: auto;
 }
 
 .card-preview-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.78);
 }
 
 .card-preview-content {
@@ -1573,31 +1510,57 @@ body::before {
 }
 
 .card-preview-image {
-  width: min(65vw, 650px);
-  height: calc(min(65vw, 650px) * 1.4);
-  border-radius: 16px;
-  background-size: contain;
+  width: 320px;
+  height: 448px;
+  border-radius: 12px;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
+  z-index: 1;
 }
 
-
 /* ========================================
-   山札めくりレイヤー
+   山札メニュー / めくったカード
 ======================================== */
+
+.deck-menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+}
+
+.reveal-menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+}
 
 .reveal-layer {
   position: fixed;
   inset: 0;
-  z-index: 50000;
+  z-index: 3100;
   pointer-events: auto;
 }
 
 .reveal-layer-bg {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.72);
 }
 
 .reveal-layer-content {
@@ -1609,7 +1572,14 @@ body::before {
   justify-content: center;
   gap: 24px;
   padding: 24px;
-  pointer-events: auto;
+}
+
+.reveal-layer-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
 }
 
 .reveal-layer-cards {
@@ -1628,8 +1598,9 @@ body::before {
   position: relative;
   z-index: 50002;
 }
+
 /* ========================================
-   現場・パートナーの下カード一覧レイヤー
+   下カード一覧レイヤー
 ======================================== */
 
 .scene-stack-layer {
@@ -1696,7 +1667,8 @@ body::before {
   z-index: 9999;
 }
 
-.scene-stack-card-option {
+.scene-stack-card-option,
+.partner-stack-card-option {
   width: 90px;
   padding: 10px 0;
   border: none;
@@ -1708,10 +1680,10 @@ body::before {
   cursor: pointer;
 }
 
-.scene-stack-card-option:hover {
+.scene-stack-card-option:hover,
+.partner-stack-card-option:hover {
   background: #ddd;
 }
-
 
 /* ========================================
    左右対面のカード向き
@@ -1721,6 +1693,7 @@ body::before {
 .self-board .partner-card,
 .self-board .incident-card,
 .self-board .deck-card,
+.self-board .mystery-card,
 .self-board .remove-card {
   transform: rotate(90deg);
   transform-origin: center center;
@@ -1730,48 +1703,129 @@ body::before {
 .opponent-board .partner-card,
 .opponent-board .incident-card,
 .opponent-board .deck-card,
+.opponent-board .mystery-card,
 .opponent-board .remove-card {
   transform: rotate(-90deg);
   transform-origin: center center;
 }
 
-
 /* ========================================
    盤面外固定ボタン
 ======================================== */
 
-#undo-button {
+#undo-button,
+#open-deck-builder {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 99999;
+  bottom: 20px;
+  z-index: 5000;
   padding: 10px 16px;
-  font-size: 14px;
-  background: #222;
+  border-radius: 12px;
+  border: none;
+  background: rgba(20, 20, 20, 0.85);
   color: white;
-  border: 1px solid #555;
-  border-radius: 6px;
+  font-size: 20px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
   cursor: pointer;
 }
 
-#undo-button:hover {
-  background: #444;
+#undo-button {
+  left: 20px;
 }
 
 #open-deck-builder {
+  right: 20px;
+}
+
+#undo-button:hover,
+#open-deck-builder:hover {
+  background: rgba(40, 40, 40, 0.95);
+}
+
+/* ========================================
+   ミステリーエリア
+======================================== */
+
+.mystery-zone {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2500;
+}
+
+.mystery-card {
+  width: 120px;
+  height: 168px;
+  border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+.self-mystery-zone {
+  left: calc(50% - 420px);
+  top: calc(50% - 200px);
+}
+
+.opponent-mystery-zone {
+  right: calc(50% - 420px);
+  top: calc(50% - 180px);
+}
+
+.mystery-card.drop-highlight {
+  outline: 4px solid rgba(255, 230, 120, 1) !important;
+  outline-offset: 6px !important;
+  box-shadow:
+    0 0 0 4px rgba(255, 230, 120, 0.95),
+    0 0 26px rgba(255, 230, 120, 0.85) !important;
+  background: rgba(255, 230, 120, 0.12) !important;
+}
+
+/* ========================================
+   追加ドラッグ用ハイライト
+======================================== */
+
+.deck-card.drop-highlight,
+.remove-card.drop-highlight,
+.partner-file-card.drop-highlight {
+  outline: 4px solid rgba(255, 230, 120, 1);
+  outline-offset: 4px;
+  box-shadow:
+    0 0 0 4px rgba(255, 230, 120, 0.95),
+    0 0 24px rgba(255, 230, 120, 0.85);
+}
+
+#open-deck-settings {
   position: fixed;
   top: 20px;
   right: 20px;
   z-index: 99999;
-  padding: 10px 16px;
-  font-size: 14px;
-  background: #222;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 120px;
+  height: 44px;
+  padding: 0 16px;
+
+  border-radius: 12px;
+  background: rgba(30, 30, 30, 0.92);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+
   color: white;
-  border: 1px solid #555;
-  border-radius: 6px;
   text-decoration: none;
+  font-size: 16px;
+  font-weight: 800;
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
-#open-deck-builder:hover {
-  background: #444;
+#open-deck-settings:hover {
+  background: rgba(45, 45, 45, 0.96);
 }

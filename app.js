@@ -127,8 +127,8 @@ const revealToSceneOptions = document.querySelectorAll(".reveal-to-scene-option"
    各サイドの山札・手札・現場などの状態を保持
 ======================================== */
 
-const game = {
-  self: {
+function createEmptySideState() {
+  return {
     deck: [],
     hand: [],
     file: [],
@@ -141,23 +141,13 @@ const game = {
     partnerFile: "",
     mystery: "",
     incidentOverlays: []
-  },
-  opponent: {
-    deck: [],
-    hand: [],
-    file: [],
-    evidence: [],
-    remove: [],
-    revealed: [],
-    scene: [[], [], [], [], []],
-    incident: "",
-    partner: [],
-    partnerFile: "",
-    mystery: "",
-    incidentOverlays: []
-  }
-};
+  };
+}
 
+const game = {
+  self: createEmptySideState(),
+  opponent: createEmptySideState()
+};
 
 /* ========================================
    選択状態
@@ -200,7 +190,6 @@ const partnerTapped = {
 };
 
 const historyStack = [];
-
 
 /* ========================================
    共通ユーティリティ
@@ -3201,11 +3190,21 @@ function moveDraggingVisual(clientX, clientY) {
 }
 
   if (dragState.type === "file") {
-    if (isPointerOverHand(side, clientX, clientY)) {
-      const zone = side === "self" ? dom.self.hand : dom.opponent.hand;
-      zone?.classList.add("drop-highlight");
+  if (isPointerOverRemove(side, clientX, clientY)) {
+    const zone = side === "self" ? removeAreaEl : opponentRemoveAreaEl;
+    if (zone) {
+      zone.style.outline = "3px solid rgba(255,230,120,0.95)";
+      zone.style.outlineOffset = "4px";
+      zone.style.boxShadow = "0 0 18px rgba(255,230,120,0.55)";
     }
+    return;
   }
+
+  if (isPointerOverHand(side, clientX, clientY)) {
+    const zone = side === "self" ? dom.self.hand : dom.opponent.hand;
+    zone?.classList.add("drop-highlight");
+  }
+}
 
   if (dragState.type === "evidence") {
     if (isPointerOverRemove(side, clientX, clientY)) {
@@ -3442,6 +3441,27 @@ function dropFileToHand(clientX, clientY) {
 
   renderHand(dragState.side);
   renderFileArea(dragState.side);
+
+  return true;
+}
+
+function dropFileToRemove(clientX, clientY) {
+  if (!dragState || dragState.type !== "file" || !dragState.started) return false;
+  if (!isPointerOverRemove(dragState.side, clientX, clientY)) return false;
+  if (!game[dragState.side].file.length) return false;
+
+  saveState();
+
+  const fileCards = game[dragState.side].file;
+  const topIndex = fileCards.length - 1;
+  const cardData = fileCards[topIndex];
+  if (!cardData) return false;
+
+  game[dragState.side].remove.push(cardData.image);
+  fileCards.splice(topIndex, 1);
+
+  renderFileArea(dragState.side);
+  renderRemoveArea(dragState.side);
 
   return true;
 }
@@ -3756,7 +3776,8 @@ document.addEventListener("pointerup", (event) => {
     dropDeckToHand(event.clientX, event.clientY) ||
     dropDeckToSceneUnder(event.clientX, event.clientY);
 } else if (dragState.type === "file") {
-    dropFileToHand(event.clientX, event.clientY);
+  dropFileToRemove(event.clientX, event.clientY) ||
+  dropFileToHand(event.clientX, event.clientY);
   } else if (dragState.type === "evidence") {
     dropEvidenceToRemove(event.clientX, event.clientY) ||
     dropEvidenceToHand(event.clientX, event.clientY);
@@ -3790,22 +3811,65 @@ window.addEventListener("blur", () => {
    初期化
 ======================================== */
 
+function getSelectedDeckRecipe(side) {
+  if (typeof window !== "undefined" && typeof window.getActiveDeckRecipe === "function") {
+    const recipe = window.getActiveDeckRecipe(side);
+    if (Array.isArray(recipe) && recipe.length > 0) {
+      return recipe;
+    }
+  }
+
+  if (side === "self" && typeof playerDeckRecipe !== "undefined" && Array.isArray(playerDeckRecipe)) {
+    return playerDeckRecipe;
+  }
+
+  if (side === "opponent" && typeof opponentDeckRecipe !== "undefined" && Array.isArray(opponentDeckRecipe)) {
+    return opponentDeckRecipe;
+  }
+
+  return [];
+}
+
+function resetGameState() {
+  game.self = createEmptySideState();
+  game.opponent = createEmptySideState();
+
+  partnerTapped.self = false;
+  partnerTapped.opponent = false;
+
+  historyStack.length = 0;
+
+  hideAllMenus();
+  hideCardPreview();
+  hideRevealLayer();
+  hideRemoveLayer();
+  hideEvidenceLayer();
+  hideSceneStackLayer();
+  hidePartnerStackLayer();
+}
+
 function setupGame() {
-  game.self.deck = shuffle(buildDeck(playerDeckRecipe));
-  game.opponent.deck = shuffle(buildDeck(opponentDeckRecipe));
+  resetGameState();
+
+  game.self.deck = shuffle(buildDeck(getSelectedDeckRecipe("self")));
+  game.opponent.deck = shuffle(buildDeck(getSelectedDeckRecipe("opponent")));
 
   drawStartingHand("self", 5);
   drawStartingHand("opponent", 5);
 
-  game.self.incident = "cards_i/0617.png";
+  game.self.incident = "cards_i/0806_h.png";
   game.opponent.incident = "cards_i/1059.png";
 
-  game.self.partner = ["cards_p/P043.png"];
+  game.self.partner = ["cards_p/P001.png"];
   game.opponent.partner = ["cards_p/P076.png"];
 
   renderAll();
   fitBoardToViewport();
 }
+
+window.restartGameWithSelectedDecks = function restartGameWithSelectedDecks() {
+  setupGame();
+};
 
 setupGame();
 

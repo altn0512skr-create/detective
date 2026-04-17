@@ -20,36 +20,36 @@
 
   <!-- 山札メニュー -->
   <div id="deck-menu" class="deck-menu hidden">
-  <button class="deck-option">山札をめくる</button>
-  <button class="deck-option">山札をシャッフル</button>
-  <button class="deck-option">閉じる</button>
-</div>
-
+    <button class="deck-option">山札をめくる</button>
+    <button class="deck-option">山札をシャッフル</button>
+    <button class="deck-option">閉じる</button>
+  </div>
 
   <!-- めくったカード用メニュー -->
- <div id="reveal-menu" class="reveal-menu hidden">
-  <button class="reveal-option">拡大</button>
-  <button class="reveal-option">手札</button>
-  <button class="reveal-option">山札</button>
-  <button class="reveal-option">現場</button>
-  <button class="reveal-option">閉じる</button>
-</div>
+  <div id="reveal-menu" class="reveal-menu hidden">
+    <button class="reveal-option">拡大</button>
+    <button class="reveal-option">手札</button>
+    <button class="reveal-option">山札</button>
+    <button class="reveal-option">現場</button>
+    <button class="reveal-option">閉じる</button>
+  </div>
 
-<div id="reveal-to-scene-menu" class="remove-card-menu hidden">
-  <button class="reveal-to-scene-option" data-slot="0">現場1</button>
-  <button class="reveal-to-scene-option" data-slot="1">現場2</button>
-  <button class="reveal-to-scene-option" data-slot="2">現場3</button>
-  <button class="reveal-to-scene-option" data-slot="3">現場4</button>
-  <button class="reveal-to-scene-option" data-slot="4">現場5</button>
-  <button class="reveal-to-scene-option" data-slot="-1">閉じる</button>
-</div>
+  <div id="reveal-to-scene-menu" class="remove-card-menu hidden">
+    <button class="reveal-to-scene-option" data-slot="0">現場1</button>
+    <button class="reveal-to-scene-option" data-slot="1">現場2</button>
+    <button class="reveal-to-scene-option" data-slot="2">現場3</button>
+    <button class="reveal-to-scene-option" data-slot="3">現場4</button>
+    <button class="reveal-to-scene-option" data-slot="4">現場5</button>
+    <button class="reveal-to-scene-option" data-slot="-1">閉じる</button>
+  </div>
 
   <!-- FILE用メニュー -->
   <div id="file-menu" class="file-menu hidden">
-  <button class="file-option">拡大</button>
-  <button class="file-option">表向き</button>
-  <button class="file-option">閉じる</button>
-</div>
+    <button class="file-option">拡大</button>
+    <button class="file-option">表向き</button>
+    <button class="file-option">閉じる</button>
+  </div>
+
   <!-- 証拠エリア用メニュー -->
   <div id="evidence-menu" class="evidence-menu hidden">
     <button class="evidence-option">リムーブ</button>
@@ -58,18 +58,18 @@
 
   <!-- 手札メニュー -->
   <div id="hand-menu" class="hand-menu hidden">
-  <button class="hand-option">拡大</button>
-  <button class="hand-option">閉じる</button>
-</div>
+    <button class="hand-option">拡大</button>
+    <button class="hand-option">閉じる</button>
+  </div>
 
   <!-- 現場カードメニュー -->
-<div id="scene-menu" class="scene-menu hidden">
-  <button class="scene-option">拡大</button>
-  <button class="scene-option">スリープ</button>
-  <button class="scene-option">スタン</button>
-  <button class="scene-option">一覧</button>
-  <button class="scene-option">閉じる</button>
-</div>
+  <div id="scene-menu" class="scene-menu hidden">
+    <button class="scene-option">拡大</button>
+    <button class="scene-option">スリープ</button>
+    <button class="scene-option">スタン</button>
+    <button class="scene-option">一覧</button>
+    <button class="scene-option">閉じる</button>
+  </div>
 
   <!-- リムーブエリア用メニュー -->
   <div id="remove-menu" class="remove-menu hidden">
@@ -379,30 +379,30 @@
   <!-- Undoボタン -->
   <button id="undo-button">↩ 戻る</button>
 
-  <!-- デッキ作成画面へのリンク -->
-  <a href="deck-builder.html" id="open-deck-builder">デッキ作成</a>
+ <a href="deck-builder.html" id="open-deck-settings">デッキ設定</a>
 
   <div id="incident-overlay" class="incident-overlay hidden">
-  <div id="incident-overlay-image" class="incident-overlay-image"></div>
-</div>
+    <div id="incident-overlay-image" class="incident-overlay-image"></div>
+  </div>
 
-<!-- 自分用 -->
-<div id="incident-piece-tray-self" class="incident-piece-tray self-tray">
-  <div class="incident-piece self-piece" data-owner="self" data-piece-type="case" style="background-image: url('cards/case.png');"></div>
-  <div class="incident-piece self-piece" data-owner="self" data-piece-type="closed" style="background-image: url('cards/closed.png');"></div>
-</div>
+  <!-- 自分用 -->
+  <div id="incident-piece-tray-self" class="incident-piece-tray self-tray">
+    <div class="incident-piece self-piece" data-owner="self" data-piece-type="case" style="background-image: url('cards/case.png');"></div>
+    <div class="incident-piece self-piece" data-owner="self" data-piece-type="closed" style="background-image: url('cards/closed.png');"></div>
+  </div>
 
-<!-- 相手用 -->
-<div id="incident-piece-tray-opponent" class="incident-piece-tray opponent-tray">
-  <div class="incident-piece opponent-piece" data-owner="opponent" data-piece-type="case" style="background-image: url('cards/case.png');"></div>
-  <div class="incident-piece opponent-piece" data-owner="opponent" data-piece-type="closed" style="background-image: url('cards/closed.png');"></div>
-</div>
+  <!-- 相手用 -->
+  <div id="incident-piece-tray-opponent" class="incident-piece-tray opponent-tray">
+    <div class="incident-piece opponent-piece" data-owner="opponent" data-piece-type="case" style="background-image: url('cards/case.png');"></div>
+    <div class="incident-piece opponent-piece" data-owner="opponent" data-piece-type="closed" style="background-image: url('cards/closed.png');"></div>
+  </div>
+
   <!-- ========================================
        スクリプト読み込み
   ========================================= -->
   <script src="card-data.js"></script>
-<script src="deck.js"></script>
-<script src="app.js?v=10"></script>
+  <script src="deck.js"></script>
+  <script src="app.js?v=10"></script>
 
 </body>
 </html>

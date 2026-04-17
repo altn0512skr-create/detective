@@ -1,374 +1,634 @@
-const DECK_SIZE = 40;
+// ========================================
+// 状態
+// ========================================
 
-let currentDeckTarget = "player";
+let currentDeckId = null;
+let currentDeckRecipe = [];
 
-const CARDS_PER_PAGE = 50;
 let currentPage = 1;
+const cardsPerPage = 30;
 
-const editingDeck = {
-  cards: {}
+// ========================================
+// 要素取得
+// ========================================
+
+const savedDeckListEl = document.getElementById("saved-deck-list");
+const deckNameInput = document.getElementById("deck-name-input");
+const deckTotalCountEl = document.getElementById("deck-total-count");
+const deckUniqueCountEl = document.getElementById("deck-unique-count");
+
+const createNewDeckButton = document.getElementById("create-new-deck-button");
+const saveNewDeckButton = document.getElementById("save-new-deck-button");
+const overwriteDeckButton = document.getElementById("overwrite-deck-button");
+const duplicateDeckButton = document.getElementById("duplicate-deck-button");
+const renameDeckButton = document.getElementById("rename-deck-button");
+const deleteDeckButton = document.getElementById("delete-deck-button");
+const clearDeckButton = document.getElementById("clear-current-deck-button");
+
+const cardLibraryEl = document.getElementById("card-library");
+const currentDeckListEl = document.getElementById("current-deck-card-list");
+
+const cardSearchInput = document.getElementById("card-search-input");
+const cardSortSelect = document.getElementById("card-sort-select");
+
+const playerDeckSelectBuilderEl = document.getElementById("player-deck-select-builder");
+const opponentDeckSelectBuilderEl = document.getElementById("opponent-deck-select-builder");
+const startGameButtonEl = document.getElementById("start-game-button");
+
+// ========================================
+// カードデータ取得
+// ========================================
+
+function getAllCards() {
+  if (typeof cardMaster !== "undefined" && Array.isArray(cardMaster)) {
+    return normalizeCardList(cardMaster);
+  }
+
+  if (typeof cardData !== "undefined" && Array.isArray(cardData)) {
+    return normalizeCardList(cardData);
+  }
+
+  if (typeof cards !== "undefined" && Array.isArray(cards)) {
+    return normalizeCardList(cards);
+  }
+
+  if (typeof cardList !== "undefined" && Array.isArray(cardList)) {
+    return normalizeCardList(cardList);
+  }
+
+  if (typeof allCards !== "undefined" && Array.isArray(allCards)) {
+    return normalizeCardList(allCards);
+  }
+
+  if (Array.isArray(window.cardData)) return normalizeCardList(window.cardData);
+  if (Array.isArray(window.cards)) return normalizeCardList(window.cards);
+  if (Array.isArray(window.cardList)) return normalizeCardList(window.cardList);
+  if (Array.isArray(window.allCards)) return normalizeCardList(window.allCards);
+
+  return [];
+}
+
+function normalizeCardList(list) {
+  return list
+    .map((card, index) => {
+      if (!card || typeof card !== "object") return null;
+
+      const image =
+        card.image ||
+        card.imagePath ||
+        card.src ||
+        card.path ||
+        "";
+
+      if (!image) return null;
+
+      const id =
+        card.id ||
+        card.cardId ||
+        card.code ||
+        extractIdFromImage(image) ||
+        String(index + 1);
+
+      const name =
+        card.name ||
+        card.title ||
+        card.cardName ||
+        extractNameFromImage(image) ||
+        `カード ${index + 1}`;
+
+      return {
+        id: String(id),
+        name: String(name),
+        image: String(image),
+        maxCopies: Number(card.maxCopies || 3)
+      };
+    })
+    .filter(Boolean);
+}
+
+function extractIdFromImage(image) {
+  const match = image.match(/([A-Za-z]?\d{3,4})/);
+  return match ? match[1] : "";
+}
+
+function extractNameFromImage(image) {
+  const parts = image.split("/");
+  return parts[parts.length - 1] || image;
+}
+
+// ========================================
+// 初期化
+// ========================================
+
+init();
+
+function init() {
+  renderSavedDecks();
+  renderCardLibrary();
+  renderCurrentDeck();
+  refreshMatchDeckSelectors();
+}
+
+// ========================================
+// デッキ一覧
+// ========================================
+
+function renderSavedDecks() {
+  const decks = getSavedDecks();
+  savedDeckListEl.innerHTML = "";
+
+  decks.forEach((deck) => {
+    const div = document.createElement("div");
+    div.className = "saved-deck-item";
+
+    const total = recipeTotal(deck.recipe);
+
+    div.innerHTML = `
+      <div class="saved-deck-main">
+        <div class="saved-deck-name-row">
+          <span class="saved-deck-name">${escapeHtml(deck.name)}</span>
+          <span class="saved-deck-count">${total}枚</span>
+        </div>
+      </div>
+      <div class="saved-deck-actions">
+        <button type="button" data-action="load">読み込み</button>
+        <button type="button" data-action="self">自分側に指定</button>
+        <button type="button" data-action="opponent">相手側に指定</button>
+      </div>
+    `;
+
+    div.querySelector('[data-action="load"]').addEventListener("click", () => loadDeck(deck.id));
+    div.querySelector('[data-action="self"]').addEventListener("click", () => {
+      setActiveDeckId("self", deck.id);
+      alert(`自分側デッキを「${deck.name}」にしました。`);
+    });
+    div.querySelector('[data-action="opponent"]').addEventListener("click", () => {
+      setActiveDeckId("opponent", deck.id);
+      alert(`相手側デッキを「${deck.name}」にしました。`);
+    });
+
+    savedDeckListEl.appendChild(div);
+  });
+}
+
+// ========================================
+// デッキ操作
+// ========================================
+
+function loadDeck(id) {
+  const deck = getDeckById(id);
+  if (!deck) return;
+
+  currentDeckId = id;
+  currentDeckRecipe = JSON.parse(JSON.stringify(deck.recipe));
+  deckNameInput.value = deck.name;
+
+  renderCurrentDeck();
+  renderCardLibrary();
+}
+
+createNewDeckButton.onclick = () => {
+  currentDeckId = null;
+  currentDeckRecipe = [];
+  deckNameInput.value = "";
+  renderCurrentDeck();
+  renderCardLibrary();
 };
 
-let searchKeyword = "";
+saveNewDeckButton.onclick = () => {
+  const saved = upsertSavedDeck(null, deckNameInput.value, currentDeckRecipe);
+  currentDeckId = saved.id;
+  deckNameInput.value = saved.name;
+  renderSavedDecks();
+  refreshMatchDeckSelectors();
+};
 
-const cardListEl = document.getElementById("card-list");
-const deckTotalEl = document.getElementById("deck-total");
-const saveDeckButtonEl = document.getElementById("save-deck-button");
-const resetDeckButtonEl = document.getElementById("reset-deck-button");
-const editPlayerDeckButtonEl = document.getElementById("edit-player-deck");
-const editOpponentDeckButtonEl = document.getElementById("edit-opponent-deck");
-
-const prevPageButtonEl = document.getElementById("prev-page-button");
-const nextPageButtonEl = document.getElementById("next-page-button");
-const pageInfoEl = document.getElementById("page-info");
-
-const cardSearchInputEl = document.getElementById("card-search-input");
-const clearSearchButtonEl = document.getElementById("clear-search-button");
-
-const deckPreviewListEl = document.getElementById("deck-preview-list");
-function getStorageKey() {
-  return currentDeckTarget === "player" ? "playerDeckData" : "opponentDeckData";
-}
-
-function getTargetLabel() {
-  return currentDeckTarget === "player" ? "自分デッキ" : "相手デッキ";
-}
-
-function getCardCount(cardId) {
-  return editingDeck.cards[cardId] || 0;
-}
-
-function getDeckTotal() {
-  return Object.values(editingDeck.cards).reduce((sum, count) => sum + count, 0);
-}
-
-function addCard(cardId) {
-  const card = cardMaster.find((c) => c.id === cardId);
-  if (!card) return;
-
-  const current = getCardCount(cardId);
-  const total = getDeckTotal();
-
-  if (current >= card.maxCopies) return;
-  if (total >= DECK_SIZE) return;
-
-  editingDeck.cards[cardId] = current + 1;
-  renderAll();
-}
-
-function removeCard(cardId) {
-  const current = getCardCount(cardId);
-  if (current <= 0) return;
-
-  editingDeck.cards[cardId] = current - 1;
-
-  if (editingDeck.cards[cardId] === 0) {
-    delete editingDeck.cards[cardId];
-  }
-
-  renderAll();
-}
-
-function saveDeck() {
-  if (getDeckTotal() !== DECK_SIZE) {
-    alert("40枚ちょうどで保存してください。");
+overwriteDeckButton.onclick = () => {
+  if (!currentDeckId) {
+    alert("上書き対象がありません。先に読み込むか、新規保存してください。");
     return;
   }
 
-  localStorage.setItem(getStorageKey(), JSON.stringify(editingDeck));
-  alert(`${getTargetLabel()}を保存しました。`);
-}
+  const saved = upsertSavedDeck(currentDeckId, deckNameInput.value, currentDeckRecipe);
+  currentDeckId = saved.id;
+  deckNameInput.value = saved.name;
+  renderSavedDecks();
+};
 
-function loadDeckForCurrentTarget() {
-  const raw = localStorage.getItem(getStorageKey());
-
-  editingDeck.cards = {};
-
-  if (!raw) return;
-
-  try {
-    const parsed = JSON.parse(raw);
-    if (parsed && parsed.cards) {
-      editingDeck.cards = parsed.cards;
-    }
-  } catch (error) {
-    console.error("保存デッキの読み込みに失敗しました", error);
+duplicateDeckButton.onclick = () => {
+  if (!currentDeckId) {
+    alert("複製するデッキがありません。");
+    return;
   }
-}
 
-function switchDeckTarget(target) {
-  currentDeckTarget = target;
-  loadDeckForCurrentTarget();
-  renderAll();
-}
+  const duplicated = duplicateSavedDeck(currentDeckId);
+  if (!duplicated) return;
 
-function renderCardList() {
-  cardListEl.innerHTML = "";
+  currentDeckId = duplicated.id;
+  currentDeckRecipe = JSON.parse(JSON.stringify(duplicated.recipe));
+  deckNameInput.value = duplicated.name;
 
-  const pagedCards = getPagedCards();
+  renderSavedDecks();
+  renderCurrentDeck();
+  renderCardLibrary();
+};
 
-  pagedCards.forEach((card) => {
-    const count = getCardCount(card.id);
+renameDeckButton.onclick = () => {
+  if (!currentDeckId) {
+    alert("名前変更するデッキがありません。");
+    return;
+  }
 
-    const itemEl = document.createElement("div");
-    itemEl.className = "card-item";
+  renameSavedDeck(currentDeckId, deckNameInput.value);
+  renderSavedDecks();
+};
 
-    const imageEl = document.createElement("div");
-    imageEl.className = "card-image";
-    imageEl.style.backgroundImage = `url("${card.image}")`;
+deleteDeckButton.onclick = () => {
+  if (!currentDeckId) {
+    alert("削除するデッキがありません。");
+    return;
+  }
 
-    const nameEl = document.createElement("p");
-    nameEl.className = "card-name";
-    nameEl.textContent = card.name;
-
-    const controlsEl = document.createElement("div");
-    controlsEl.className = "card-controls";
-
-    const minusButton = document.createElement("button");
-    minusButton.type = "button";
-    minusButton.textContent = "−";
-    minusButton.addEventListener("click", () => {
-      removeCard(card.id);
-    });
-
-    const countEl = document.createElement("div");
-    countEl.className = "card-count";
-    countEl.textContent = count;
-
-    const plusButton = document.createElement("button");
-    plusButton.type = "button";
-    plusButton.textContent = "+";
-    plusButton.addEventListener("click", () => {
-      addCard(card.id);
-    });
-
-    controlsEl.appendChild(minusButton);
-    controlsEl.appendChild(countEl);
-    controlsEl.appendChild(plusButton);
-
-    itemEl.appendChild(imageEl);
-    itemEl.appendChild(nameEl);
-    itemEl.appendChild(controlsEl);
-
-    cardListEl.appendChild(itemEl);
-  });
-}
-
-function renderHeader() {
-  const total = getDeckTotal();
-  deckTotalEl.textContent = `${getTargetLabel()}：合計 ${total} / ${DECK_SIZE} 枚`;
-  saveDeckButtonEl.disabled = total !== DECK_SIZE;
-
-  editPlayerDeckButtonEl.classList.toggle("active", currentDeckTarget === "player");
-  editOpponentDeckButtonEl.classList.toggle("active", currentDeckTarget === "opponent");
-}
-
-function renderAll() {
-  renderHeader();
-  renderPagination();
-  renderCardList();
-}
-
-function resetDeck() {
-  const ok = confirm(`${getTargetLabel()}の選択中カードをすべて0枚にします。よろしいですか？`);
+  const ok = confirm("このデッキを削除しますか？");
   if (!ok) return;
 
-  editingDeck.cards = {};
-  renderAll();
-}
+  const deleted = deleteSavedDeck(currentDeckId);
+  if (!deleted) return;
 
-function getTotalPages() {
-  const filteredCards = getFilteredCards();
-  return Math.max(1, Math.ceil(filteredCards.length / CARDS_PER_PAGE));
-}
+  currentDeckId = null;
+  currentDeckRecipe = [];
+  deckNameInput.value = "";
 
-function getPagedCards() {
-  const filteredCards = getFilteredCards();
-  const startIndex = (currentPage - 1) * CARDS_PER_PAGE;
-  const endIndex = startIndex + CARDS_PER_PAGE;
-  return filteredCards.slice(startIndex, endIndex);
-}
+  renderSavedDecks();
+  renderCurrentDeck();
+  renderCardLibrary();
+};
 
-function goToPrevPage() {
-  if (currentPage <= 1) return;
-  currentPage--;
-  renderAll();
-}
+clearDeckButton.onclick = () => {
+  currentDeckRecipe = [];
+  renderCurrentDeck();
+  renderCardLibrary();
+};
 
-function goToNextPage() {
-  if (currentPage >= getTotalPages()) return;
-  currentPage++;
-  renderAll();
-}
+// ========================================
+// カード一覧
+// ========================================
 
-function renderPagination() {
-  const filteredCards = getFilteredCards();
-  const totalPages = Math.max(1, Math.ceil(filteredCards.length / CARDS_PER_PAGE));
+function renderCardLibrary() {
+  cardLibraryEl.innerHTML = "";
 
-  if (currentPage > totalPages) {
-    currentPage = totalPages;
-  }
+  const allCards = getAllCards();
 
-  pageInfoEl.textContent = `${currentPage} / ${totalPages}`;
-  prevPageButtonEl.disabled = currentPage === 1;
-  nextPageButtonEl.disabled = currentPage === totalPages;
-}
-
-function getFilteredCards() {
-  const keyword = searchKeyword.trim();
-
-  if (!keyword) {
-    return cardMaster;
-  }
-
-  return cardMaster.filter((card) => {
-    return card.id.includes(keyword);
-  });
-}
-
-function handleSearchInput() {
-  searchKeyword = cardSearchInputEl.value;
-  currentPage = 1;
-  renderAll();
-}
-
-function clearSearch() {
-  searchKeyword = "";
-  cardSearchInputEl.value = "";
-  currentPage = 1;
-  renderAll();
-}
-
-function renderDeckPreview() {
-  deckPreviewListEl.innerHTML = "";
-
-  const entries = Object.entries(editingDeck.cards);
-
-  if (entries.length === 0) {
-    deckPreviewListEl.textContent = "カードが選択されていません";
+  if (!allCards.length) {
+    cardLibraryEl.innerHTML = `
+      <div style="padding:16px; color:#fff;">
+        カード一覧が見つかりません。<br>
+        card-data.js の変数名が想定と違う可能性があります。
+      </div>
+    `;
     return;
   }
 
-  entries
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .forEach(([cardId, count]) => {
-      const card = cardMaster.find((c) => c.id === cardId);
-      if (!card) return;
+  const keyword = (cardSearchInput?.value || "").trim().toLowerCase();
+  const sortType = cardSortSelect?.value || "default";
 
-      const item = document.createElement("div");
-      item.className = "deck-preview-item";
+  let filtered = allCards.filter((card) => {
+    if (!keyword) return true;
 
-      const image = document.createElement("div");
-      image.className = "deck-preview-image";
-      image.style.backgroundImage = `url("${card.image}")`;
+    return (
+      card.name.toLowerCase().includes(keyword) ||
+      card.id.toLowerCase().includes(keyword) ||
+      card.image.toLowerCase().includes(keyword)
+    );
+  });
 
-      const info = document.createElement("div");
-      info.className = "deck-preview-info";
+  filtered = sortCards(filtered, sortType);
 
-      const name = document.createElement("div");
-      name.className = "deck-preview-name";
-      name.textContent = card.id;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / cardsPerPage));
 
-      const amount = document.createElement("div");
-      amount.className = "deck-preview-count";
-      amount.textContent = `×${count}`;
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
 
-      info.appendChild(name);
-      info.appendChild(amount);
+  const startIndex = (currentPage - 1) * cardsPerPage;
+  const endIndex = startIndex + cardsPerPage;
+  const pageCards = filtered.slice(startIndex, endIndex);
 
-      const controls = document.createElement("div");
-      controls.className = "deck-preview-controls";
+  const listWrap = document.createElement("div");
+  listWrap.className = "card-library-page-list";
 
-      const minusButton = document.createElement("button");
-      minusButton.type = "button";
-      minusButton.className = "deck-preview-button";
-      minusButton.textContent = "−";
-      minusButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        removeOneFromPreview(cardId);
-      });
+  pageCards.forEach((card) => {
+    const currentCount = getCurrentCount(card.image);
 
-      const plusButton = document.createElement("button");
-      plusButton.type = "button";
-      plusButton.className = "deck-preview-button";
-      plusButton.textContent = "+";
-      plusButton.addEventListener("click", (event) => {
-        event.stopPropagation();
-        addOneFromPreview(cardId);
-      });
+    const div = document.createElement("div");
+    div.className = "card-library-item";
 
-      controls.appendChild(minusButton);
-      controls.appendChild(plusButton);
+    div.innerHTML = `
+      <div class="card-library-image-wrap">
+        <div class="card-library-image" style="background-image:url('${escapeAttr(card.image)}')"></div>
+      </div>
+      <div class="card-library-info">
+        <div class="card-library-title">${escapeHtml(card.name)}</div>
+        <div class="card-library-sub">
+          ID: ${escapeHtml(card.id)}<br>
+          ${currentCount} / ${card.maxCopies}
+        </div>
+      </div>
+      <div class="card-library-actions">
+        <button type="button" data-action="add">＋1</button>
+        <button type="button" data-action="remove">－1</button>
+      </div>
+    `;
 
-      item.appendChild(image);
-      item.appendChild(info);
-      item.appendChild(controls);
+    div.querySelector('[data-action="add"]').addEventListener("click", () => addCard(card.image));
+    div.querySelector('[data-action="remove"]').addEventListener("click", () => removeCard(card.image));
 
-      deckPreviewListEl.appendChild(item);
-    });
+    listWrap.appendChild(div);
+  });
+
+  cardLibraryEl.appendChild(listWrap);
+
+  const paginationWrap = document.createElement("div");
+  paginationWrap.className = "pagination-wrap";
+
+  const prevButton = document.createElement("button");
+  prevButton.type = "button";
+  prevButton.textContent = "←";
+  prevButton.disabled = currentPage === 1;
+  prevButton.addEventListener("click", () => changePage(currentPage - 1));
+  paginationWrap.appendChild(prevButton);
+
+  const pageNumbers = buildPageNumbers(currentPage, totalPages);
+
+  pageNumbers.forEach((item) => {
+    if (item === "...") {
+      const dots = document.createElement("span");
+      dots.textContent = "...";
+      dots.style.padding = "0 4px";
+      dots.style.color = "rgba(255,255,255,0.8)";
+      paginationWrap.appendChild(dots);
+      return;
+    }
+
+    const pageButton = document.createElement("button");
+    pageButton.type = "button";
+    pageButton.textContent = String(item);
+
+    if (item === currentPage) {
+      pageButton.style.background = "rgba(255, 230, 120, 0.95)";
+      pageButton.style.color = "#111";
+      pageButton.style.fontWeight = "800";
+    }
+
+    pageButton.addEventListener("click", () => changePage(item));
+    paginationWrap.appendChild(pageButton);
+  });
+
+  const nextButton = document.createElement("button");
+  nextButton.type = "button";
+  nextButton.textContent = "→";
+  nextButton.disabled = currentPage === totalPages;
+  nextButton.addEventListener("click", () => changePage(currentPage + 1));
+  paginationWrap.appendChild(nextButton);
+
+  cardLibraryEl.appendChild(paginationWrap);
+
+  const pageInfo = document.createElement("div");
+  pageInfo.className = "pagination-info";
+  pageInfo.textContent = `${filtered.length}件中 ${startIndex + 1}〜${Math.min(endIndex, filtered.length)}件を表示`;
+  cardLibraryEl.appendChild(pageInfo);
 }
 
-function renderAll() {
-  renderHeader();
-  renderPagination();
-  renderCardList();
-  renderDeckPreview(); // ←追加
+function sortCards(cards, sortType) {
+  const copied = [...cards];
+
+  switch (sortType) {
+    case "id-asc":
+      return copied.sort((a, b) => a.id.localeCompare(b.id, "ja"));
+    case "id-desc":
+      return copied.sort((a, b) => b.id.localeCompare(a.id, "ja"));
+    case "name-asc":
+      return copied.sort((a, b) => a.name.localeCompare(b.name, "ja"));
+    case "name-desc":
+      return copied.sort((a, b) => b.name.localeCompare(a.name, "ja"));
+    default:
+      return copied;
+  }
 }
 
-function removeOneFromPreview(cardId) {
-  const current = getCardCount(cardId);
-  if (current <= 0) return;
+function changePage(page) {
+  currentPage = page;
+  renderCardLibrary();
+}
 
-  editingDeck.cards[cardId] = current - 1;
+function buildPageNumbers(current, total) {
+  const pages = [];
 
-  if (editingDeck.cards[cardId] === 0) {
-    delete editingDeck.cards[cardId];
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
-  renderAll();
-}
+  pages.push(1);
 
-function addOneFromPreview(cardId) {
-  const card = cardMaster.find((c) => c.id === cardId);
-  if (!card) return;
-
-  const current = getCardCount(cardId);
-  const total = getDeckTotal();
-
-  if (current >= card.maxCopies) return;
-  if (total >= DECK_SIZE) return;
-
-  editingDeck.cards[cardId] = current + 1;
-  renderAll();
-}
-
-function removeOneFromPreview(cardId) {
-  const current = getCardCount(cardId);
-  if (current <= 0) return;
-
-  editingDeck.cards[cardId] = current - 1;
-
-  if (editingDeck.cards[cardId] === 0) {
-    delete editingDeck.cards[cardId];
+  if (current > 4) {
+    pages.push("...");
   }
 
-  renderAll();
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
+  if (current < total - 3) {
+    pages.push("...");
+  }
+
+  pages.push(total);
+
+  return pages;
 }
 
-cardSearchInputEl.addEventListener("input", handleSearchInput);
-clearSearchButtonEl.addEventListener("click", clearSearch);
-prevPageButtonEl.addEventListener("click", goToPrevPage);
-nextPageButtonEl.addEventListener("click", goToNextPage);
-saveDeckButtonEl.addEventListener("click", saveDeck);
-resetDeckButtonEl.addEventListener("click", resetDeck);
+if (cardSearchInput) {
+  cardSearchInput.addEventListener("input", () => {
+    currentPage = 1;
+    renderCardLibrary();
+  });
+}
 
-editPlayerDeckButtonEl.addEventListener("click", () => {
-  switchDeckTarget("player");
-});
+if (cardSortSelect) {
+  cardSortSelect.addEventListener("change", () => {
+    currentPage = 1;
+    renderCardLibrary();
+  });
+}
 
-editOpponentDeckButtonEl.addEventListener("click", () => {
-  switchDeckTarget("opponent");
-});
+// ========================================
+// カード追加・削除
+// ========================================
 
-loadDeckForCurrentTarget();
-renderAll();
+function getCurrentCount(image) {
+  const found = currentDeckRecipe.find((c) => c.image === image);
+  return found ? found.count : 0;
+}
+
+function getMaxCopies(image) {
+  const allCards = getAllCards();
+  const found = allCards.find((card) => card.image === image);
+  return found ? found.maxCopies : 3;
+}
+
+function addCard(image) {
+  const currentCount = getCurrentCount(image);
+  const maxCopies = getMaxCopies(image);
+
+  if (currentCount >= maxCopies) {
+    alert(`このカードは最大 ${maxCopies} 枚までです。`);
+    return;
+  }
+
+  const found = currentDeckRecipe.find((c) => c.image === image);
+
+  if (found) {
+    found.count++;
+  } else {
+    currentDeckRecipe.push({ image, count: 1 });
+  }
+
+  renderCurrentDeck();
+  renderCardLibrary();
+}
+
+function removeCard(image) {
+  const found = currentDeckRecipe.find((c) => c.image === image);
+
+  if (!found) return;
+
+  found.count--;
+
+  if (found.count <= 0) {
+    currentDeckRecipe = currentDeckRecipe.filter((c) => c.image !== image);
+  }
+
+  renderCurrentDeck();
+  renderCardLibrary();
+}
+
+// ========================================
+// 現在のデッキ
+// ========================================
+
+function renderCurrentDeck() {
+  currentDeckListEl.innerHTML = "";
+
+  let total = 0;
+
+  currentDeckRecipe.forEach((card) => {
+    total += card.count;
+
+    const div = document.createElement("div");
+    div.className = "current-deck-item";
+
+    div.innerHTML = `
+      <div class="current-deck-image-wrap">
+        <div class="current-deck-image" style="background-image:url('${escapeAttr(card.image)}')"></div>
+      </div>
+      <div class="current-deck-info">
+        <div class="current-deck-title">${escapeHtml(extractNameFromImage(card.image))}</div>
+        <div class="current-deck-sub">${escapeHtml(card.image)}</div>
+      </div>
+      <div class="current-deck-controls">
+        <button type="button" data-action="minus">－</button>
+        <span class="current-count">${card.count}</span>
+        <button type="button" data-action="plus">＋</button>
+      </div>
+    `;
+
+    div.querySelector('[data-action="minus"]').addEventListener("click", () => removeCard(card.image));
+    div.querySelector('[data-action="plus"]').addEventListener("click", () => addCard(card.image));
+
+    currentDeckListEl.appendChild(div);
+  });
+
+  deckTotalCountEl.textContent = total;
+  deckUniqueCountEl.textContent = currentDeckRecipe.length;
+}
+
+// ========================================
+// エスケープ
+// ========================================
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function escapeAttr(value) {
+  return String(value).replaceAll("'", "\\'");
+}
+
+function refreshMatchDeckSelectors() {
+  if (!playerDeckSelectBuilderEl || !opponentDeckSelectBuilderEl) return;
+
+  const decks = getSavedDecks();
+
+  playerDeckSelectBuilderEl.innerHTML = "";
+  opponentDeckSelectBuilderEl.innerHTML = "";
+
+  decks.forEach((deck) => {
+    const total = recipeTotal(deck.recipe);
+
+    const option1 = document.createElement("option");
+    option1.value = deck.id;
+    option1.textContent = `${deck.name}（${total}枚）`;
+    playerDeckSelectBuilderEl.appendChild(option1);
+
+    const option2 = document.createElement("option");
+    option2.value = deck.id;
+    option2.textContent = `${deck.name}（${total}枚）`;
+    opponentDeckSelectBuilderEl.appendChild(option2);
+  });
+
+  const activePlayerId = localStorage.getItem("active_player_deck_id");
+  const activeOpponentId = localStorage.getItem("active_opponent_deck_id");
+
+  if (activePlayerId) {
+    playerDeckSelectBuilderEl.value = activePlayerId;
+  }
+
+  if (activeOpponentId) {
+    opponentDeckSelectBuilderEl.value = activeOpponentId;
+  }
+
+  if (!playerDeckSelectBuilderEl.value && decks[0]) {
+    playerDeckSelectBuilderEl.value = decks[0].id;
+  }
+
+  if (!opponentDeckSelectBuilderEl.value && decks[0]) {
+    opponentDeckSelectBuilderEl.value = decks[0].id;
+  }
+}
+
+if (startGameButtonEl) {
+  startGameButtonEl.addEventListener("click", () => {
+    const playerDeckId = playerDeckSelectBuilderEl?.value;
+    const opponentDeckId = opponentDeckSelectBuilderEl?.value;
+
+    if (!playerDeckId || !opponentDeckId) {
+      alert("自分側と相手側のデッキを選んでください。");
+      return;
+    }
+
+    setActiveDeckId("self", playerDeckId);
+    setActiveDeckId("opponent", opponentDeckId);
+
+    location.href = "index.html";
+  });
+}
