@@ -667,11 +667,14 @@ body::before {
 }
 
 .incident-card {
+  display: block;
+  position: relative;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
   pointer-events: auto;
+  cursor: pointer;
 }
 
 .card-vertical {
@@ -685,7 +688,17 @@ body::before {
 }
 
 .self-incident-zone {
+  position: relative !important;
+  z-index: 12000 !important;
+  pointer-events: auto !important;
   transform: translate(300px, 20px);
+}
+
+#incident-card {
+  position: relative;
+  z-index: 12001 !important;
+  pointer-events: auto !important;
+  cursor: pointer;
 }
 
 .incident-overlay {
@@ -776,6 +789,29 @@ body::before {
   -webkit-user-select: none;
 }
 
+.evidence-area.drop-highlight,
+#evidence-area.drop-highlight,
+#opponent-evidence-area.drop-highlight {
+  outline: 4px solid rgba(255, 230, 120, 1) !important;
+  outline-offset: 6px !important;
+  box-shadow:
+    0 0 0 4px rgba(255, 230, 120, 0.95),
+    0 0 26px rgba(255, 230, 120, 0.85) !important;
+  background: rgba(255, 230, 120, 0.12) !important;
+}
+
+.evidence-area.drop-highlight::after,
+#evidence-area.drop-highlight::after,
+#opponent-evidence-area.drop-highlight::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border: 4px solid rgba(255, 230, 120, 1);
+  border-radius: 14px;
+  box-shadow: 0 0 24px rgba(255, 230, 120, 0.85);
+  pointer-events: none;
+  z-index: 9999;
+}
 /* ========================================
    パートナー
 ======================================== */
@@ -1520,6 +1556,55 @@ body::before {
   z-index: 1;
 }
 
+/* ========================================
+   カード拡大表示
+======================================== */
+
+.card-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 50000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.card-preview-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(92vw, 1100px);
+  height: min(92vh, 800px);
+  padding: 20px;
+}
+
+.card-preview-image {
+  border-radius: 16px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* 縦カード用 */
+.card-preview-image.preview-vertical {
+  width: min(320px, 70vw);
+  height: min(448px, 80vh);
+}
+
+/* 横カード用 */
+.card-preview-image.preview-horizontal {
+  width: min(620px, 88vw);
+  height: min(430px, 70vh);
+}
 /* ========================================
    山札メニュー / めくったカード
 ======================================== */

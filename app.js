@@ -310,6 +310,8 @@ function renderIncidentCard(imagePath) {
   if (!incidentCardEl) return;
 
   incidentCardEl.classList.remove("card-vertical", "card-horizontal");
+  incidentCardEl.onclick = null;
+  incidentCardEl.onpointerup = null;
 
   if (!imagePath) {
     incidentCardEl.style.backgroundImage = "none";
@@ -323,12 +325,24 @@ function renderIncidentCard(imagePath) {
   } else {
     incidentCardEl.classList.add("card-vertical");
   }
+
+  incidentCardEl.onpointerup = (event) => {
+    event.stopPropagation();
+
+    if (previewOpened) {
+      hideCardPreview();
+    } else {
+      showCardPreview(imagePath);
+    }
+  };
 }
 
 function renderOpponentIncidentCard(imagePath) {
   if (!opponentIncidentCardEl) return;
 
   opponentIncidentCardEl.classList.remove("card-vertical", "card-horizontal");
+  opponentIncidentCardEl.onclick = null;
+  opponentIncidentCardEl.onpointerup = null;
 
   if (!imagePath) {
     opponentIncidentCardEl.style.backgroundImage = "none";
@@ -342,6 +356,16 @@ function renderOpponentIncidentCard(imagePath) {
   } else {
     opponentIncidentCardEl.classList.add("card-vertical");
   }
+
+  opponentIncidentCardEl.onpointerup = (event) => {
+    event.stopPropagation();
+
+    if (previewOpened) {
+      hideCardPreview();
+    } else {
+      showCardPreview(imagePath);
+    }
+  };
 }
 
 function renderPartnerCard(side) {
@@ -432,6 +456,17 @@ function renderPartnerFileCard(side) {
   }
 }
 
+function hideCardPreview() {
+  if (!cardPreviewEl) return;
+
+  cardPreviewEl.classList.add("hidden");
+  cardPreviewImageEl.classList.remove("preview-vertical", "preview-horizontal");
+  previewOpened = false;
+
+  if (selectedRevealSide && game[selectedRevealSide].revealed.length > 0) {
+    renderRevealLayer(selectedRevealSide);
+  }
+}
 
 /* ========================================
    描画：手札・FILE・証拠・リムーブ・現場
@@ -1913,6 +1948,12 @@ if (opponentEvidenceAreaEl) {
   });
 }
 
+document.addEventListener("click", () => {
+  if (previewOpened) {
+    hideCardPreview();
+  }
+});
+
 /* ========================================
    DECKメニュー
 ======================================== */
@@ -2515,34 +2556,6 @@ incidentOptions.forEach((button) => {
       return;
     }
 
-    if (type === "A") {
-  saveState();
-  incidentMenuEl.classList.add("hidden");
-  showIncidentOverlay(selectedIncidentSide, "A");
-  return;
-}
-
-    if (type === "B") {
-  saveState();
-  incidentMenuEl.classList.add("hidden");
-  showIncidentOverlay(selectedIncidentSide, "B");
-  return;
-}
-
-if (type === "C") {
-  saveState();
-  incidentMenuEl.classList.add("hidden");
-  showIncidentOverlay(selectedIncidentSide, "C");
-  return;
-}
-
-if (type === "D") {
-  saveState();
-  incidentMenuEl.classList.add("hidden");
-  showIncidentOverlay(selectedIncidentSide, "D");
-  return;
-}
-
     if (label === "閉じる") {
       incidentMenuEl.classList.add("hidden");
     }
@@ -2966,16 +2979,20 @@ function beginFileDrag(side, startEvent) {
   if (!zoneEl) return;
   if (!game[side].file.length) return;
 
-  const rect = zoneEl.getBoundingClientRect();
+  const fileCardEls = zoneEl.querySelectorAll(".file-card");
+  const topCardEl = fileCardEls[fileCardEls.length - 1];
+  if (!topCardEl) return;
 
-  zoneEl.setPointerCapture?.(startEvent.pointerId);
+  const rect = topCardEl.getBoundingClientRect();
+
+  topCardEl.setPointerCapture?.(startEvent.pointerId);
 
   dragState = {
     type: "file",
     side,
-    element: zoneEl,
-    zoneElement: zoneEl,
-    sourceEl: zoneEl,
+    element: topCardEl,      // ← ゴーストに使うのは一番上のカードだけ
+    zoneElement: zoneEl,     // ← 元のFILE全体は別で持っておく
+    sourceEl: topCardEl,
     pointerId: startEvent.pointerId,
     started: false,
     startX: startEvent.clientX,
@@ -2990,16 +3007,20 @@ function beginEvidenceDrag(side, startEvent) {
   if (!zoneEl) return;
   if (!game[side].evidence.length) return;
 
-  const rect = zoneEl.getBoundingClientRect();
+  const evidenceCardEls = zoneEl.querySelectorAll(".evidence-card");
+  const topCardEl = evidenceCardEls[evidenceCardEls.length - 1];
+  if (!topCardEl) return;
 
-  zoneEl.setPointerCapture?.(startEvent.pointerId);
+  const rect = topCardEl.getBoundingClientRect();
+
+  topCardEl.setPointerCapture?.(startEvent.pointerId);
 
   dragState = {
     type: "evidence",
     side,
-    element: zoneEl,
-    zoneElement: zoneEl,
-    sourceEl: zoneEl,
+    element: topCardEl,      // ← 動かす見た目は一番上のカードだけ
+    zoneElement: zoneEl,     // ← 元の証拠エリア全体は別で保持
+    sourceEl: topCardEl,
     pointerId: startEvent.pointerId,
     started: false,
     startX: startEvent.clientX,
@@ -3150,11 +3171,7 @@ function moveDraggingVisual(clientX, clientY) {
   if (dragState.type === "deck") {
   if (isPointerOverFile(side, clientX, clientY)) {
     const zone = side === "self" ? fileAreaEl : opponentFileAreaEl;
-    if (zone) {
-      zone.style.outline = "3px solid rgba(255,230,120,0.95)";
-      zone.style.outlineOffset = "4px";
-      zone.style.boxShadow = "0 0 18px rgba(255,230,120,0.55)";
-    }
+    zone?.classList.add("drop-highlight");
     return;
   }
 
@@ -3281,15 +3298,23 @@ function dropHandToScene(clientX, clientY) {
   if (!card) return false;
 
   const stack = game[dragState.side].scene[nearest.index];
-  if (!stack || stack.length > 0) return false;
+  if (!stack) return false;
 
   saveState();
 
-  stack.push({
+  const sceneCardData = {
     image: card,
     sleep: false,
     stun: false
-  });
+  };
+
+  if (stack.length === 0) {
+    // 空の現場なら表で置く
+    stack.unshift(sceneCardData);
+  } else {
+    // すでにカードがあるなら表の下に差し込む
+    stack.splice(1, 0, sceneCardData);
+  }
 
   game[dragState.side].hand.splice(dragState.handIndex, 1);
 
@@ -3556,12 +3581,21 @@ function moveSceneCard(clientX, clientY) {
   const toStack = game[side].scene[toIndex];
 
   if (!fromStack || fromStack.length === 0) return false;
-  if (!toStack || toStack.length > 0) return false;
+  if (!toStack) return false;
 
   saveState();
 
+  // 移動元の表カードだけを持っていく
   const movingCard = fromStack.shift();
-  toStack.unshift(movingCard);
+  if (!movingCard) return false;
+
+  if (toStack.length === 0) {
+    // 移動先が空なら、そのまま表で置く
+    toStack.unshift(movingCard);
+  } else {
+    // 移動先にすでにカードがあるなら、表カードの下に差し込む
+    toStack.splice(1, 0, movingCard);
+  }
 
   renderSceneArea(side);
   return true;
@@ -3726,7 +3760,6 @@ function dropMysteryToRemove(clientX, clientY) {
 
   return true;
 }
-
 /* ========================================
    ドラッグ中イベント
 ======================================== */
