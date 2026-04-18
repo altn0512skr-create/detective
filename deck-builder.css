@@ -715,3 +715,187 @@ button.subtle:hover,
 #start-game-button:hover {
   background: #388e3c;
 }
+
+.special-card-block {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.special-card-block h3 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.special-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.special-card-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#incident-card-select,
+#partner-card-select {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  outline: none;
+  font-size: 14px;
+}
+
+#incident-card-select:focus,
+#partner-card-select:focus {
+  border-color: rgba(255, 230, 120, 0.95);
+  box-shadow: 0 0 0 3px rgba(255, 230, 120, 0.14);
+}
+
+#incident-card-select option,
+#partner-card-select option {
+  color: #111111;
+}
+
+.special-card-preview {
+  width: 160px;
+  height: 220px;
+  border-radius: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.04);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.special-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#save-special-card-button {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#save-special-card-button:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+@media (max-width: 860px) {
+  .special-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.special-card-search {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  outline: none;
+  font-size: 14px;
+}
+
+.special-card-search:focus {
+  border-color: rgba(255, 230, 120, 0.95);
+  box-shadow: 0 0 0 3px rgba(255, 230, 120, 0.14);
+}
+
+.special-card-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.special-card-gallery::-webkit-scrollbar {
+  width: 8px;
+}
+
+.special-card-gallery::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+}
+
+.special-card-gallery-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+
+.special-card-gallery-item:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.special-card-gallery-item.is-selected {
+  border-color: rgba(255, 230, 120, 0.95);
+  box-shadow: 0 0 0 2px rgba(255, 230, 120, 0.35);
+  background: rgba(255, 230, 120, 0.08);
+}
+
+.special-card-gallery-thumb {
+  width: 78px;
+  height: 108px;
+  border-radius: 8px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+}
+
+.special-card-gallery-name {
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+  word-break: break-word;
+}
+
+@media (max-width: 1200px) {
+  .special-card-gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .special-card-gallery {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .special-card-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

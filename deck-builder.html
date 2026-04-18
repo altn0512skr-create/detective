@@ -70,6 +70,50 @@
   </div>
 </div>
 
+<div class="special-card-block">
+  <h3>事件カード / パートナーカード設定</h3>
+
+  <div class="special-card-column">
+  <label class="form-block">
+    <span>事件カード</span>
+    <select id="incident-card-select"></select>
+  </label>
+
+  <div id="incident-card-preview" class="special-card-preview"></div>
+
+  <input
+    id="incident-card-search"
+    type="text"
+    placeholder="0035_h / 名前で検索"
+    class="special-card-search"
+  />
+
+  <div id="incident-card-gallery" class="special-card-gallery"></div>
+</div>
+
+    <div class="special-card-column">
+  <label class="form-block">
+    <span>パートナーカード</span>
+    <select id="partner-card-select"></select>
+  </label>
+
+  <div id="partner-card-preview" class="special-card-preview"></div>
+
+  <input
+    id="partner-card-search"
+    type="text"
+    placeholder="P001 / 名前で検索"
+    class="special-card-search"
+  />
+
+  <div id="partner-card-gallery" class="special-card-gallery"></div>
+</div>
+
+  <div class="special-card-actions">
+    <button id="save-special-card-button" type="button">この設定を保存</button>
+  </div>
+</div>
+
           <div class="current-deck-stats">
             <div class="stat-box">
               <span class="stat-label">合計枚数</span>
@@ -206,7 +250,9 @@
   </template>
 
   <script src="card-data.js"></script>
-  <script src="deck.js"></script>
-  <script src="deck-builder.js?v=2"></script>
+<script src="incident-card-data.js"></script>
+<script src="partner-card-data.js"></script>
+<script src="deck.js"></script>
+<script src="deck-builder.js?v=2"></script>
 </body>
 </html>

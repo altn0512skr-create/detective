@@ -36,6 +36,10 @@
       .filter(Boolean);
   }
 
+
+  function normalizeSpecialCard(value) {
+  return typeof value === "string" ? value : "";
+}
   function loadLegacyRecipe(key) {
     return normalizeRecipe(safeJsonParse(localStorage.getItem(key), []));
   }
@@ -90,12 +94,15 @@
           if (recipe.length === 0) return null;
 
           return {
-            id: typeof deck.id === "string" && deck.id ? deck.id : makeDeckId(),
-            name: typeof deck.name === "string" && deck.name.trim() ? deck.name.trim() : "デッキ",
-            recipe,
-            createdAt: deck.createdAt || new Date().toISOString(),
-            updatedAt: deck.updatedAt || new Date().toISOString()
-          };
+  id: typeof deck.id === "string" && deck.id ? deck.id : makeDeckId(),
+  name: typeof deck.name === "string" && deck.name.trim() ? deck.name.trim() : "デッキ",
+  recipe,
+  incidentCard: normalizeSpecialCard(deck.incidentCard),
+  partnerCard: normalizeSpecialCard(deck.partnerCard),
+  createdAt: deck.createdAt || new Date().toISOString(),
+  updatedAt: deck.updatedAt || new Date().toISOString()
+};
+
         })
         .filter(Boolean);
     }
@@ -173,43 +180,50 @@
     syncLegacyGlobals();
   }
 
-  function upsertSavedDeck(deckId, name, recipe) {
-    const decks = getSavedDecks();
-    const normalizedRecipe = normalizeRecipe(recipe);
-    const trimmedName = (name || "").trim() || `デッキ${decks.length + 1}`;
-    const now = new Date().toISOString();
+  function upsertSavedDeck(deckId, name, recipe, extra = {}) {
+  const decks = getSavedDecks();
+  const normalizedRecipe = normalizeRecipe(recipe);
+  const trimmedName = (name || "").trim() || `デッキ${decks.length + 1}`;
+  const now = new Date().toISOString();
 
-    const existingIndex = decks.findIndex((deck) => deck.id === deckId);
+  const incidentCard = normalizeSpecialCard(extra.incidentCard);
+  const partnerCard = normalizeSpecialCard(extra.partnerCard);
 
-    if (existingIndex >= 0) {
-      decks[existingIndex] = {
-        ...decks[existingIndex],
-        name: trimmedName,
-        recipe: normalizedRecipe,
-        updatedAt: now
-      };
-      saveSavedDecks(decks);
-      syncLegacyGlobals();
-      return decks[existingIndex];
-    }
+  const existingIndex = decks.findIndex((deck) => deck.id === deckId);
 
-    const newDeck = {
-      id: makeDeckId(),
+  if (existingIndex >= 0) {
+    decks[existingIndex] = {
+      ...decks[existingIndex],
       name: trimmedName,
       recipe: normalizedRecipe,
-      createdAt: now,
+      incidentCard,
+      partnerCard,
       updatedAt: now
     };
-
-    decks.push(newDeck);
     saveSavedDecks(decks);
-
-    if (!getActiveDeckId("self")) setActiveDeckId("self", newDeck.id);
-    if (!getActiveDeckId("opponent")) setActiveDeckId("opponent", newDeck.id);
-
     syncLegacyGlobals();
-    return newDeck;
+    return decks[existingIndex];
   }
+
+  const newDeck = {
+    id: makeDeckId(),
+    name: trimmedName,
+    recipe: normalizedRecipe,
+    incidentCard,
+    partnerCard,
+    createdAt: now,
+    updatedAt: now
+  };
+
+  decks.push(newDeck);
+  saveSavedDecks(decks);
+
+  if (!getActiveDeckId("self")) setActiveDeckId("self", newDeck.id);
+  if (!getActiveDeckId("opponent")) setActiveDeckId("opponent", newDeck.id);
+
+  syncLegacyGlobals();
+  return newDeck;
+}
 
   function renameDeck(deckId, nextName) {
     const decks = getSavedDecks();
@@ -249,16 +263,19 @@
   }
 
   function duplicateDeck(deckId) {
-    const source = getDeckById(deckId);
-    if (!source) return null;
+  const source = getDeckById(deckId);
+  if (!source) return null;
 
-    return upsertSavedDeck(
-      null,
-      `${source.name} コピー`,
-      JSON.parse(JSON.stringify(source.recipe))
-    );
-  }
-
+  return upsertSavedDeck(
+    null,
+    `${source.name} コピー`,
+    JSON.parse(JSON.stringify(source.recipe)),
+    {
+      incidentCard: source.incidentCard || "",
+      partnerCard: source.partnerCard || ""
+    }
+  );
+}
   function fillSelect(selectEl, activeId) {
     if (!selectEl) return;
 
@@ -319,17 +336,18 @@
     return normalizeRecipe(recipe).reduce((sum, item) => sum + item.count, 0);
   }
 
-  window.getSavedDecks = getSavedDecks;
-  window.getDeckById = getDeckById;
-  window.getActiveDeckRecipe = getActiveDeckRecipe;
-  window.setActiveDeckId = setActiveDeckId;
-  window.upsertSavedDeck = upsertSavedDeck;
-  window.renameSavedDeck = renameDeck;
-  window.deleteSavedDeck = deleteDeck;
-  window.duplicateSavedDeck = duplicateDeck;
-  window.refreshBoardDeckSelectors = refreshBoardDeckSelectors;
-  window.recipeTotal = recipeTotal;
-  window.normalizeRecipe = normalizeRecipe;
+ window.getSavedDecks = getSavedDecks;
+window.getDeckById = getDeckById;
+window.getActiveDeckId = getActiveDeckId;
+window.getActiveDeckRecipe = getActiveDeckRecipe;
+window.setActiveDeckId = setActiveDeckId;
+window.upsertSavedDeck = upsertSavedDeck;
+window.renameSavedDeck = renameDeck;
+window.deleteSavedDeck = deleteDeck;
+window.duplicateSavedDeck = duplicateDeck;
+window.refreshBoardDeckSelectors = refreshBoardDeckSelectors;
+window.recipeTotal = recipeTotal;
+window.normalizeRecipe = normalizeRecipe;
 
   ensureAtLeastOneDeck();
   syncLegacyGlobals();

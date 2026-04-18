@@ -3851,22 +3851,35 @@ function resetGameState() {
 function setupGame() {
   resetGameState();
 
+  const selfDeck = typeof getDeckById === "function"
+    ? getDeckById(getActiveDeckId("self"))
+    : null;
+
+  const opponentDeck = typeof getDeckById === "function"
+    ? getDeckById(getActiveDeckId("opponent"))
+    : null;
+
   game.self.deck = shuffle(buildDeck(getSelectedDeckRecipe("self")));
   game.opponent.deck = shuffle(buildDeck(getSelectedDeckRecipe("opponent")));
 
   drawStartingHand("self", 5);
   drawStartingHand("opponent", 5);
 
-  game.self.incident = "cards_i/0806_h.png";
-  game.opponent.incident = "cards_i/1059.png";
+  game.self.incident = selfDeck?.incidentCard || "";
+  game.opponent.incident = opponentDeck?.incidentCard || "";
 
-  game.self.partner = ["cards_p/P001.png"];
-  game.opponent.partner = ["cards_p/P076.png"];
+  game.self.partner = selfDeck?.partnerCard ? [selfDeck.partnerCard] : [];
+  game.opponent.partner = opponentDeck?.partnerCard ? [opponentDeck.partnerCard] : [];
+
+  game.self.partnerFile = "";
+  game.opponent.partnerFile = "";
+
+  game.self.mystery = "";
+  game.opponent.mystery = "";
 
   renderAll();
   fitBoardToViewport();
 }
-
 window.restartGameWithSelectedDecks = function restartGameWithSelectedDecks() {
   setupGame();
 };

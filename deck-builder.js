@@ -8,6 +8,8 @@ let currentDeckRecipe = [];
 let currentPage = 1;
 const cardsPerPage = 30;
 
+let currentIncidentCard = "";
+let currentPartnerCard = "";
 // ========================================
 // 要素取得
 // ========================================
@@ -35,6 +37,17 @@ const playerDeckSelectBuilderEl = document.getElementById("player-deck-select-bu
 const opponentDeckSelectBuilderEl = document.getElementById("opponent-deck-select-builder");
 const startGameButtonEl = document.getElementById("start-game-button");
 
+const incidentCardSelectEl = document.getElementById("incident-card-select");
+const partnerCardSelectEl = document.getElementById("partner-card-select");
+const incidentCardPreviewEl = document.getElementById("incident-card-preview");
+const partnerCardPreviewEl = document.getElementById("partner-card-preview");
+const saveSpecialCardButtonEl = document.getElementById("save-special-card-button");
+
+const partnerCardSearchEl = document.getElementById("partner-card-search");
+const partnerCardGalleryEl = document.getElementById("partner-card-gallery");
+
+const incidentCardSearchEl = document.getElementById("incident-card-search");
+const incidentCardGalleryEl = document.getElementById("incident-card-gallery");
 // ========================================
 // カードデータ取得
 // ========================================
@@ -127,6 +140,7 @@ function init() {
   renderCardLibrary();
   renderCurrentDeck();
   refreshMatchDeckSelectors();
+  fillSpecialCardSelectors();
 }
 
 // ========================================
@@ -155,6 +169,11 @@ function renderSavedDecks() {
         <button type="button" data-action="self">自分側に指定</button>
         <button type="button" data-action="opponent">相手側に指定</button>
       </div>
+
+      <div class="saved-deck-meta">
+  事件: ${escapeHtml(extractNameFromImage(deck.incidentCard || "未設定"))}<br>
+  パートナー: ${escapeHtml(extractNameFromImage(deck.partnerCard || "未設定"))}
+</div>
     `;
 
     div.querySelector('[data-action="load"]').addEventListener("click", () => loadDeck(deck.id));
@@ -166,7 +185,8 @@ function renderSavedDecks() {
       setActiveDeckId("opponent", deck.id);
       alert(`相手側デッキを「${deck.name}」にしました。`);
     });
-
+    
+    
     savedDeckListEl.appendChild(div);
   });
 }
@@ -181,26 +201,44 @@ function loadDeck(id) {
 
   currentDeckId = id;
   currentDeckRecipe = JSON.parse(JSON.stringify(deck.recipe));
+  currentIncidentCard = deck.incidentCard || "";
+  currentPartnerCard = deck.partnerCard || "";
+
   deckNameInput.value = deck.name;
 
   renderCurrentDeck();
-  renderCardLibrary();
+  fillSpecialCardSelectors();
 }
 
 createNewDeckButton.onclick = () => {
   currentDeckId = null;
   currentDeckRecipe = [];
+  currentIncidentCard = "";
+  currentPartnerCard = "";
   deckNameInput.value = "";
   renderCurrentDeck();
-  renderCardLibrary();
+  fillSpecialCardSelectors();
 };
 
 saveNewDeckButton.onclick = () => {
-  const saved = upsertSavedDeck(null, deckNameInput.value, currentDeckRecipe);
+  const saved = upsertSavedDeck(
+    null,
+    deckNameInput.value,
+    currentDeckRecipe,
+    {
+      incidentCard: currentIncidentCard,
+      partnerCard: currentPartnerCard
+    }
+  );
+
   currentDeckId = saved.id;
+  currentIncidentCard = saved.incidentCard || "";
+  currentPartnerCard = saved.partnerCard || "";
   deckNameInput.value = saved.name;
+
   renderSavedDecks();
   refreshMatchDeckSelectors();
+  fillSpecialCardSelectors();
 };
 
 overwriteDeckButton.onclick = () => {
@@ -209,10 +247,24 @@ overwriteDeckButton.onclick = () => {
     return;
   }
 
-  const saved = upsertSavedDeck(currentDeckId, deckNameInput.value, currentDeckRecipe);
+  const saved = upsertSavedDeck(
+    currentDeckId,
+    deckNameInput.value,
+    currentDeckRecipe,
+    {
+      incidentCard: currentIncidentCard,
+      partnerCard: currentPartnerCard
+    }
+  );
+
   currentDeckId = saved.id;
+  currentIncidentCard = saved.incidentCard || "";
+  currentPartnerCard = saved.partnerCard || "";
   deckNameInput.value = saved.name;
+
   renderSavedDecks();
+  refreshMatchDeckSelectors();
+  fillSpecialCardSelectors();
 };
 
 duplicateDeckButton.onclick = () => {
@@ -226,13 +278,15 @@ duplicateDeckButton.onclick = () => {
 
   currentDeckId = duplicated.id;
   currentDeckRecipe = JSON.parse(JSON.stringify(duplicated.recipe));
+  currentIncidentCard = duplicated.incidentCard || "";
+  currentPartnerCard = duplicated.partnerCard || "";
   deckNameInput.value = duplicated.name;
 
   renderSavedDecks();
   renderCurrentDeck();
-  renderCardLibrary();
+  refreshMatchDeckSelectors();
+  fillSpecialCardSelectors();
 };
-
 renameDeckButton.onclick = () => {
   if (!currentDeckId) {
     alert("名前変更するデッキがありません。");
@@ -241,6 +295,8 @@ renameDeckButton.onclick = () => {
 
   renameSavedDeck(currentDeckId, deckNameInput.value);
   renderSavedDecks();
+  refreshMatchDeckSelectors();
+  fillSpecialCardSelectors();
 };
 
 deleteDeckButton.onclick = () => {
@@ -257,11 +313,14 @@ deleteDeckButton.onclick = () => {
 
   currentDeckId = null;
   currentDeckRecipe = [];
+  currentIncidentCard = "";
+  currentPartnerCard = "";
   deckNameInput.value = "";
 
   renderSavedDecks();
   renderCurrentDeck();
-  renderCardLibrary();
+  refreshMatchDeckSelectors();
+  fillSpecialCardSelectors();
 };
 
 clearDeckButton.onclick = () => {
@@ -270,6 +329,13 @@ clearDeckButton.onclick = () => {
   renderCardLibrary();
 };
 
+if (incidentCardSelectEl) {
+  incidentCardSelectEl.addEventListener("change", updateSpecialCardPreview);
+}
+
+if (partnerCardSelectEl) {
+  partnerCardSelectEl.addEventListener("change", updateSpecialCardPreview);
+}
 // ========================================
 // カード一覧
 // ========================================
@@ -630,5 +696,209 @@ if (startGameButtonEl) {
     setActiveDeckId("opponent", opponentDeckId);
 
     location.href = "index.html";
+  });
+}
+
+function fillSpecialCardSelectors() {
+  if (incidentCardSelectEl && typeof incidentCardList !== "undefined" && Array.isArray(incidentCardList)) {
+    incidentCardSelectEl.innerHTML = "";
+
+    const emptyOption = document.createElement("option");
+    emptyOption.value = "";
+    emptyOption.textContent = "未設定";
+    incidentCardSelectEl.appendChild(emptyOption);
+
+    incidentCardList.forEach((card) => {
+      const option = document.createElement("option");
+      option.value = card.image;
+      option.textContent = card.name || card.id || card.image;
+      incidentCardSelectEl.appendChild(option);
+    });
+  }
+
+  if (partnerCardSelectEl && typeof partnerCardList !== "undefined" && Array.isArray(partnerCardList)) {
+    partnerCardSelectEl.innerHTML = "";
+
+    const emptyOption = document.createElement("option");
+    emptyOption.value = "";
+    emptyOption.textContent = "未設定";
+    partnerCardSelectEl.appendChild(emptyOption);
+
+    partnerCardList.forEach((card) => {
+      const option = document.createElement("option");
+      option.value = card.image;
+      option.textContent = card.name || card.id || card.image;
+      partnerCardSelectEl.appendChild(option);
+    });
+  }
+
+  if (incidentCardSelectEl) {
+    incidentCardSelectEl.value = currentIncidentCard || "";
+  }
+
+  if (partnerCardSelectEl) {
+    partnerCardSelectEl.value = currentPartnerCard || "";
+  }
+
+  updateSpecialCardPreview();
+  renderIncidentCardGallery();
+  renderPartnerCardGallery();
+}
+
+function renderIncidentCardGallery() {
+  if (!incidentCardGalleryEl || typeof incidentCardList === "undefined" || !Array.isArray(incidentCardList)) {
+    return;
+  }
+
+  const keyword = (incidentCardSearchEl?.value || "").trim().toLowerCase();
+  incidentCardGalleryEl.innerHTML = "";
+
+  const filtered = incidentCardList.filter((card) => {
+    if (!keyword) return true;
+    return (
+      (card.id || "").toLowerCase().includes(keyword) ||
+      (card.name || "").toLowerCase().includes(keyword) ||
+      (card.image || "").toLowerCase().includes(keyword)
+    );
+  });
+
+  filtered.forEach((card) => {
+    const itemEl = document.createElement("button");
+    itemEl.type = "button";
+    itemEl.className = "special-card-gallery-item";
+
+    if (card.image === currentIncidentCard) {
+      itemEl.classList.add("is-selected");
+    }
+
+    itemEl.innerHTML = `
+      <div class="special-card-gallery-thumb" style="background-image:url('${escapeAttr(card.image)}')"></div>
+      <div class="special-card-gallery-name">${escapeHtml(card.name || card.id || card.image)}</div>
+    `;
+
+    itemEl.addEventListener("click", () => {
+      currentIncidentCard = card.image;
+
+      if (incidentCardSelectEl) {
+        incidentCardSelectEl.value = card.image;
+      }
+
+      updateSpecialCardPreview();
+    });
+
+    incidentCardGalleryEl.appendChild(itemEl);
+  });
+}
+
+function renderPartnerCardGallery() {
+  if (!partnerCardGalleryEl || typeof partnerCardList === "undefined" || !Array.isArray(partnerCardList)) {
+    return;
+  }
+
+  const keyword = (partnerCardSearchEl?.value || "").trim().toLowerCase();
+  partnerCardGalleryEl.innerHTML = "";
+
+  const filtered = partnerCardList.filter((card) => {
+    if (!keyword) return true;
+    return (
+      (card.id || "").toLowerCase().includes(keyword) ||
+      (card.name || "").toLowerCase().includes(keyword) ||
+      (card.image || "").toLowerCase().includes(keyword)
+    );
+  });
+
+  filtered.forEach((card) => {
+    const itemEl = document.createElement("button");
+    itemEl.type = "button";
+    itemEl.className = "special-card-gallery-item";
+
+    if (card.image === currentPartnerCard) {
+      itemEl.classList.add("is-selected");
+    }
+
+    itemEl.innerHTML = `
+      <div class="special-card-gallery-thumb" style="background-image:url('${escapeAttr(card.image)}')"></div>
+      <div class="special-card-gallery-name">${escapeHtml(card.name || card.id || card.image)}</div>
+    `;
+
+    itemEl.addEventListener("click", () => {
+      currentPartnerCard = card.image;
+
+      if (partnerCardSelectEl) {
+        partnerCardSelectEl.value = card.image;
+      }
+
+      updateSpecialCardPreview();
+    });
+
+    partnerCardGalleryEl.appendChild(itemEl);
+  });
+}
+
+function updateSpecialCardPreview() {
+  currentIncidentCard = incidentCardSelectEl?.value || "";
+  currentPartnerCard = partnerCardSelectEl?.value || "";
+
+  if (incidentCardPreviewEl) {
+    incidentCardPreviewEl.style.backgroundImage = currentIncidentCard
+      ? `url("${currentIncidentCard}")`
+      : "none";
+  }
+
+  if (partnerCardPreviewEl) {
+    partnerCardPreviewEl.style.backgroundImage = currentPartnerCard
+      ? `url("${currentPartnerCard}")`
+      : "none";
+  }
+
+  renderIncidentCardGallery();
+  renderPartnerCardGallery();
+}
+
+if (incidentCardSearchEl) {
+  incidentCardSearchEl.addEventListener("input", renderIncidentCardGallery);
+}
+
+if (partnerCardSearchEl) {
+  partnerCardSearchEl.addEventListener("input", renderPartnerCardGallery);
+}
+
+if (incidentCardSelectEl) {
+  incidentCardSelectEl.addEventListener("change", updateSpecialCardPreview);
+}
+
+if (partnerCardSelectEl) {
+  partnerCardSelectEl.addEventListener("change", updateSpecialCardPreview);
+}
+
+if (saveSpecialCardButtonEl) {
+  saveSpecialCardButtonEl.addEventListener("click", () => {
+    updateSpecialCardPreview();
+
+    if (!currentDeckId) {
+      alert("先に保存済みデッキを読み込むか、新規保存してください。");
+      return;
+    }
+
+    const saved = upsertSavedDeck(
+      currentDeckId,
+      deckNameInput.value,
+      currentDeckRecipe,
+      {
+        incidentCard: currentIncidentCard,
+        partnerCard: currentPartnerCard
+      }
+    );
+
+    currentDeckId = saved.id;
+    currentIncidentCard = saved.incidentCard || "";
+    currentPartnerCard = saved.partnerCard || "";
+    deckNameInput.value = saved.name;
+
+    renderSavedDecks();
+    refreshMatchDeckSelectors();
+    fillSpecialCardSelectors();
+
+    alert("このデッキに事件カードとパートナーカードを保存しました。");
   });
 }
