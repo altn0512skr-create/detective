@@ -1546,8 +1546,8 @@ body::before {
 }
 
 .card-preview-image {
-  width: 320px;
-  height: 448px;
+  width: 450px;
+  height: 630px;
   border-radius: 12px;
   background-size: cover;
   background-position: center;
@@ -1596,14 +1596,14 @@ body::before {
 
 /* 縦カード用 */
 .card-preview-image.preview-vertical {
-  width: min(320px, 70vw);
-  height: min(448px, 80vh);
+  width: min(85vw, 600px);
+  height: min(90vh, 800px);
 }
 
 /* 横カード用 */
 .card-preview-image.preview-horizontal {
-  width: min(620px, 88vw);
-  height: min(430px, 70vh);
+  width: min(95vw, 900px);
+  height: min(80vh, 600px);
 }
 /* ========================================
    山札メニュー / めくったカード

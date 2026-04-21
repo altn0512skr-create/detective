@@ -2587,7 +2587,7 @@ sceneStackCardOptions.forEach((button) => {
       return;
     }
 
-    if (choice === "A") {
+    if (choice === "リムーブ") {
       saveState();
 
       stack.splice(selectedSceneStackHiddenIndex, 1);
@@ -2601,7 +2601,8 @@ sceneStackCardOptions.forEach((button) => {
       return;
     }
 
-    if (choice === "B") {
+    if (choice === "拡大") {
+      showCardPreview(card.image);
       hideSceneStackCardMenu();
       return;
     }
